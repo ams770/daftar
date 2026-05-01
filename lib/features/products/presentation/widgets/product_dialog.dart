@@ -85,14 +85,20 @@ class _ProductDialogState extends State<ProductDialog> {
               const SizedBox(height: 24),
               TextFormField(
                 controller: _nameController,
+                maxLength: 100,
                 decoration: InputDecoration(
                   labelText: 'Product Name',
                   prefixIcon: const Icon(Icons.shopping_bag_outlined),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   filled: true,
                   fillColor: Colors.grey[50],
+                  counterText: '', // Hide the counter for a cleaner look
                 ),
-                validator: (value) => value == null || value.isEmpty ? 'Required' : null,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Required';
+                  if (value.length > 100) return 'Too long (max 100 chars)';
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
               TextFormField(

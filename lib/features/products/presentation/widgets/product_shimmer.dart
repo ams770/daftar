@@ -17,7 +17,6 @@ class ProductShimmer extends StatelessWidget {
         baseColor: Colors.grey[300]!,
         highlightColor: Colors.grey[100]!,
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
               child: Column(
@@ -26,6 +25,15 @@ class ProductShimmer extends StatelessWidget {
                 children: [
                   Container(
                     width: double.infinity,
+                    height: 18,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    width: 60,
                     height: 20,
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -34,11 +42,11 @@ class ProductShimmer extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Container(
-                    width: 80,
-                    height: 20,
+                    width: 100,
+                    height: 12,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                   ),
                 ],
@@ -46,11 +54,11 @@ class ProductShimmer extends StatelessWidget {
             ),
             const SizedBox(width: 16),
             Container(
-              width: 70,
-              height: 30,
-              decoration: BoxDecoration(
+              width: 40,
+              height: 40,
+              decoration: const BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
+                shape: BoxShape.circle,
               ),
             ),
           ],
