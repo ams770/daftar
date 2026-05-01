@@ -7,6 +7,7 @@ import '../cubits/products_cubit.dart';
 import '../cubits/products_state.dart';
 import '../widgets/product_dialog.dart';
 import '../widgets/product_shimmer.dart';
+import '../widgets/search_input_field.dart';
 
 class ProductsPage extends StatelessWidget {
   const ProductsPage({super.key});
@@ -61,70 +62,85 @@ class _ProductsViewState extends State<ProductsView> {
         elevation: 0,
         centerTitle: true,
       ),
-      body: BlocConsumer<ProductsCubit, ProductsState>(
-        listener: (context, state) {
-          if (state is ProductScanResult) {
-            _handleScanResult(context, state);
-          } else if (state is ProductsError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message), backgroundColor: Colors.redAccent),
-            );
-          }
-        },
-        buildWhen: (previous, current) => current is ProductsLoading || current is ProductsLoaded || current is ProductsError,
-        builder: (context, state) {
-          if (state is ProductsLoading) {
-            return const ProductListShimmer();
-          }
+      body: CustomScrollView(
+        controller: _scrollController,
+        slivers: [
+          SliverToBoxAdapter(
+            child: SearchInputField(
+              onChanged: (query) {
+                context.read<ProductsCubit>().searchProducts(query);
+              },
+              onScannerTap: () => _openScanner(context),
+            ),
+          ),
+          BlocConsumer<ProductsCubit, ProductsState>(
+            listener: (context, state) {
+              if (state is ProductScanResult) {
+                _handleScanResult(context, state);
+              } else if (state is ProductsError) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(state.message), backgroundColor: Colors.redAccent),
+                );
+              }
+            },
+            buildWhen: (previous, current) =>
+                current is ProductsLoading || current is ProductsLoaded || current is ProductsError,
+            builder: (context, state) {
+              if (state is ProductsLoading) {
+                return const SliverProductListShimmer();
+              }
 
-          if (state is ProductsError) {
-            return Center(child: Text('Error: ${state.message}'));
-          }
+              if (state is ProductsError) {
+                return SliverFillRemaining(
+                  child: Center(child: Text('Error: ${state.message}')),
+                );
+              }
 
-          if (state is ProductsLoaded) {
-            if (state.products.isEmpty) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.inventory_2_outlined, size: 64, color: Colors.grey[400]),
-                    const SizedBox(height: 16),
-                    Text(
-                      'No products found.\nTap the scanner to add one!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.grey[600], fontSize: 16),
+              if (state is ProductsLoaded) {
+                if (state.products.isEmpty) {
+                  return SliverFillRemaining(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.inventory_2_outlined, size: 64, color: Colors.grey[400]),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'No products found.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.grey, fontSize: 16),
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-              );
-            }
-
-            return ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(16),
-              itemCount: state.products.length + (state.hasMore ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index == state.products.length) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8.0),
-                    child: ProductShimmer(),
                   );
                 }
 
-                final product = state.products[index];
-                return _ProductCard(product: product);
-              },
-            );
-          }
+                return SliverPadding(
+                  padding: const EdgeInsets.all(16),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        if (index == state.products.length) {
+                          return const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 8.0),
+                            child: ProductShimmer(),
+                          );
+                        }
 
-          return const SizedBox();
-        },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openScanner(context),
-        backgroundColor: const Color(0xFF2D31FA),
-        icon: const Icon(Icons.qr_code_scanner, color: Colors.white),
-        label: const Text('Scan Barcode', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        final product = state.products[index];
+                        return _ProductCard(product: product);
+                      },
+                      childCount: state.products.length + (state.hasMore ? 1 : 0),
+                    ),
+                  ),
+                );
+              }
+
+              return const SliverToBoxAdapter(child: SizedBox());
+            },
+          ),
+        ],
       ),
     );
   }

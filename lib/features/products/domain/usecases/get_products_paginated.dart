@@ -6,7 +6,7 @@ class GetProductsPaginated {
 
   GetProductsPaginated(this.repository);
 
-  Future<List<Product>> call(int limit, int offset) {
-    return repository.getProductsPaginated(limit, offset);
+  Future<List<Product>> call(int limit, int offset, {String? query}) {
+    return repository.getProductsPaginated(limit, offset, query: query);
   }
 }

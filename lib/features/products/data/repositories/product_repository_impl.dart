@@ -9,8 +9,8 @@ class ProductRepositoryImpl implements ProductRepository {
   ProductRepositoryImpl(this.localDataSource);
 
   @override
-  Future<List<Product>> getProductsPaginated(int limit, int offset) async {
-    return await localDataSource.getProductsPaginated(limit, offset);
+  Future<List<Product>> getProductsPaginated(int limit, int offset, {String? query}) async {
+    return await localDataSource.getProductsPaginated(limit, offset, query: query);
   }
 
   @override

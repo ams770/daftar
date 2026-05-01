@@ -81,3 +81,21 @@ class ProductListShimmer extends StatelessWidget {
     );
   }
 }
+
+class SliverProductListShimmer extends StatelessWidget {
+  final int count;
+  const SliverProductListShimmer({super.key, this.count = 6});
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverPadding(
+      padding: const EdgeInsets.all(16),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) => const ProductShimmer(),
+          childCount: count,
+        ),
+      ),
+    );
+  }
+}

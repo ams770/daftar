@@ -14,6 +14,7 @@ class ProductsCubit extends Cubit<ProductsState> {
 
   static const int _pageSize = 20;
   int _currentOffset = 0;
+  String? _query;
 
   ProductsCubit({
     required this.getProductsPaginated,
@@ -21,6 +22,11 @@ class ProductsCubit extends Cubit<ProductsState> {
     required this.addProduct,
     required this.updateProduct,
   }) : super(ProductsInitial());
+
+  Future<void> searchProducts(String query) async {
+    _query = query;
+    await loadProducts(refresh: true);
+  }
 
   Future<void> loadProducts({bool refresh = false}) async {
     if (refresh) {
@@ -37,7 +43,7 @@ class ProductsCubit extends Cubit<ProductsState> {
     }
 
     try {
-      final products = await getProductsPaginated(_pageSize, _currentOffset);
+      final products = await getProductsPaginated(_pageSize, _currentOffset, query: _query);
       final hasMore = products.length == _pageSize;
 
       if (state is ProductsLoaded && !refresh) {

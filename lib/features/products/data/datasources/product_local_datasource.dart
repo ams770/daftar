@@ -2,7 +2,7 @@ import '../../../../core/database/database_helper.dart';
 import '../models/product_model.dart';
 
 abstract class ProductLocalDataSource {
-  Future<List<ProductModel>> getProductsPaginated(int limit, int offset);
+  Future<List<ProductModel>> getProductsPaginated(int limit, int offset, {String? query});
   Future<ProductModel?> getProductByCode(String code);
   Future<void> addProduct(ProductModel product);
   Future<void> updateProduct(ProductModel product);
@@ -14,10 +14,21 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
   ProductLocalDataSourceImpl(this.databaseHelper);
 
   @override
-  Future<List<ProductModel>> getProductsPaginated(int limit, int offset) async {
+  Future<List<ProductModel>> getProductsPaginated(int limit, int offset, {String? query}) async {
     final db = await databaseHelper.database;
+    
+    String? where;
+    List<dynamic>? whereArgs;
+    
+    if (query != null && query.isNotEmpty) {
+      where = 'name LIKE ? OR code LIKE ?';
+      whereArgs = ['%$query%', '%$query%'];
+    }
+
     final result = await db.query(
       'products',
+      where: where,
+      whereArgs: whereArgs,
       limit: limit,
       offset: offset,
       orderBy: 'id DESC',
