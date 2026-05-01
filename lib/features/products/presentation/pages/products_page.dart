@@ -6,6 +6,7 @@ import '../../domain/entities/product.dart';
 import '../cubits/products_cubit.dart';
 import '../cubits/products_state.dart';
 import '../widgets/product_dialog.dart';
+import '../widgets/product_shimmer.dart';
 
 class ProductsPage extends StatelessWidget {
   const ProductsPage({super.key});
@@ -73,7 +74,7 @@ class _ProductsViewState extends State<ProductsView> {
         buildWhen: (previous, current) => current is ProductsLoading || current is ProductsLoaded || current is ProductsError,
         builder: (context, state) {
           if (state is ProductsLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const ProductListShimmer();
           }
 
           if (state is ProductsError) {
@@ -104,11 +105,9 @@ class _ProductsViewState extends State<ProductsView> {
               itemCount: state.products.length + (state.hasMore ? 1 : 0),
               itemBuilder: (context, index) {
                 if (index == state.products.length) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: CircularProgressIndicator(),
-                    ),
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8.0),
+                    child: ProductShimmer(),
                   );
                 }
 
