@@ -1,5 +1,8 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../../core/enums/invoice_enums.dart';
+
+
 class Invoice extends Equatable {
   final int? id;
   final DateTime createdAt;
@@ -10,6 +13,11 @@ class Invoice extends Equatable {
   final int vatPercent;
   final String currency;
 
+  final InvoiceType type;
+  final PaymentMethod paymentMethod;
+  final double paidAmount;
+  final double remainingAmount;
+
   const Invoice({
     this.id,
     required this.createdAt,
@@ -19,10 +27,27 @@ class Invoice extends Equatable {
     required this.total,
     required this.vatPercent,
     required this.currency,
+    required this.type,
+    required this.paymentMethod,
+    required this.paidAmount,
+    required this.remainingAmount,
   });
 
   @override
-  List<Object?> get props => [id, createdAt, items, subtotal, vatAmount, total, vatPercent, currency];
+  List<Object?> get props => [
+        id,
+        createdAt,
+        items,
+        subtotal,
+        vatAmount,
+        total,
+        vatPercent,
+        currency,
+        type,
+        paymentMethod,
+        paidAmount,
+        remainingAmount,
+      ];
 
   Map<String, dynamic> toJson() {
     return {
@@ -33,6 +58,10 @@ class Invoice extends Equatable {
       'total': total,
       'vatPercent': vatPercent,
       'currency': currency,
+      'type': type.name,
+      'paymentMethod': paymentMethod.name,
+      'paidAmount': paidAmount,
+      'remainingAmount': remainingAmount,
     };
   }
 
@@ -46,6 +75,10 @@ class Invoice extends Equatable {
       total: json['total'],
       vatPercent: json['vatPercent'],
       currency: json['currency'],
+      type: InvoiceType.values.byName(json['type'] ?? 'cash'),
+      paymentMethod: PaymentMethod.values.byName(json['paymentMethod'] ?? 'cash'),
+      paidAmount: json['paidAmount'] ?? json['total'],
+      remainingAmount: json['remainingAmount'] ?? 0.0,
     );
   }
 }

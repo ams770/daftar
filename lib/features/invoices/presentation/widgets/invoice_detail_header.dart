@@ -1,0 +1,136 @@
+import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:intl/intl.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../../../../core/enums/invoice_enums.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
+import '../../../../core/theme/bento_theme_extension.dart';
+
+class InvoiceDetailHeader extends StatelessWidget {
+  final int? invoiceId;
+  final DateTime createdAt;
+  final bool isArabic;
+  final DateFormat dateFormat;
+  final InvoiceType type;
+  final PaymentMethod paymentMethod;
+  final double remainingAmount;
+
+  const InvoiceDetailHeader({
+    super.key,
+    required this.invoiceId,
+    required this.createdAt,
+    required this.isArabic,
+    required this.dateFormat,
+    required this.type,
+    required this.paymentMethod,
+    required this.remainingAmount,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bento = Theme.of(context).extension<BentoThemeExtension>()!;
+    final isFullyPaid = remainingAmount <= 0;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.xl),
+      decoration: bento.cardDecoration.copyWith(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.secondary,
+            AppColors.secondary.withValues(alpha: 0.8),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${isArabic ? 'فاتورة' : 'Invoice'} ${type.label(isArabic)}',
+                    style: AppTypography.label.copyWith(
+                      color: AppColors.white.withValues(alpha: 0.8),
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const Gap(4),
+                  Text(
+                    '#${invoiceId?.toString().padLeft(4, '0') ?? 'N/A'}',
+                    style: AppTypography.h1.copyWith(
+                      color: AppColors.white,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: AppColors.white.withValues(alpha: 0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(LucideIcons.receipt, color: AppColors.white, size: 32),
+              ),
+            ],
+          ),
+          const Gap(AppSpacing.xl),
+          Row(
+            children: [
+              Icon(LucideIcons.calendar, size: 14, color: AppColors.white.withValues(alpha: 0.7)),
+              const Gap(AppSpacing.xs),
+              Text(
+                dateFormat.format(createdAt),
+                style: AppTypography.bodySm.copyWith(
+                  color: AppColors.white.withValues(alpha: 0.9),
+                ),
+              ),
+              const Spacer(),
+              _buildStatusBadge(isArabic, isFullyPaid),
+            ],
+          ),
+          const Gap(AppSpacing.md),
+          Row(
+            children: [
+              Icon(LucideIcons.wallet, size: 14, color: AppColors.white.withValues(alpha: 0.7)),
+              const Gap(AppSpacing.xs),
+              Text(
+                paymentMethod.label(isArabic),
+                style: AppTypography.bodySm.copyWith(
+                  color: AppColors.white.withValues(alpha: 0.9),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusBadge(bool isArabic, bool isFullyPaid) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: (isFullyPaid ? AppColors.success : AppColors.danger).withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.white.withValues(alpha: 0.2)),
+      ),
+      child: Text(
+        isFullyPaid
+            ? (isArabic ? 'مدفوع بالكامل' : 'FULLY PAID')
+            : (isArabic ? 'متبقي' : 'REMAINING'),
+        style: AppTypography.label.copyWith(
+          color: AppColors.white,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+}

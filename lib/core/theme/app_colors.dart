@@ -9,16 +9,25 @@ class AppColors {
   static const Color danger = Color(0xFFDC2626);
   static const Color surface = Color(0xFFF0F9FF);
   static const Color text = Color(0xFF111827);
-  
+
   // Neutrals
-  static const Color background = Color(0xFFF8F9FB);
+  static const Color background = Color.fromARGB(255, 247, 249, 253);
   static const Color white = Colors.white;
   static const Color grey = Color(0xFF9CA3AF);
   static const Color greyLight = Color(0xFFE5E7EB);
   static const Color greyDark = Color(0xFF4B5563);
 
   // Gradients
-  static const List<Color> primaryGradient = [Color(0xFFBAE6FD), Color(0xFF7DD3FC)];
-  static const List<Color> secondaryGradient = [Color(0xFF0EA5E9), Color(0xFF0284C7)];
-  static const List<Color> surfaceGradient = [Color(0xFFF0F9FF), Color(0xFFE0F2FE)];
+  static const List<Color> primaryGradient = [
+    Color(0xFFBAE6FD),
+    Color(0xFF7DD3FC),
+  ];
+  static const List<Color> secondaryGradient = [
+    Color(0xFF0EA5E9),
+    Color(0xFF0284C7),
+  ];
+  static const List<Color> surfaceGradient = [
+    Color(0xFFF0F9FF),
+    Color(0xFFE0F2FE),
+  ];
 }

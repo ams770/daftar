@@ -19,7 +19,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -29,6 +29,12 @@ class DatabaseHelper {
     if (oldVersion < 2) {
       await _createSettingsTable(db);
       await _createInvoiceTables(db);
+    }
+    if (oldVersion < 3) {
+      await db.execute('ALTER TABLE invoices ADD COLUMN type TEXT NOT NULL DEFAULT "cash"');
+      await db.execute('ALTER TABLE invoices ADD COLUMN paymentMethod TEXT NOT NULL DEFAULT "cash"');
+      await db.execute('ALTER TABLE invoices ADD COLUMN paidAmount REAL NOT NULL DEFAULT 0.0');
+      await db.execute('ALTER TABLE invoices ADD COLUMN remainingAmount REAL NOT NULL DEFAULT 0.0');
     }
   }
 
@@ -82,7 +88,11 @@ CREATE TABLE invoices (
   vatAmount REAL NOT NULL,
   total REAL NOT NULL,
   vatPercent INTEGER NOT NULL,
-  currency TEXT NOT NULL
+  currency TEXT NOT NULL,
+  type TEXT NOT NULL DEFAULT "cash",
+  paymentMethod TEXT NOT NULL DEFAULT "cash",
+  paidAmount REAL NOT NULL DEFAULT 0.0,
+  remainingAmount REAL NOT NULL DEFAULT 0.0
 )
 ''');
 

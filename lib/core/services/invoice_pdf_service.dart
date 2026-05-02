@@ -85,7 +85,7 @@ class InvoicePdfService {
           crossAxisAlignment: pw.CrossAxisAlignment.end,
           children: [
             pw.Text(
-              isArabic ? 'فاتورة' : 'INVOICE',
+              '${isArabic ? 'فاتورة' : 'INVOICE'} ${invoice.type.name.toUpperCase()}',
               style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold, color: PdfColors.blue700),
             ),
             pw.SizedBox(height: 8),
@@ -153,6 +153,16 @@ class InvoicePdfService {
             _buildTotalRow('${isArabic ? 'الضريبة' : 'VAT'} (${invoice.vatPercent}%)', invoice.vatAmount, settings.currency),
             pw.Divider(),
             _buildTotalRow(isArabic ? 'الإجمالي' : 'Total', invoice.total, settings.currency, isBold: true),
+            if (invoice.remainingAmount > 0) ...[
+              pw.Divider(),
+              _buildTotalRow(isArabic ? 'المدفوع' : 'Paid', invoice.paidAmount, settings.currency),
+              _buildTotalRow(isArabic ? 'المتبقي' : 'Remaining', invoice.remainingAmount, settings.currency, isBold: true),
+            ],
+            pw.SizedBox(height: 8),
+            pw.Text(
+              '${isArabic ? 'طريقة الدفع' : 'Payment'}: ${invoice.paymentMethod.name.toUpperCase()}',
+              style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700),
+            ),
           ],
         ),
       ),

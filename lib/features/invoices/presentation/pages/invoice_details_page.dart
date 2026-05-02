@@ -13,6 +13,11 @@ import '../../../settings/presentation/cubits/settings_cubit.dart';
 import '../../domain/entities/invoice.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
+import '../widgets/brand_header.dart';
+import '../widgets/invoice_detail_header.dart';
+import '../widgets/invoice_items_table.dart';
+import '../widgets/invoice_totals_section.dart';
+import '../widgets/section_title.dart';
 
 class InvoiceDetailsPage extends StatelessWidget {
   final Invoice invoice;
@@ -24,7 +29,9 @@ class InvoiceDetailsPage extends StatelessWidget {
     return BlocBuilder<SettingsCubit, SettingsState>(
       builder: (context, settingsState) {
         if (settingsState is! SettingsLoaded) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
 
         final settings = settingsState.settings;
@@ -43,19 +50,51 @@ class InvoiceDetailsPage extends StatelessWidget {
             ],
           ),
           body: Directionality(
-            textDirection: isArabic ? ui.TextDirection.rtl : ui.TextDirection.ltr,
+            textDirection: isArabic
+                ? ui.TextDirection.rtl
+                : ui.TextDirection.ltr,
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(AppSpacing.lg),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _buildInvoiceHeader(context, isArabic, dateFormat),
-                  const Gap(AppSpacing.lg),
-                  _buildBrandHeader(context, settings),
+                  InvoiceDetailHeader(
+                    invoiceId: invoice.id,
+                    createdAt: invoice.createdAt,
+                    isArabic: isArabic,
+                    dateFormat: dateFormat,
+                    type: invoice.type,
+                    paymentMethod: invoice.paymentMethod,
+                    remainingAmount: invoice.remainingAmount,
+                  ),
+
                   const Gap(AppSpacing.xl),
-                  _buildItemsTable(context, invoice.items, settings.currency, isArabic),
+                  SectionTitle(
+                    title: isArabic ? 'الأصناف' : 'Items',
+                    icon: LucideIcons.box,
+                  ),
+                  const Gap(AppSpacing.sm),
+                  InvoiceItemsTable(
+                    items: invoice.items,
+                    currency: settings.currency,
+                    isArabic: isArabic,
+                  ),
                   const Gap(AppSpacing.xl),
-                  _buildTotalsSection(context, invoice, settings, isArabic),
+                  SectionTitle(
+                    title: isArabic ? 'الملخص' : 'Summary',
+                    icon: LucideIcons.calculator,
+                  ),
+                  const Gap(AppSpacing.sm),
+                  InvoiceTotalsSection(
+                    subtotal: invoice.subtotal,
+                    vatAmount: invoice.vatAmount,
+                    total: invoice.total,
+                    vatPercent: invoice.vatPercent,
+                    currency: settings.currency,
+                    isArabic: isArabic,
+                    paidAmount: invoice.paidAmount,
+                    remainingAmount: invoice.remainingAmount,
+                  ),
                 ],
               ),
             ),
@@ -73,7 +112,9 @@ class InvoiceDetailsPage extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.secondary,
                         foregroundColor: AppColors.white,
-                        padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppSpacing.md,
+                        ),
                       ),
                     ),
                   ),
@@ -82,11 +123,15 @@ class InvoiceDetailsPage extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: () => _showPrintOptions(context, isArabic),
                       icon: const Icon(LucideIcons.printer),
-                      label: Text(isArabic ? 'طباعة الفاتورة' : 'PRINT INVOICE'),
+                      label: Text(
+                        isArabic ? 'طباعة الفاتورة' : 'PRINT INVOICE',
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.success,
                         foregroundColor: AppColors.white,
-                        padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppSpacing.md,
+                        ),
                       ),
                     ),
                   ),
@@ -105,7 +150,7 @@ class InvoiceDetailsPage extends StatelessWidget {
         invoice: invoice,
         settings: settings,
       );
-      
+
       await Printing.sharePdf(
         bytes: pdfBytes,
         filename: 'invoice_${invoice.id ?? 'new'}.pdf',
@@ -113,7 +158,10 @@ class InvoiceDetailsPage extends StatelessWidget {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error generating PDF: $e'), backgroundColor: AppColors.danger),
+          SnackBar(
+            content: Text('Error generating PDF: $e'),
+            backgroundColor: AppColors.danger,
+          ),
         );
       }
     }
@@ -124,7 +172,9 @@ class InvoiceDetailsPage extends StatelessWidget {
       context: context,
       backgroundColor: AppColors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusXl)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSpacing.radiusXl),
+        ),
       ),
       builder: (context) {
         return SafeArea(
@@ -154,138 +204,6 @@ class InvoiceDetailsPage extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildInvoiceHeader(BuildContext context, bool isArabic, DateFormat dateFormat) {
-    final bento = Theme.of(context).extension<BentoThemeExtension>()!;
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: bento.cardDecoration.copyWith(
-        color: AppColors.primary.withValues(alpha: 0.1),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '${isArabic ? 'فاتورة رقم' : 'Invoice #'} ${invoice.id?.toString().padLeft(4, '0') ?? 'N/A'}',
-                style: AppTypography.h2,
-              ),
-              const Gap(AppSpacing.xs),
-              Text(
-                dateFormat.format(invoice.createdAt),
-                style: AppTypography.bodySm.copyWith(color: AppColors.grey),
-              ),
-            ],
-          ),
-          const Icon(LucideIcons.receipt, color: AppColors.secondary, size: 32),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBrandHeader(BuildContext context, dynamic settings) {
-    final bento = Theme.of(context).extension<BentoThemeExtension>()!;
-
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.xl),
-      decoration: bento.cardDecoration,
-      child: Column(
-        children: [
-          if (settings.logoPath != null && settings.logoPath!.isNotEmpty) ...[
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                image: DecorationImage(
-                  image: FileImage(File(settings.logoPath!)),
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ),
-            const Gap(AppSpacing.md),
-          ],
-          Text(
-            settings.brandName,
-            style: AppTypography.h1.copyWith(color: AppColors.secondary),
-            textAlign: TextAlign.center,
-          ),
-          if (settings.phone.isNotEmpty) ...[
-            const Gap(AppSpacing.xs),
-            Text(settings.phone, style: AppTypography.bodySm),
-          ],
-          if (settings.address.isNotEmpty) ...[
-            const Gap(AppSpacing.xs),
-            Text(settings.address, style: AppTypography.bodySm, textAlign: TextAlign.center),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildItemsTable(BuildContext context, List<InvoiceItem> items, String currency, bool isArabic) {
-    final bento = Theme.of(context).extension<BentoThemeExtension>()!;
-
-    return Container(
-      decoration: bento.cardDecoration,
-      clipBehavior: Clip.antiAlias,
-      child: DataTable(
-        columnSpacing: 12,
-        horizontalMargin: 16,
-        headingRowColor: WidgetStateProperty.all(AppColors.primary.withValues(alpha: 0.1)),
-        columns: [
-          DataColumn(label: Text(isArabic ? 'المنتج' : 'Product', style: AppTypography.label)),
-          DataColumn(label: Text(isArabic ? 'الكمية' : 'Qty', style: AppTypography.label), numeric: true),
-          DataColumn(label: Text(isArabic ? 'الإجمالي' : 'Total', style: AppTypography.label), numeric: true),
-        ],
-        rows: items.map((item) {
-          return DataRow(cells: [
-            DataCell(Text(item.productName, style: AppTypography.bodySm)),
-            DataCell(Text('${item.qty}', style: AppTypography.bodySm)),
-            DataCell(Text(item.lineTotal.toStringAsFixed(2), style: AppTypography.bodySm)),
-          ]);
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildTotalsSection(BuildContext context, Invoice invoice, dynamic settings, bool isArabic) {
-    final bento = Theme.of(context).extension<BentoThemeExtension>()!;
-
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.xl),
-      decoration: bento.cardDecoration,
-      child: Column(
-        children: [
-          _buildTotalRow(isArabic ? 'المجموع الفرعي' : 'Subtotal', invoice.subtotal, settings.currency),
-          const Gap(AppSpacing.sm),
-          _buildTotalRow('${isArabic ? 'ضريبة القيمة المضافة' : 'VAT'} (${invoice.vatPercent}%)', invoice.vatAmount, settings.currency),
-          const Divider(height: AppSpacing.xl),
-          _buildTotalRow(isArabic ? 'الإجمالي النهائي' : 'Grand Total', invoice.total, settings.currency, isBold: true),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTotalRow(String label, double value, String currency, {bool isBold = false}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: isBold ? AppTypography.bodyLg.copyWith(fontWeight: FontWeight.bold) : AppTypography.bodyMd,
-        ),
-        Text(
-          '${value.toStringAsFixed(2)} $currency',
-          style: isBold 
-            ? AppTypography.h2.copyWith(color: AppColors.secondary) 
-            : AppTypography.bodyMd.copyWith(fontWeight: FontWeight.w600),
-        ),
-      ],
     );
   }
 }
