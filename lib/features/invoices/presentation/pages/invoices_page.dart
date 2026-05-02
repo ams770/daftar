@@ -10,6 +10,7 @@ import '../../../../core/theme/bento_theme_extension.dart';
 import '../../domain/entities/invoice.dart';
 import '../cubits/invoice_cubit.dart';
 import 'new_invoice_page.dart';
+import 'invoice_details_page.dart';
 
 class InvoicesPage extends StatelessWidget {
   const InvoicesPage({super.key});
@@ -100,50 +101,63 @@ class _InvoiceCard extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.lg),
-      padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: bento.cardDecoration,
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => InvoiceDetailsPage(invoice: invoice),
             ),
-            child: const Icon(LucideIcons.receipt, color: AppColors.secondary),
-          ),
-          const Gap(AppSpacing.lg),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Invoice #${invoice.id.toString().padLeft(4, '0')}',
-                  style: AppTypography.h2.copyWith(fontSize: 16),
-                ),
-                const Gap(AppSpacing.xs),
-                Text(
-                  dateFormat.format(invoice.createdAt),
-                  style: AppTypography.bodySm.copyWith(color: AppColors.grey),
-                ),
-              ],
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          );
+        },
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          child: Row(
             children: [
-              Text(
-                '${invoice.total.toStringAsFixed(2)} ${invoice.currency}',
-                style: AppTypography.h2.copyWith(color: AppColors.secondary),
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                ),
+                child: const Icon(LucideIcons.receipt, color: AppColors.secondary),
               ),
-              const Gap(AppSpacing.xs),
-              Text(
-                '${invoice.items.length} items',
-                style: AppTypography.bodySm.copyWith(color: AppColors.grey),
+              const Gap(AppSpacing.lg),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Invoice #${invoice.id.toString().padLeft(4, '0')}',
+                      style: AppTypography.h2.copyWith(fontSize: 16),
+                    ),
+                    const Gap(AppSpacing.xs),
+                    Text(
+                      dateFormat.format(invoice.createdAt),
+                      style: AppTypography.bodySm.copyWith(color: AppColors.grey),
+                    ),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    '${invoice.total.toStringAsFixed(2)} ${invoice.currency}',
+                    style: AppTypography.h2.copyWith(color: AppColors.secondary),
+                  ),
+                  const Gap(AppSpacing.xs),
+                  Text(
+                    '${invoice.items.length} items',
+                    style: AppTypography.bodySm.copyWith(color: AppColors.grey),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }

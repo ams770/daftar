@@ -26,6 +26,9 @@ dependencies:
   lucide_icons_flutter: ^1.0.0
   gap: ^3.0.1
   image_picker: ^1.2.2
+  pdf: ^3.11.3
+  printing: ^5.14.0
+
 
 dev_dependencies:
   flutter_test:
