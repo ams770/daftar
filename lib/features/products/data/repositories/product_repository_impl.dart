@@ -27,4 +27,20 @@ class ProductRepositoryImpl implements ProductRepository {
   Future<void> updateProduct(Product product) async {
     await localDataSource.updateProduct(ProductModel.fromEntity(product));
   }
+
+  @override
+  Future<void> saveBulkProducts(List<Product> products) async {
+    final models = products.map((e) => ProductModel.fromEntity(e)).toList();
+    await localDataSource.saveBulkProducts(models);
+  }
+
+  @override
+  Future<List<Product>> getAllProducts() async {
+    return await localDataSource.getAllProducts();
+  }
+
+  @override
+  Future<List<Product>> getProductsByCodes(List<String> codes) async {
+    return await localDataSource.getProductsByCodes(codes);
+  }
 }

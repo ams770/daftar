@@ -1,4 +1,6 @@
 import 'package:get_it/get_it.dart';
+import '../services/excel_service.dart';
+import '../services/excel_service_impl.dart';
 import '../../features/products/data/datasources/product_local_datasource.dart';
 import '../../features/products/data/repositories/product_repository_impl.dart';
 import '../../features/products/domain/repositories/product_repository.dart';
@@ -6,6 +8,9 @@ import '../../features/products/domain/usecases/add_product.dart';
 import '../../features/products/domain/usecases/get_product_by_code.dart';
 import '../../features/products/domain/usecases/get_products_paginated.dart';
 import '../../features/products/domain/usecases/update_product.dart';
+import '../../features/products/domain/usecases/validate_excel_products_use_case.dart';
+import '../../features/products/domain/usecases/import_excel_products_use_case.dart';
+import '../../features/products/domain/usecases/export_products_to_excel_use_case.dart';
 import '../../features/products/presentation/cubits/products_cubit.dart';
 import '../database/database_helper.dart';
 
@@ -18,6 +23,10 @@ Future<void> init() async {
         getProductByCode: sl(),
         addProduct: sl(),
         updateProduct: sl(),
+        validateExcelProducts: sl(),
+        importExcelProducts: sl(),
+        exportProductsToExcel: sl(),
+        excelService: sl(),
       ));
 
   // Use cases
@@ -25,6 +34,9 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetProductByCode(sl()));
   sl.registerLazySingleton(() => AddProduct(sl()));
   sl.registerLazySingleton(() => UpdateProduct(sl()));
+  sl.registerLazySingleton(() => ValidateExcelProductsUseCase(sl()));
+  sl.registerLazySingleton(() => ImportExcelProductsUseCase(sl()));
+  sl.registerLazySingleton(() => ExportProductsToExcelUseCase(sl(), sl()));
 
   // Repository
   sl.registerLazySingleton<ProductRepository>(
@@ -35,6 +47,9 @@ Future<void> init() async {
   sl.registerLazySingleton<ProductLocalDataSource>(
     () => ProductLocalDataSourceImpl(sl()),
   );
+
+  // Services
+  sl.registerLazySingleton<ExcelService>(() => ExcelServiceImpl());
 
   // Core
   sl.registerLazySingleton(() => DatabaseHelper.instance);

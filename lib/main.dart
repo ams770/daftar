@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'core/di/injection.dart' as di;
+import 'core/theme/app_theme.dart';
 import 'features/products/presentation/pages/products_page.dart';
 
 void main() async {
@@ -16,11 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Products Printer',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2D31FA)),
-        useMaterial3: true,
-        fontFamily: 'Inter', // Assuming Inter is available or fallback to default
-      ),
+      theme: AppTheme.light,
       home: const ProductsPage(),
     );
   }

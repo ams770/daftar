@@ -1,0 +1,91 @@
+import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:gap/gap.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
+
+class ImportInstructionsDialog extends StatelessWidget {
+  const ImportInstructionsDialog({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusXl)),
+      backgroundColor: AppColors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(LucideIcons.info, color: AppColors.secondary, size: 28),
+                const Gap(AppSpacing.md),
+                Text(
+                  'Instructions',
+                  style: AppTypography.h2.copyWith(fontSize: 22),
+                ),
+              ],
+            ),
+            const Gap(AppSpacing.xl),
+            Text(
+              'Your Excel file (.xlsx) must have these columns in order:',
+              style: AppTypography.bodyMd.copyWith(color: AppColors.greyDark),
+            ),
+            const Gap(AppSpacing.lg),
+            _buildColumnInfo('1. Name', 'String (Product Name)'),
+            _buildColumnInfo('2. Code', 'String (Barcode/SKU)'),
+            _buildColumnInfo('3. Price', 'Number (Product Price)'),
+            const Gap(AppSpacing.xl),
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                border: Border.all(color: AppColors.primary.withOpacity(0.5)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(LucideIcons.circleAlert, size: 16, color: AppColors.warning),
+                  const Gap(AppSpacing.sm),
+                  Expanded(
+                    child: Text(
+                      'The first row is considered a header and will be skipped.',
+                      style: AppTypography.bodySm.copyWith(
+                        color: AppColors.text,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Gap(AppSpacing.xl),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Pick Excel File'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildColumnInfo(String title, String type) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title, style: AppTypography.bodyMd.copyWith(fontWeight: FontWeight.w600)),
+          Text(type, style: AppTypography.bodySm.copyWith(color: AppColors.secondary)),
+        ],
+      ),
+    );
+  }
+}

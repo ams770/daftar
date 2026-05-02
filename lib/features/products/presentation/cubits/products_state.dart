@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import '../../domain/entities/product.dart';
+import '../../domain/entities/excel_product.dart';
 
 abstract class ProductsState extends Equatable {
   const ProductsState();
@@ -56,3 +57,16 @@ class ProductScanResult extends ProductsState {
   @override
   List<Object?> get props => [product, code];
 }
+
+class ExcelValidationLoading extends ProductsState {}
+
+class ExcelValidationLoaded extends ProductsState {
+  final List<ExcelProduct> excelProducts;
+  const ExcelValidationLoaded(this.excelProducts);
+
+  @override
+  List<Object?> get props => [excelProducts];
+}
+
+class ProductsImportSuccess extends ProductsState {}
+class ProductsExportSuccess extends ProductsState {}

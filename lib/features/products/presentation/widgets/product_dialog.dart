@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:gap/gap.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
 import '../../domain/entities/product.dart';
 
 class ProductDialog extends StatefulWidget {
@@ -48,10 +53,10 @@ class _ProductDialogState extends State<ProductDialog> {
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
         decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+          color: AppColors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusXl)),
         ),
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Form(
           key: _formKey,
           child: Column(
@@ -63,36 +68,34 @@ class _ProductDialogState extends State<ProductDialog> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: AppColors.greyLight,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const Gap(AppSpacing.xl),
               Text(
                 isUpdate ? 'Edit Product' : (fromScan ? 'Add New Product' : 'Add Product'),
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: AppTypography.h1,
                 textAlign: TextAlign.center,
               ),
               if (fromScan && !isUpdate) ...[
-                const SizedBox(height: 8),
+                const Gap(AppSpacing.sm),
                 Text(
                   'Barcode "${widget.initialCode}" not found.',
-                  style: TextStyle(color: Colors.orange[800], fontWeight: FontWeight.w500),
+                  style: AppTypography.bodyMd.copyWith(color: AppColors.warning, fontWeight: FontWeight.w500),
                   textAlign: TextAlign.center,
                 ),
               ],
-              const SizedBox(height: 24),
+              const Gap(AppSpacing.xl),
               TextFormField(
                 controller: _nameController,
                 maxLength: 100,
+                style: AppTypography.bodyMd,
                 decoration: InputDecoration(
                   labelText: 'Product Name',
-                  prefixIcon: const Icon(Icons.shopping_bag_outlined),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  filled: true,
-                  fillColor: Colors.grey[50],
-                  counterText: '', // Hide the counter for a cleaner look
+                  prefixIcon: const Icon(LucideIcons.shoppingBag, size: 20),
+                  counterText: '',
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) return 'Required';
@@ -100,28 +103,24 @@ class _ProductDialogState extends State<ProductDialog> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              const Gap(AppSpacing.lg),
               TextFormField(
                 controller: _codeController,
-                decoration: InputDecoration(
+                style: AppTypography.bodyMd,
+                decoration: const InputDecoration(
                   labelText: 'Product Code',
-                  prefixIcon: const Icon(Icons.qr_code_outlined),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  filled: true,
-                  fillColor: Colors.grey[50],
+                  prefixIcon: Icon(LucideIcons.qrCode, size: 20),
                 ),
                 validator: (value) => value == null || value.isEmpty ? 'Required' : null,
               ),
-              const SizedBox(height: 16),
+              const Gap(AppSpacing.lg),
               TextFormField(
                 controller: _priceController,
+                style: AppTypography.bodyMd,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Price',
-                  prefixIcon: const Icon(Icons.attach_money_outlined),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  filled: true,
-                  fillColor: Colors.grey[50],
+                  prefixIcon: Icon(LucideIcons.dollarSign, size: 20),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) return 'Required';
@@ -129,7 +128,7 @@ class _ProductDialogState extends State<ProductDialog> {
                   return null;
                 },
               ),
-              const SizedBox(height: 32),
+              const Gap(AppSpacing.xxl),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
@@ -143,14 +142,9 @@ class _ProductDialogState extends State<ProductDialog> {
                     Navigator.pop(context);
                   }
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2D31FA),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                ),
                 child: Text(
                   isUpdate ? 'Update Product' : 'Save Product',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: AppTypography.label.copyWith(color: AppColors.text, fontSize: 16),
                 ),
               ),
             ],

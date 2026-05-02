@@ -1,3 +1,4 @@
+import 'package:sqflite/sqflite.dart';
 import '../../../../core/database/database_helper.dart';
 import '../models/product_model.dart';
 
@@ -6,6 +7,9 @@ abstract class ProductLocalDataSource {
   Future<ProductModel?> getProductByCode(String code);
   Future<void> addProduct(ProductModel product);
   Future<void> updateProduct(ProductModel product);
+  Future<void> saveBulkProducts(List<ProductModel> products);
+  Future<List<ProductModel>> getAllProducts();
+  Future<List<ProductModel>> getProductsByCodes(List<String> codes);
 }
 
 class ProductLocalDataSourceImpl implements ProductLocalDataSource {
@@ -67,5 +71,50 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
       where: 'id = ?',
       whereArgs: [product.id],
     );
+  }
+
+  @override
+  Future<void> saveBulkProducts(List<ProductModel> products) async {
+    final db = await databaseHelper.database;
+    final batch = db.batch();
+    for (var product in products) {
+      batch.insert(
+        'products',
+        product.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+    await batch.commit(noResult: true);
+  }
+
+  @override
+  Future<List<ProductModel>> getAllProducts() async {
+    final db = await databaseHelper.database;
+    final result = await db.query('products', orderBy: 'name ASC');
+    return result.map((json) => ProductModel.fromMap(json)).toList();
+  }
+  @override
+  Future<List<ProductModel>> getProductsByCodes(List<String> codes) async {
+    if (codes.isEmpty) return [];
+    
+    final db = await databaseHelper.database;
+    final List<ProductModel> allResults = [];
+    
+    // SQLite has a limit on variables (usually 999), so we chunk the request
+    const int chunkSize = 500;
+    for (var i = 0; i < codes.length; i += chunkSize) {
+      final chunk = codes.sublist(i, i + chunkSize > codes.length ? codes.length : i + chunkSize);
+      final placeholders = List.filled(chunk.length, '?').join(',');
+      
+      final result = await db.query(
+        'products',
+        where: 'code IN ($placeholders)',
+        whereArgs: chunk,
+      );
+      
+      allResults.addAll(result.map((json) => ProductModel.fromMap(json)));
+    }
+    
+    return allResults;
   }
 }

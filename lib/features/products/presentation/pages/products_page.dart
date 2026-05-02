@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:gap/gap.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/theme/app_typography.dart';
+import '../../../../core/theme/bento_theme_extension.dart';
+import '../../domain/entities/excel_product.dart';
 import '../../domain/entities/product.dart';
-import '../cubits/products_cubit.dart';
-import '../cubits/products_state.dart';
 import '../widgets/product_dialog.dart';
 import '../widgets/product_shimmer.dart';
 import '../widgets/search_input_field.dart';
+import '../widgets/import_instructions_dialog.dart';
+import 'excel_validation_page.dart';
+import '../cubits/products_cubit.dart';
+import '../cubits/products_state.dart';
 
 class ProductsPage extends StatelessWidget {
   const ProductsPage({super.key});
@@ -52,15 +61,21 @@ class _ProductsViewState extends State<ProductsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FB),
       appBar: AppBar(
-        title: const Text(
-          'Products Inventory',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
+        title: const Text('Inventory'),
+        actions: [
+          IconButton(
+            icon: const Icon(LucideIcons.fileUp),
+            onPressed: () => _showImportInstructions(context),
+            tooltip: 'Import Excel',
+          ),
+          IconButton(
+            icon: const Icon(LucideIcons.fileDown),
+            onPressed: () => context.read<ProductsCubit>().exportToExcel(),
+            tooltip: 'Export Excel',
+          ),
+          const Gap(AppSpacing.sm),
+        ],
       ),
       body: CustomScrollView(
         controller: _scrollController,
@@ -77,9 +92,32 @@ class _ProductsViewState extends State<ProductsView> {
             listener: (context, state) {
               if (state is ProductScanResult) {
                 _handleScanResult(context, state);
-              } else if (state is ProductsError) {
+              } else if (state is ExcelValidationLoading) {
+                _showLoadingDialog(context, 'Validating Excel data...');
+              } else if (state is ExcelValidationLoaded) {
+                Navigator.pop(context); // Hide loading
+                _showValidationPage(context, state.excelProducts);
+              } else if (state is ProductsImportSuccess) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(state.message), backgroundColor: Colors.redAccent),
+                  const SnackBar(
+                    content: Text('Products imported successfully!'),
+                    backgroundColor: AppColors.success,
+                  ),
+                );
+              } else if (state is ProductsExportSuccess) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Products exported successfully!'),
+                    backgroundColor: AppColors.success,
+                  ),
+                );
+              } else if (state is ProductsError) {
+                if (Navigator.canPop(context)) Navigator.pop(context); // Hide loading if showing
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.message),
+                    backgroundColor: AppColors.danger,
+                  ),
                 );
               }
             },
@@ -92,7 +130,12 @@ class _ProductsViewState extends State<ProductsView> {
 
               if (state is ProductsError) {
                 return SliverFillRemaining(
-                  child: Center(child: Text('Error: ${state.message}')),
+                  child: Center(
+                    child: Text(
+                      'Error: ${state.message}',
+                      style: AppTypography.bodyMd.copyWith(color: AppColors.danger),
+                    ),
+                  ),
                 );
               }
 
@@ -103,12 +146,12 @@ class _ProductsViewState extends State<ProductsView> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.inventory_2_outlined, size: 64, color: Colors.grey[400]),
-                          const SizedBox(height: 16),
-                          const Text(
+                          Icon(LucideIcons.package2, size: 64, color: AppColors.grey.withOpacity(0.5)),
+                          const Gap(AppSpacing.lg),
+                          Text(
                             'No products found.',
                             textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.grey, fontSize: 16),
+                            style: AppTypography.bodyMd.copyWith(color: AppColors.grey),
                           ),
                         ],
                       ),
@@ -117,13 +160,13 @@ class _ProductsViewState extends State<ProductsView> {
                 }
 
                 return SliverPadding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
                   sliver: SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
                         if (index == state.products.length) {
                           return const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 8.0),
+                            padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
                             child: ProductShimmer(),
                           );
                         }
@@ -172,6 +215,46 @@ class _ProductsViewState extends State<ProductsView> {
       ),
     );
   }
+
+  void _showImportInstructions(BuildContext context) async {
+    final shouldPick = await showDialog<bool>(
+      context: context,
+      builder: (_) => const ImportInstructionsDialog(),
+    );
+
+    if (shouldPick == true && mounted) {
+      context.read<ProductsCubit>().pickAndValidateExcel();
+    }
+  }
+
+  void _showLoadingDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusLg)),
+        content: Row(
+          children: [
+            const CircularProgressIndicator(),
+            const Gap(AppSpacing.xl),
+            Expanded(child: Text(message, style: AppTypography.bodyMd)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showValidationPage(BuildContext context, List<ExcelProduct> products) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: context.read<ProductsCubit>(),
+          child: ExcelValidationPage(products: products),
+        ),
+      ),
+    );
+  }
 }
 
 class _ProductCard extends StatelessWidget {
@@ -180,20 +263,12 @@ class _ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bento = Theme.of(context).extension<BentoThemeExtension>()!;
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: bento.cardDecoration,
       child: Row(
         children: [
           Expanded(
@@ -204,48 +279,56 @@ class _ProductCard extends StatelessWidget {
                   product.name,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Colors.black87,
-                  ),
+                  style: AppTypography.h2.copyWith(fontSize: 16),
                 ),
-                const SizedBox(height: 4),
+                const Gap(AppSpacing.xs),
                 Text(
-                  product.price.toStringAsFixed(2),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
+                  'SR ${product.price.toStringAsFixed(2)}',
+                  style: AppTypography.h1.copyWith(
                     fontSize: 18,
-                    color: Color(0xFF2D31FA),
+                    color: AppColors.secondary,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  product.code,
-                  style: TextStyle(
-                    color: Colors.grey[500],
-                    fontSize: 12,
-                    letterSpacing: 0.5,
+                const Gap(AppSpacing.sm),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.background,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    product.code,
+                    style: AppTypography.bodySm.copyWith(
+                      color: AppColors.greyDark,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.edit_outlined, color: Colors.grey),
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                backgroundColor: Colors.transparent,
-                builder: (_) => ProductDialog(
-                  product: product,
-                  onSave: (updatedProduct, isUpdate) {
-                    context.read<ProductsCubit>().saveProduct(updatedProduct, isUpdate: isUpdate);
-                  },
-                ),
-              );
-            },
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (_) => ProductDialog(
+                    product: product,
+                    onSave: (updatedProduct, isUpdate) {
+                      context.read<ProductsCubit>().saveProduct(updatedProduct, isUpdate: isUpdate);
+                    },
+                  ),
+                );
+              },
+              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.sm),
+                child: Icon(LucideIcons.pencil, size: 20, color: AppColors.grey),
+              ),
+            ),
           ),
         ],
       ),
@@ -262,7 +345,7 @@ class _ScannerBottomSheet extends StatelessWidget {
       height: MediaQuery.of(context).size.height * 0.7,
       decoration: const BoxDecoration(
         color: Colors.black,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusXl)),
       ),
       clipBehavior: Clip.antiAlias,
       child: Stack(
@@ -304,14 +387,13 @@ class _ScannerBottomSheet extends StatelessWidget {
               ),
             ),
           ),
-          // Custom scanner overlay
           Center(
             child: Container(
               width: 250,
               height: 250,
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.white, width: 2),
-                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: Colors.white.withOpacity(0.5), width: 2),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
               ),
             ),
           ),
