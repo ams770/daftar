@@ -6,8 +6,9 @@ class AppSpacing {
   static const double xl = 24.0;
   static const double xxl = 32.0;
   
-  static const double radiusSm = 8.0;
-  static const double radiusMd = 12.0;
-  static const double radiusLg = 16.0;
-  static const double radiusXl = 24.0;
+  static const double radiusSm = 12.0;
+  static const double radiusMd = 16.0;
+  static const double radiusLg = 24.0;
+  static const double radiusXl = 32.0;
+  static const double radiusFull = 100.0;
 }

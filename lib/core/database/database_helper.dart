@@ -19,9 +19,17 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _createDB,
+      onUpgrade: _onUpgrade,
     );
+  }
+
+  Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await _createSettingsTable(db);
+      await _createInvoiceTables(db);
+    }
   }
 
   Future _createDB(Database db, int version) async {
@@ -36,6 +44,60 @@ CREATE TABLE products (
   code $textType UNIQUE,
   price $doubleType
   )
+''');
+
+    await _createSettingsTable(db);
+    await _createInvoiceTables(db);
+  }
+
+  Future _createSettingsTable(Database db) async {
+    await db.execute('''
+CREATE TABLE app_settings (
+  id INTEGER PRIMARY KEY,
+  brandName TEXT,
+  phone TEXT,
+  address TEXT,
+  vatPercent INTEGER DEFAULT 15,
+  language TEXT DEFAULT 'EN',
+  logoPath TEXT,
+  currency TEXT DEFAULT 'USD'
+)
+''');
+    // Insert default settings
+    await db.insert('app_settings', {
+      'id': 1,
+      'brandName': 'My Brand',
+      'vatPercent': 15,
+      'language': 'EN',
+      'currency': 'USD'
+    });
+  }
+
+  Future _createInvoiceTables(Database db) async {
+    await db.execute('''
+CREATE TABLE invoices (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  createdAt TEXT NOT NULL,
+  subtotal REAL NOT NULL,
+  vatAmount REAL NOT NULL,
+  total REAL NOT NULL,
+  vatPercent INTEGER NOT NULL,
+  currency TEXT NOT NULL
+)
+''');
+
+    await db.execute('''
+CREATE TABLE invoice_items (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  invoiceId INTEGER NOT NULL,
+  productId INTEGER,
+  productName TEXT NOT NULL,
+  productCode TEXT NOT NULL,
+  qty INTEGER NOT NULL,
+  unitPrice REAL NOT NULL,
+  lineTotal REAL NOT NULL,
+  FOREIGN KEY (invoiceId) REFERENCES invoices (id) ON DELETE CASCADE
+)
 ''');
   }
 

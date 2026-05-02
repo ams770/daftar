@@ -1,0 +1,77 @@
+import 'package:equatable/equatable.dart';
+
+class AppSettings extends Equatable {
+  final String brandName;
+  final String phone;
+  final String address;
+  final int vatPercent;
+  final String language; // 'AR' or 'EN'
+  final String? logoPath;
+  final String currency;
+
+  const AppSettings({
+    required this.brandName,
+    required this.phone,
+    required this.address,
+    required this.vatPercent,
+    required this.language,
+    this.logoPath,
+    required this.currency,
+  });
+
+  factory AppSettings.fromJson(Map<String, dynamic> json) {
+    return AppSettings(
+      brandName: json['brandName'] ?? '',
+      phone: json['phone'] ?? '',
+      address: json['address'] ?? '',
+      vatPercent: json['vatPercent'] ?? 15,
+      language: json['language'] ?? 'EN',
+      logoPath: json['logoPath'],
+      currency: json['currency'] ?? 'USD',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': 1, // Always 1 for singleton
+      'brandName': brandName,
+      'phone': phone,
+      'address': address,
+      'vatPercent': vatPercent,
+      'language': language,
+      'logoPath': logoPath,
+      'currency': currency,
+    };
+  }
+
+  AppSettings copyWith({
+    String? brandName,
+    String? phone,
+    String? address,
+    int? vatPercent,
+    String? language,
+    String? logoPath,
+    String? currency,
+  }) {
+    return AppSettings(
+      brandName: brandName ?? this.brandName,
+      phone: phone ?? this.phone,
+      address: address ?? this.address,
+      vatPercent: vatPercent ?? this.vatPercent,
+      language: language ?? this.language,
+      logoPath: logoPath ?? this.logoPath,
+      currency: currency ?? this.currency,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+        brandName,
+        phone,
+        address,
+        vatPercent,
+        language,
+        logoPath,
+        currency,
+      ];
+}

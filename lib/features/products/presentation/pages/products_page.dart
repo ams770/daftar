@@ -23,10 +23,7 @@ class ProductsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => sl<ProductsCubit>()..loadProducts(),
-      child: const ProductsView(),
-    );
+    return const ProductsView();
   }
 }
 
@@ -266,8 +263,8 @@ class _ProductCard extends StatelessWidget {
     final bento = Theme.of(context).extension<BentoThemeExtension>()!;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: AppSpacing.md),
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      margin: const EdgeInsets.only(bottom: AppSpacing.lg),
+      padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: bento.cardDecoration,
       child: Row(
         children: [
@@ -279,36 +276,58 @@ class _ProductCard extends StatelessWidget {
                   product.name,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTypography.h2.copyWith(fontSize: 16),
-                ),
-                const Gap(AppSpacing.xs),
-                Text(
-                  'SR ${product.price.toStringAsFixed(2)}',
-                  style: AppTypography.h1.copyWith(
-                    fontSize: 18,
-                    color: AppColors.secondary,
-                  ),
+                  style: AppTypography.h2.copyWith(fontSize: 18, color: AppColors.text),
                 ),
                 const Gap(AppSpacing.sm),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.background,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    product.code,
-                    style: AppTypography.bodySm.copyWith(
-                      color: AppColors.greyDark,
-                      fontWeight: FontWeight.w500,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Text(
+                      'SR',
+                      style: AppTypography.bodySm.copyWith(
+                        color: AppColors.secondary,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
+                    const Gap(AppSpacing.xs),
+                    Text(
+                      product.price.toStringAsFixed(2),
+                      style: AppTypography.h1.copyWith(
+                        fontSize: 24,
+                        color: AppColors.secondary,
+                      ),
+                    ),
+                  ],
+                ),
+                const Gap(AppSpacing.md),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(LucideIcons.barcode, size: 14, color: AppColors.secondary),
+                      const Gap(AppSpacing.xs),
+                      Text(
+                        product.code,
+                        style: AppTypography.bodySm.copyWith(
+                          color: AppColors.secondary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
           Material(
-            color: Colors.transparent,
+            color: AppColors.primary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
             child: InkWell(
               onTap: () {
                 showModalBottomSheet(
@@ -323,10 +342,10 @@ class _ProductCard extends StatelessWidget {
                   ),
                 );
               },
-              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.sm),
-                child: Icon(LucideIcons.pencil, size: 20, color: AppColors.grey),
+              borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+              child: const Padding(
+                padding: EdgeInsets.all(AppSpacing.md),
+                child: Icon(LucideIcons.pencilLine, size: 22, color: AppColors.secondary),
               ),
             ),
           ),

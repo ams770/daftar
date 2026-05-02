@@ -12,7 +12,13 @@ import '../../features/products/domain/usecases/validate_excel_products_use_case
 import '../../features/products/domain/usecases/import_excel_products_use_case.dart';
 import '../../features/products/domain/usecases/export_products_to_excel_use_case.dart';
 import '../../features/products/presentation/cubits/products_cubit.dart';
+import '../../features/invoices/data/datasources/invoice_local_datasource.dart';
+import '../../features/invoices/data/repositories/invoice_repository_impl.dart';
+import '../../features/invoices/domain/repositories/invoice_repository.dart';
+import '../../features/invoices/presentation/cubits/invoice_cubit.dart';
+import '../../features/settings/presentation/cubits/settings_cubit.dart';
 import '../database/database_helper.dart';
+import '../services/settings_service.dart';
 
 final sl = GetIt.instance;
 
@@ -28,6 +34,8 @@ Future<void> init() async {
         exportProductsToExcel: sl(),
         excelService: sl(),
       ));
+  sl.registerFactory(() => SettingsCubit(sl()));
+  sl.registerFactory(() => InvoiceCubit(sl()));
 
   // Use cases
   sl.registerLazySingleton(() => GetProductsPaginated(sl()));
@@ -42,14 +50,21 @@ Future<void> init() async {
   sl.registerLazySingleton<ProductRepository>(
     () => ProductRepositoryImpl(sl()),
   );
+  sl.registerLazySingleton<InvoiceRepository>(
+    () => InvoiceRepositoryImpl(sl()),
+  );
 
   // Data sources
   sl.registerLazySingleton<ProductLocalDataSource>(
     () => ProductLocalDataSourceImpl(sl()),
   );
+  sl.registerLazySingleton<InvoiceLocalDataSource>(
+    () => InvoiceLocalDataSourceImpl(sl()),
+  );
 
   // Services
   sl.registerLazySingleton<ExcelService>(() => ExcelServiceImpl());
+  sl.registerLazySingleton<SettingsService>(() => SettingsServiceImpl(sl()));
 
   // Core
   sl.registerLazySingleton(() => DatabaseHelper.instance);

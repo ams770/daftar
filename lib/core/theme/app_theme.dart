@@ -32,43 +32,45 @@ class AppTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-          side: const BorderSide(color: AppColors.greyLight, width: 1),
+          side: BorderSide(color: AppColors.greyLight.withValues(alpha: 0.5), width: 1),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: AppColors.text,
-          elevation: 0,
+          backgroundColor: AppColors.secondary,
+          foregroundColor: AppColors.white,
+          elevation: 4,
+          shadowColor: AppColors.secondary.withValues(alpha: 0.3),
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.xl,
             vertical: AppSpacing.lg,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
           ),
-          textStyle: AppTypography.label,
+          textStyle: AppTypography.label.copyWith(fontSize: 14, letterSpacing: 1),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.white,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-          borderSide: const BorderSide(color: AppColors.greyLight),
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+          borderSide: BorderSide(color: AppColors.greyLight.withValues(alpha: 0.5)),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-          borderSide: const BorderSide(color: AppColors.greyLight),
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+          borderSide: BorderSide(color: AppColors.greyLight.withValues(alpha: 0.5)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
           borderSide: const BorderSide(color: AppColors.secondary, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
-          vertical: AppSpacing.md,
+          horizontal: AppSpacing.xl,
+          vertical: AppSpacing.lg,
         ),
+        floatingLabelStyle: AppTypography.bodyMd.copyWith(color: AppColors.secondary, fontWeight: FontWeight.bold),
       ),
       extensions: [
         BentoThemeExtension(
@@ -76,19 +78,35 @@ class AppTheme {
           cardDecoration: BoxDecoration(
             color: AppColors.white,
             borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-            border: Border.all(color: AppColors.greyLight, width: 1),
+            border: Border.all(color: AppColors.greyLight.withValues(alpha: 0.4), width: 1),
             boxShadow: [
               BoxShadow(
-                color: AppColors.text.withValues(alpha: 0.03),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+                color: AppColors.text.withValues(alpha: 0.04),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+              BoxShadow(
+                color: AppColors.secondary.withValues(alpha: 0.02),
+                blurRadius: 40,
+                offset: const Offset(0, 16),
               ),
             ],
           ),
           bentoBoxDecoration: BoxDecoration(
-            color: AppColors.surface,
+            gradient: const LinearGradient(
+              colors: AppColors.surfaceGradient,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
             borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-            border: Border.all(color: AppColors.primary.withValues(alpha: 0.5), width: 1),
+            border: Border.all(color: AppColors.primary.withValues(alpha: 0.8), width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
           ),
         ),
       ],

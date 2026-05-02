@@ -142,9 +142,23 @@ class _ProductDialogState extends State<ProductDialog> {
                     Navigator.pop(context);
                   }
                 },
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 56),
+                  backgroundColor: AppColors.secondary,
+                  foregroundColor: AppColors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+                  ),
+                  elevation: 8,
+                  shadowColor: AppColors.secondary.withValues(alpha: 0.4),
+                ),
                 child: Text(
                   isUpdate ? 'Update Product' : 'Save Product',
-                  style: AppTypography.label.copyWith(color: AppColors.text, fontSize: 16),
+                  style: AppTypography.label.copyWith(
+                    color: AppColors.white,
+                    fontSize: 16,
+                    letterSpacing: 1.2,
+                  ),
                 ),
               ),
             ],

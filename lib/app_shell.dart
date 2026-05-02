@@ -1,0 +1,68 @@
+import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'features/products/presentation/pages/products_page.dart';
+import 'features/invoices/presentation/pages/invoices_page.dart';
+import 'features/settings/presentation/pages/settings_page.dart';
+import 'core/theme/app_colors.dart';
+
+class AppShell extends StatefulWidget {
+  const AppShell({super.key});
+
+  @override
+  State<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends State<AppShell> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = [
+    const ProductsPage(),
+    const InvoicesPage(),
+    const SettingsPage(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.text.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          onTap: (index) => setState(() => _selectedIndex = index),
+          backgroundColor: AppColors.white,
+          selectedItemColor: AppColors.secondary,
+          unselectedItemColor: AppColors.grey,
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
+          type: BottomNavigationBarType.fixed,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(LucideIcons.package),
+              activeIcon: Icon(LucideIcons.package2),
+              label: 'Inventory',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(LucideIcons.fileText),
+              activeIcon: Icon(LucideIcons.filePlus2),
+              label: 'Invoices',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(LucideIcons.settings),
+              activeIcon: Icon(LucideIcons.settings2),
+              label: 'Settings',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

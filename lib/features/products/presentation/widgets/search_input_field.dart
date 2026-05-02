@@ -43,10 +43,7 @@ class _SearchInputFieldState extends State<SearchInputField> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: const BoxDecoration(
-        color: Colors.transparent,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
       child: Row(
         children: [
           Expanded(
@@ -61,27 +58,43 @@ class _SearchInputFieldState extends State<SearchInputField> {
                 filled: true,
                 fillColor: AppColors.white,
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                  borderSide: const BorderSide(color: AppColors.greyLight),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+                  borderSide: BorderSide(color: AppColors.greyLight.withValues(alpha: 0.5)),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
                   borderSide: const BorderSide(color: AppColors.secondary, width: 2),
                 ),
-                contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                contentPadding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.xl),
               ),
             ),
           ),
           const Gap(AppSpacing.md),
-          Material(
-            color: AppColors.secondary,
-            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-            child: InkWell(
-              onTap: widget.onScannerTap,
-              borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-              child: const Padding(
-                padding: EdgeInsets.all(AppSpacing.md),
-                child: Icon(LucideIcons.scanBarcode, color: Colors.white, size: 24),
+          Container(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: AppColors.secondaryGradient,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.secondary.withValues(alpha: 0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: widget.onScannerTap,
+                borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
+                child: const Padding(
+                  padding: EdgeInsets.all(AppSpacing.md),
+                  child: Icon(LucideIcons.scanBarcode, color: Colors.white, size: 24),
+                ),
               ),
             ),
           ),

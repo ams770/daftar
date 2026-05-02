@@ -16,4 +16,9 @@ class AppColors {
   static const Color grey = Color(0xFF9CA3AF);
   static const Color greyLight = Color(0xFFE5E7EB);
   static const Color greyDark = Color(0xFF4B5563);
+
+  // Gradients
+  static const List<Color> primaryGradient = [Color(0xFFBAE6FD), Color(0xFF7DD3FC)];
+  static const List<Color> secondaryGradient = [Color(0xFF0EA5E9), Color(0xFF0284C7)];
+  static const List<Color> surfaceGradient = [Color(0xFFF0F9FF), Color(0xFFE0F2FE)];
 }
