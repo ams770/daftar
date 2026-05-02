@@ -325,29 +325,70 @@ class _ProductCard extends StatelessWidget {
               ],
             ),
           ),
-          Material(
-            color: AppColors.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-            child: InkWell(
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (_) => ProductDialog(
-                    product: product,
-                    onSave: (updatedProduct, isUpdate) {
-                      context.read<ProductsCubit>().saveProduct(updatedProduct, isUpdate: isUpdate);
-                    },
+          Row(
+            children: [
+              Material(
+                color: AppColors.danger.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                child: InkWell(
+                  onTap: () => _showDeleteConfirmation(context),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                  child: const Padding(
+                    padding: EdgeInsets.all(AppSpacing.md),
+                    child: Icon(LucideIcons.trash2, size: 22, color: AppColors.danger),
                   ),
-                );
-              },
-              borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-              child: const Padding(
-                padding: EdgeInsets.all(AppSpacing.md),
-                child: Icon(LucideIcons.pencilLine, size: 22, color: AppColors.secondary),
+                ),
               ),
-            ),
+              const Gap(AppSpacing.sm),
+              Material(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                child: InkWell(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => ProductDialog(
+                        product: product,
+                        onSave: (updatedProduct, isUpdate) {
+                          context.read<ProductsCubit>().saveProduct(updatedProduct, isUpdate: isUpdate);
+                        },
+                      ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                  child: const Padding(
+                    padding: EdgeInsets.all(AppSpacing.md),
+                    child: Icon(LucideIcons.pencilLine, size: 22, color: AppColors.secondary),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete Product'),
+        content: Text('Are you sure you want to delete "${product.name}"? This action cannot be undone, but historical invoices will remain unchanged.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('CANCEL'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              context.read<ProductsCubit>().removeProduct(product.id!);
+            },
+            style: TextButton.styleFrom(foregroundColor: AppColors.danger),
+            child: const Text('DELETE'),
           ),
         ],
       ),

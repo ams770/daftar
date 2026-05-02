@@ -43,4 +43,9 @@ class ProductRepositoryImpl implements ProductRepository {
   Future<List<Product>> getProductsByCodes(List<String> codes) async {
     return await localDataSource.getProductsByCodes(codes);
   }
+
+  @override
+  Future<void> deleteProduct(int id) async {
+    await localDataSource.deleteProduct(id);
+  }
 }

@@ -11,6 +11,7 @@ import '../../domain/usecases/update_product.dart';
 import '../../domain/usecases/validate_excel_products_use_case.dart';
 import '../../domain/usecases/import_excel_products_use_case.dart';
 import '../../domain/usecases/export_products_to_excel_use_case.dart';
+import '../../domain/usecases/delete_product.dart';
 import 'products_state.dart';
 
 class ProductsCubit extends Cubit<ProductsState> {
@@ -21,6 +22,7 @@ class ProductsCubit extends Cubit<ProductsState> {
   final ValidateExcelProductsUseCase validateExcelProducts;
   final ImportExcelProductsUseCase importExcelProducts;
   final ExportProductsToExcelUseCase exportProductsToExcel;
+  final DeleteProduct deleteProduct;
   final ExcelService excelService;
 
   bool _isPickingFile = false;
@@ -36,6 +38,7 @@ class ProductsCubit extends Cubit<ProductsState> {
     required this.validateExcelProducts,
     required this.importExcelProducts,
     required this.exportProductsToExcel,
+    required this.deleteProduct,
     required this.excelService,
   }) : super(ProductsInitial());
 
@@ -98,6 +101,15 @@ class ProductsCubit extends Cubit<ProductsState> {
       } else {
         await addProduct(product);
       }
+      await loadProducts(refresh: true);
+    } catch (e) {
+      emit(ProductsError(e.toString()));
+    }
+  }
+
+  Future<void> removeProduct(int id) async {
+    try {
+      await deleteProduct(id);
       await loadProducts(refresh: true);
     } catch (e) {
       emit(ProductsError(e.toString()));

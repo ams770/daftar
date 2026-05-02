@@ -8,4 +8,5 @@ abstract class ProductRepository {
   Future<void> saveBulkProducts(List<Product> products);
   Future<List<Product>> getAllProducts();
   Future<List<Product>> getProductsByCodes(List<String> codes);
+  Future<void> deleteProduct(int id);
 }

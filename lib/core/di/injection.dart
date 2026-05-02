@@ -11,6 +11,7 @@ import '../../features/products/domain/usecases/update_product.dart';
 import '../../features/products/domain/usecases/validate_excel_products_use_case.dart';
 import '../../features/products/domain/usecases/import_excel_products_use_case.dart';
 import '../../features/products/domain/usecases/export_products_to_excel_use_case.dart';
+import '../../features/products/domain/usecases/delete_product.dart';
 import '../../features/products/presentation/cubits/products_cubit.dart';
 import '../../features/invoices/data/datasources/invoice_local_datasource.dart';
 import '../../features/invoices/data/repositories/invoice_repository_impl.dart';
@@ -32,6 +33,7 @@ Future<void> init() async {
         validateExcelProducts: sl(),
         importExcelProducts: sl(),
         exportProductsToExcel: sl(),
+        deleteProduct: sl(),
         excelService: sl(),
       ));
   sl.registerFactory(() => SettingsCubit(sl()));
@@ -45,6 +47,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => ValidateExcelProductsUseCase(sl()));
   sl.registerLazySingleton(() => ImportExcelProductsUseCase(sl()));
   sl.registerLazySingleton(() => ExportProductsToExcelUseCase(sl(), sl()));
+  sl.registerLazySingleton(() => DeleteProduct(sl()));
 
   // Repository
   sl.registerLazySingleton<ProductRepository>(

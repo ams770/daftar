@@ -10,6 +10,7 @@ abstract class ProductLocalDataSource {
   Future<void> saveBulkProducts(List<ProductModel> products);
   Future<List<ProductModel>> getAllProducts();
   Future<List<ProductModel>> getProductsByCodes(List<String> codes);
+  Future<void> deleteProduct(int id);
 }
 
 class ProductLocalDataSourceImpl implements ProductLocalDataSource {
@@ -116,5 +117,15 @@ class ProductLocalDataSourceImpl implements ProductLocalDataSource {
     }
     
     return allResults;
+  }
+
+  @override
+  Future<void> deleteProduct(int id) async {
+    final db = await databaseHelper.database;
+    await db.delete(
+      'products',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 }
