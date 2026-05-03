@@ -66,4 +66,9 @@ class InvoiceRepositoryImpl implements InvoiceRepository {
   Future<List<MoneyCollection>> getCollectionsByInvoice(int invoiceId) async {
     return await localDataSource.getCollectionsByInvoice(invoiceId);
   }
+
+  @override
+  Future<void> deleteMoneyCollection(int id) async {
+    await localDataSource.deleteMoneyCollection(id);
+  }
 }

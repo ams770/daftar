@@ -25,6 +25,7 @@ abstract class InvoiceLocalDataSource {
     DateTime? endDate,
   });
   Future<List<MoneyCollection>> getCollectionsByInvoice(int invoiceId);
+  Future<void> deleteMoneyCollection(int id);
 }
 
 class InvoiceLocalDataSourceImpl implements InvoiceLocalDataSource {
@@ -204,5 +205,51 @@ class InvoiceLocalDataSourceImpl implements InvoiceLocalDataSource {
       orderBy: 'createdAt DESC',
     );
     return maps.map((m) => MoneyCollection.fromJson(m)).toList();
+  }
+
+  @override
+  Future<void> deleteMoneyCollection(int id) async {
+    final db = await _dbHelper.database;
+    await db.transaction((txn) async {
+      // 1. Get collection info to know which invoice and how much
+      final List<Map<String, dynamic>> collectionMaps = await txn.query(
+        'money_collections',
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+
+      if (collectionMaps.isNotEmpty) {
+        final collection = MoneyCollection.fromJson(collectionMaps.first);
+
+        // 2. Delete collection
+        await txn.delete(
+          'money_collections',
+          where: 'id = ?',
+          whereArgs: [id],
+        );
+
+        // 3. Update invoice
+        final List<Map<String, dynamic>> invoiceMaps = await txn.query(
+          'invoices',
+          where: 'id = ?',
+          whereArgs: [collection.invoiceId],
+        );
+
+        if (invoiceMaps.isNotEmpty) {
+          final currentPaid = invoiceMaps.first['paidAmount'] as double;
+          final currentRemaining = invoiceMaps.first['remainingAmount'] as double;
+
+          await txn.update(
+            'invoices',
+            {
+              'paidAmount': currentPaid - collection.amount,
+              'remainingAmount': currentRemaining + collection.amount,
+            },
+            where: 'id = ?',
+            whereArgs: [collection.invoiceId],
+          );
+        }
+      }
+    });
   }
 }

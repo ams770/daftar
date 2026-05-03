@@ -11,6 +11,8 @@ import '../../../../core/theme/bento_theme_extension.dart';
 import '../cubits/money_collection_cubit.dart';
 import '../../domain/entities/money_collection.dart';
 
+import 'money_collection_details_page.dart';
+
 class CollectionsPage extends StatefulWidget {
   const CollectionsPage({super.key});
 
@@ -149,7 +151,22 @@ class _CollectionsPageState extends State<CollectionsPage> {
                           child: Center(child: CircularProgressIndicator()),
                         );
                       }
-                      return _CollectionCard(collection: state.collections[index]);
+                      return InkWell(
+                        onTap: () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MoneyCollectionDetailsPage(
+                                collection: state.collections[index],
+                              ),
+                            ),
+                          );
+                          if (context.mounted) {
+                            context.read<MoneyCollectionCubit>().loadCollections(refresh: true);
+                          }
+                        },
+                        child: _CollectionCard(collection: state.collections[index]),
+                      );
                     },
                     childCount:
                         state.collections.length + (state.hasMore ? 1 : 0),

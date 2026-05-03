@@ -43,17 +43,17 @@ class InvoiceCard extends StatelessWidget {
           },
           child: Stack(
             children: [
-              Positioned(
-                left: 0,
-                top: 0,
-                bottom: 0,
-                width: 4,
-                child: Container(
-                  color: invoice.remainingAmount > 0
-                      ? AppColors.danger
-                      : AppColors.secondary,
-                ),
-              ),
+              // Positioned(
+              //   left: 0,
+              //   top: 0,
+              //   bottom: 0,
+              //   width: 4,
+              //   child: Container(
+              //     color: invoice.remainingAmount > 0
+              //         ? AppColors.danger
+              //         : AppColors.secondary,
+              //   ),
+              // ),
               Padding(
                 padding: const EdgeInsets.all(AppSpacing.xl),
                 child: Row(
@@ -84,7 +84,8 @@ class InvoiceCard extends StatelessWidget {
                               letterSpacing: -0.5,
                             ),
                           ),
-                          if (invoice.clientName != null && invoice.clientName!.isNotEmpty) ...[
+                          if (invoice.clientName != null &&
+                              invoice.clientName!.isNotEmpty) ...[
                             const Gap(2),
                             Text(
                               invoice.clientName!,

@@ -22,6 +22,7 @@ import '../widgets/section_title.dart';
 import '../widgets/collect_money_bottom_sheet.dart';
 import '../../domain/entities/money_collection.dart';
 import '../cubits/money_collection_cubit.dart';
+import 'money_collection_details_page.dart';
 
 class InvoiceDetailsPage extends StatefulWidget {
   final Invoice invoice;
@@ -147,38 +148,49 @@ class _InvoiceDetailsPageState extends State<InvoiceDetailsPage> {
         separatorBuilder: (context, index) => const Divider(height: 1),
         itemBuilder: (context, index) {
           final collection = _collections[index];
-          return ListTile(
-            titleAlignment: .center,
-
-            title: Row(
-              mainAxisAlignment: .spaceBetween,
-
-              children: [
-                Text(
-                  collection.formattedDate,
-                  style: AppTypography.bodySm.copyWith(color: AppColors.grey),
-                ),
-                Text(
-                  '+${collection.amount.toStringAsFixed(2)} $currency',
-                  style: AppTypography.h3.copyWith(color: AppColors.success),
-                ),
-              ],
-            ),
-            subtitle: Row(
-              mainAxisAlignment: .spaceBetween,
-              children: [
-                Text(
-                  '${AppStrings.remainingBefore}: ${collection.remainingBefore.toStringAsFixed(2)}',
-                  style: AppTypography.label.copyWith(fontSize: 10),
-                ),
-                Text(
-                  '${AppStrings.remainingAfter}: ${collection.remainingAfter.toStringAsFixed(2)}',
-                  style: AppTypography.label.copyWith(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
+          return InkWell(
+            onTap: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MoneyCollectionDetailsPage(
+                    collection: collection,
                   ),
                 ),
-              ],
+              );
+              _loadCollections();
+            },
+            child: ListTile(
+              titleAlignment: ListTileTitleAlignment.center,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    collection.formattedDate,
+                    style: AppTypography.bodySm.copyWith(color: AppColors.grey),
+                  ),
+                  Text(
+                    '+${collection.amount.toStringAsFixed(2)} $currency',
+                    style: AppTypography.h3.copyWith(color: AppColors.success),
+                  ),
+                ],
+              ),
+              subtitle: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${AppStrings.remainingBefore}: ${collection.remainingBefore.toStringAsFixed(2)}',
+                    style: AppTypography.label.copyWith(fontSize: 10),
+                  ),
+                  Text(
+                    '${AppStrings.remainingAfter}: ${collection.remainingAfter.toStringAsFixed(2)}',
+                    style: AppTypography.label.copyWith(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },

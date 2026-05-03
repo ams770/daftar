@@ -5,8 +5,115 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:intl/intl.dart';
 import '../models/app_settings.dart';
 import '../../features/invoices/domain/entities/invoice.dart';
+import '../../features/invoices/domain/entities/money_collection.dart';
 
 class InvoicePdfService {
+  static Future<Uint8List> generateCollectionPdf({
+    required MoneyCollection collection,
+    required AppSettings settings,
+  }) async {
+    final pdf = pw.Document();
+    final isArabic = settings.language == 'AR';
+    final dateFormat = DateFormat('yyyy-MM-dd HH:mm');
+
+    pw.MemoryImage? logoImage;
+    if (settings.logoPath != null && settings.logoPath!.isNotEmpty) {
+      final logoFile = File(settings.logoPath!);
+      if (await logoFile.exists()) {
+        final logoBytes = await logoFile.readAsBytes();
+        logoImage = pw.MemoryImage(logoBytes);
+      }
+    }
+
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a5,
+        textDirection: isArabic ? pw.TextDirection.rtl : pw.TextDirection.ltr,
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+            children: [
+              _buildCollectionHeader(collection, settings, isArabic, dateFormat, logoImage),
+              pw.SizedBox(height: 30),
+              pw.Container(
+                padding: const pw.EdgeInsets.all(15),
+                decoration: pw.BoxDecoration(
+                  color: PdfColors.grey100,
+                  borderRadius: const pw.BorderRadius.all(pw.Radius.circular(8)),
+                ),
+                child: pw.Column(
+                  children: [
+                    _buildSummaryRow(isArabic ? 'المبلغ المحصل' : 'Collected Amount', collection.amount, settings.currency, isBold: true, fontSize: 18),
+                    pw.Divider(color: PdfColors.grey400),
+                    _buildSummaryRow(isArabic ? 'المتبقي قبل' : 'Remaining Before', collection.remainingBefore, settings.currency),
+                    _buildSummaryRow(isArabic ? 'المتبقي بعد' : 'Remaining After', collection.remainingAfter, settings.currency, isBold: true),
+                  ],
+                ),
+              ),
+              pw.SizedBox(height: 30),
+              pw.Text(
+                '${isArabic ? 'تفاصيل الفاتورة' : 'Invoice Details'}: #${collection.invoiceId}',
+                style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+              ),
+              if (collection.clientName != null)
+                pw.Text('${isArabic ? 'العميل' : 'Client'}: ${collection.clientName}'),
+              pw.Spacer(),
+              _buildFooter(settings, isArabic),
+            ],
+          );
+        },
+      ),
+    );
+
+    return pdf.save();
+  }
+
+  static pw.Widget _buildCollectionHeader(
+    MoneyCollection collection,
+    AppSettings settings,
+    bool isArabic,
+    DateFormat dateFormat,
+    pw.MemoryImage? logo,
+  ) {
+    return pw.Row(
+      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+      children: [
+        pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            if (logo != null) pw.Container(height: 50, width: 50, child: pw.Image(logo)),
+            pw.Text(settings.brandName, style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 16)),
+            pw.Text(settings.phone, style: const pw.TextStyle(fontSize: 10)),
+          ],
+        ),
+        pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.end,
+          children: [
+            pw.Text(
+              isArabic ? 'سند قبض' : 'RECEIPT',
+              style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: PdfColors.blue700),
+            ),
+            pw.Text('${isArabic ? 'التاريخ' : 'Date'}: ${dateFormat.format(collection.createdAt)}', style: const pw.TextStyle(fontSize: 10)),
+            pw.Text('${isArabic ? 'الرقم' : 'No'}: #${collection.id?.toString().padLeft(4, '0') ?? 'N/A'}', style: const pw.TextStyle(fontSize: 10)),
+          ],
+        ),
+      ],
+    );
+  }
+
+  static pw.Widget _buildSummaryRow(String label, double value, String currency, {bool isBold = false, double fontSize = 12}) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.symmetric(vertical: 4),
+      child: pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        children: [
+          pw.Text(label, style: pw.TextStyle(fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal, fontSize: fontSize)),
+          pw.Text('${value.toStringAsFixed(2)} $currency', style: pw.TextStyle(fontWeight: isBold ? pw.FontWeight.bold : pw.FontWeight.normal, fontSize: fontSize)),
+        ],
+      ),
+    );
+  }
+
   static Future<Uint8List> generateInvoicePdf({
     required Invoice invoice,
     required AppSettings settings,

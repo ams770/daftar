@@ -169,6 +169,22 @@ class MoneyCollectionCubit extends Cubit<MoneyCollectionState> {
     }
   }
 
+  Future<void> deleteCollection(int id) async {
+    try {
+      await repository.deleteMoneyCollection(id);
+      await loadCollections(refresh: true);
+    } catch (e) {
+      emit(MoneyCollectionError(
+        message: e.toString(),
+        collections: state.collections,
+        hasMore: state.hasMore,
+        searchQuery: state.searchQuery,
+        startDate: state.startDate,
+        endDate: state.endDate,
+      ));
+    }
+  }
+
   Future<List<MoneyCollection>> getCollectionsByInvoice(int invoiceId) async {
     return await repository.getCollectionsByInvoice(invoiceId);
   }

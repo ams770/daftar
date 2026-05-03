@@ -23,4 +23,5 @@ abstract class InvoiceRepository {
     DateTime? endDate,
   });
   Future<List<MoneyCollection>> getCollectionsByInvoice(int invoiceId);
+  Future<void> deleteMoneyCollection(int id);
 }
