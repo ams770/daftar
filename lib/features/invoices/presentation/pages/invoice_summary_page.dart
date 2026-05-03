@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/enums/invoice_enums.dart';
 import '../../../../core/presentation/widgets/app_selection_group.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -25,7 +26,7 @@ class InvoiceSummaryPage extends StatefulWidget {
 }
 
 class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
-  InvoiceType _type = InvoiceType.cash;
+  InvoiceType _type = InvoiceType.paid;
   PaymentMethod _method = PaymentMethod.cash;
   final TextEditingController _paidController = TextEditingController();
 
@@ -53,7 +54,7 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
             if (state is AddInvoiceSaveSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(isArabic ? 'تم حفظ الفاتورة بنجاح!' : 'Invoice saved successfully!'),
+                  content: Text(AppStrings.invoiceSavedSuccess),
                   backgroundColor: AppColors.success,
                 ),
               );
@@ -65,7 +66,9 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
           builder: (context, state) {
             if (state is! AddInvoiceCreating) {
               return Scaffold(
-                body: Center(child: Text(isArabic ? 'لا توجد فاتورة قيد التنفيذ' : 'No invoice in progress')),
+                body: Center(
+                  child: Text(AppStrings.noInvoiceInProgress),
+                ),
               );
             }
 
@@ -96,7 +99,7 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
 
             // Logic for paid amount
             double paidAmountValue;
-            if (_type == InvoiceType.cash) {
+            if (_type == InvoiceType.paid) {
               paidAmountValue = total;
             } else {
               paidAmountValue = double.tryParse(_paidController.text) ?? 0.0;
@@ -105,17 +108,19 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
 
             return Scaffold(
               appBar: AppBar(
-                title: Text(isArabic ? 'ملخص الفاتورة' : 'Invoice Summary'),
+                title: Text(AppStrings.invoiceSummary),
               ),
               body: Directionality(
                 textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                 child: SingleChildScrollView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
                   padding: const EdgeInsets.all(AppSpacing.lg),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       SectionTitle(
-                        title: isArabic ? 'الأصناف' : 'Items',
+                        title: AppStrings.items,
                         icon: LucideIcons.box,
                       ),
                       const Gap(AppSpacing.sm),
@@ -126,18 +131,27 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
                       ),
                       const Gap(AppSpacing.xl),
                       SectionTitle(
-                        title: isArabic ? 'خيارات الدفع' : 'Payment Options',
+                        title: AppStrings.paymentOptions,
                         icon: LucideIcons.creditCard,
                       ),
                       const Gap(AppSpacing.md),
-                      _buildPaymentOptions(isArabic),
+                      _buildInvoiceTypeSelection(isArabic),
                       if (_type == InvoiceType.credit) ...[
                         const Gap(AppSpacing.lg),
-                        _buildPaidAmountField(isArabic, settings.currency),
+                        _buildPaidAmountField(
+                          isArabic,
+                          settings.currency,
+                          total,
+                        ),
+                      ],
+                      if (_type == InvoiceType.paid ||
+                          _paidController.text.isNotEmpty) ...[
+                        const Gap(AppSpacing.lg),
+                        _buildPaymentMethodSelection(isArabic),
                       ],
                       const Gap(AppSpacing.xl),
                       SectionTitle(
-                        title: isArabic ? 'الملخص' : 'Summary',
+                        title: AppStrings.summary,
                         icon: LucideIcons.calculator,
                       ),
                       const Gap(AppSpacing.sm),
@@ -151,32 +165,38 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
                       ),
                       if (_type == InvoiceType.credit) ...[
                         const Gap(AppSpacing.md),
-                        _buildRemainingSection(isArabic, remainingAmountValue, settings.currency),
+                        _buildRemainingSection(
+                          isArabic,
+                          remainingAmountValue,
+                          settings.currency,
+                        ),
                       ],
                     ],
                   ),
                 ),
               ),
-              bottomNavigationBar: Padding(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                child: ElevatedButton(
-                  onPressed: () {
-                    final invoice = Invoice(
-                      createdAt: DateTime.now(),
-                      items: items,
-                      subtotal: subtotal,
-                      vatAmount: vatAmount,
-                      total: total,
-                      vatPercent: settings.vatPercent,
-                      currency: settings.currency,
-                      type: _type,
-                      paymentMethod: _method,
-                      paidAmount: paidAmountValue,
-                      remainingAmount: remainingAmountValue,
-                    );
-                    context.read<AddInvoiceCubit>().saveInvoice(invoice);
-                  },
-                  child: Text(isArabic ? 'حفظ الفاتورة' : 'SAVE INVOICE'),
+              bottomNavigationBar: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final invoice = Invoice(
+                        createdAt: DateTime.now(),
+                        items: items,
+                        subtotal: subtotal,
+                        vatAmount: vatAmount,
+                        total: total,
+                        vatPercent: settings.vatPercent,
+                        currency: settings.currency,
+                        type: _type,
+                        paymentMethod: _method,
+                        paidAmount: paidAmountValue,
+                        remainingAmount: remainingAmountValue,
+                      );
+                      context.read<AddInvoiceCubit>().saveInvoice(invoice);
+                    },
+                    child: Text(AppStrings.saveInvoice),
+                  ),
                 ),
               ),
             );
@@ -186,49 +206,51 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
     );
   }
 
-  Widget _buildPaymentOptions(bool isArabic) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AppSelectionGroup<InvoiceType>(
-          title: isArabic ? 'نوع الفاتورة' : 'Invoice Type',
-          items: InvoiceType.values,
-          selectedItem: _type,
-          itemLabel: (item) => item.label(isArabic),
-          onSelect: (val) {
-            if (val != null) {
-              setState(() {
-                _type = val;
-                if (_type == InvoiceType.cash) {
-                  _paidController.clear();
-                }
-              });
+  Widget _buildInvoiceTypeSelection(bool isArabic) {
+    return AppSelectionGroup<InvoiceType>(
+      title: AppStrings.invoiceType,
+      items: InvoiceType.values,
+      selectedItem: _type,
+      itemLabel: (item) => item.label(isArabic),
+      itemIcon: (item) => item.icon,
+      onSelect: (val) {
+        if (val != null) {
+          setState(() {
+            _type = val;
+            if (_type == InvoiceType.paid) {
+              _paidController.clear();
             }
-          },
-        ),
-        const Gap(AppSpacing.lg),
-        AppSelectionGroup<PaymentMethod>(
-          title: isArabic ? 'طريقة الدفع' : 'Payment Method',
-          items: PaymentMethod.values,
-          selectedItem: _method,
-          itemLabel: (item) => item.label(isArabic),
-          onSelect: (val) {
-            if (val != null) {
-              setState(() => _method = val);
-            }
-          },
-        ),
-      ],
+          });
+        }
+      },
     );
   }
 
-  Widget _buildPaidAmountField(bool isArabic, String currency) {
+  Widget _buildPaymentMethodSelection(bool isArabic) {
+    return AppSelectionGroup<PaymentMethod>(
+      title: AppStrings.paymentMethod,
+      items: PaymentMethod.values,
+      selectedItem: _method,
+      itemLabel: (item) => item.label(isArabic),
+      itemIcon: (item) => item.icon,
+      onSelect: (val) {
+        if (val != null) {
+          setState(() => _method = val);
+        }
+      },
+    );
+  }
+
+  Widget _buildPaidAmountField(bool isArabic, String currency, double total) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          isArabic ? 'المبلغ المدفوع ($currency)' : 'Paid Amount ($currency)',
-          style: AppTypography.bodyMd.copyWith(fontWeight: FontWeight.bold, color: AppColors.greyDark),
+          '${AppStrings.paidAmount} ($currency)',
+          style: AppTypography.bodyMd.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.greyDark,
+          ),
         ),
         const Gap(AppSpacing.sm),
         TextField(
@@ -238,15 +260,28 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
             FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
           ],
           decoration: InputDecoration(
-            hintText: isArabic ? 'أدخل المبلغ المدفوع' : 'Enter paid amount',
+            hintText: AppStrings.enterPaidAmount,
           ),
-          onChanged: (v) => setState(() {}),
+          onChanged: (v) {
+            final val = double.tryParse(v) ?? 0;
+            if (val > total) {
+              _paidController.text = total.toStringAsFixed(2);
+              _paidController.selection = TextSelection.fromPosition(
+                TextPosition(offset: _paidController.text.length),
+              );
+            }
+            setState(() {});
+          },
         ),
       ],
     );
   }
 
-  Widget _buildRemainingSection(bool isArabic, double remaining, String currency) {
+  Widget _buildRemainingSection(
+    bool isArabic,
+    double remaining,
+    String currency,
+  ) {
     final bento = Theme.of(context).extension<BentoThemeExtension>()!;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
@@ -258,8 +293,11 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            isArabic ? 'المبلغ المتبقي' : 'Remaining Amount',
-            style: AppTypography.bodyMd.copyWith(color: AppColors.danger, fontWeight: FontWeight.bold),
+            AppStrings.remainingAmount,
+            style: AppTypography.bodyMd.copyWith(
+              color: AppColors.danger,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           Text(
             '${remaining.toStringAsFixed(2)} $currency',

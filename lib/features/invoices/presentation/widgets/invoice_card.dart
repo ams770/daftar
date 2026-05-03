@@ -49,7 +49,9 @@ class InvoiceCard extends StatelessWidget {
                 bottom: 0,
                 width: 4,
                 child: Container(
-                  color: invoice.remainingAmount > 0 ? AppColors.danger : AppColors.secondary,
+                  color: invoice.remainingAmount > 0
+                      ? AppColors.danger
+                      : AppColors.secondary,
                 ),
               ),
               Padding(
@@ -87,7 +89,9 @@ class InvoiceCard extends StatelessWidget {
                           Row(
                             children: [
                               _StatusBadge(
-                                label: invoice.type == InvoiceType.cash ? 'CASH' : 'CREDIT',
+                                label: invoice.type == InvoiceType.paid
+                                    ? 'CASH'
+                                    : 'CREDIT',
                                 color: AppColors.grey,
                               ),
                               if (invoice.remainingAmount > 0) ...[

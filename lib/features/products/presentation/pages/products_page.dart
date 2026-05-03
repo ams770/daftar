@@ -9,6 +9,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/bento_theme_extension.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../settings/presentation/cubits/settings_cubit.dart';
 import '../../domain/entities/excel_product.dart';
 import '../../domain/entities/product.dart';
 import '../widgets/product_dialog.dart';
@@ -45,7 +46,8 @@ class _ProductsViewState extends State<ProductsView> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
       context.read<ProductsCubit>().loadProducts();
     }
   }
@@ -110,7 +112,8 @@ class _ProductsViewState extends State<ProductsView> {
                   ),
                 );
               } else if (state is ProductsError) {
-                if (Navigator.canPop(context)) Navigator.pop(context); // Hide loading if showing
+                if (Navigator.canPop(context))
+                  Navigator.pop(context); // Hide loading if showing
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(state.message),
@@ -120,7 +123,9 @@ class _ProductsViewState extends State<ProductsView> {
               }
             },
             buildWhen: (previous, current) =>
-                current is ProductsLoading || current is ProductsLoaded || current is ProductsError,
+                current is ProductsLoading ||
+                current is ProductsLoaded ||
+                current is ProductsError,
             builder: (context, state) {
               if (state is ProductsLoading) {
                 return const SliverProductListShimmer();
@@ -131,7 +136,9 @@ class _ProductsViewState extends State<ProductsView> {
                   child: Center(
                     child: Text(
                       'Error: ${state.message}',
-                      style: AppTypography.bodyMd.copyWith(color: AppColors.danger),
+                      style: AppTypography.bodyMd.copyWith(
+                        color: AppColors.danger,
+                      ),
                     ),
                   ),
                 );
@@ -144,12 +151,18 @@ class _ProductsViewState extends State<ProductsView> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(LucideIcons.package2, size: 64, color: AppColors.grey.withOpacity(0.5)),
+                          Icon(
+                            LucideIcons.package2,
+                            size: 64,
+                            color: AppColors.grey.withOpacity(0.5),
+                          ),
                           const Gap(AppSpacing.lg),
                           Text(
                             AppStrings.noProducts,
                             textAlign: TextAlign.center,
-                            style: AppTypography.bodyMd.copyWith(color: AppColors.grey),
+                            style: AppTypography.bodyMd.copyWith(
+                              color: AppColors.grey,
+                            ),
                           ),
                         ],
                       ),
@@ -158,13 +171,18 @@ class _ProductsViewState extends State<ProductsView> {
                 }
 
                 return SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.sm,
+                  ),
                   sliver: SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
                         if (index == state.products.length) {
                           return const Padding(
-                            padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                            padding: EdgeInsets.symmetric(
+                              vertical: AppSpacing.sm,
+                            ),
                             child: ProductShimmer(),
                           );
                         }
@@ -172,7 +190,8 @@ class _ProductsViewState extends State<ProductsView> {
                         final product = state.products[index];
                         return _ProductCard(product: product);
                       },
-                      childCount: state.products.length + (state.hasMore ? 1 : 0),
+                      childCount:
+                          state.products.length + (state.hasMore ? 1 : 0),
                     ),
                   ),
                 );
@@ -208,7 +227,10 @@ class _ProductsViewState extends State<ProductsView> {
         product: result.product,
         initialCode: result.code,
         onSave: (product, isUpdate) {
-          context.read<ProductsCubit>().saveProduct(product, isUpdate: isUpdate);
+          context.read<ProductsCubit>().saveProduct(
+            product,
+            isUpdate: isUpdate,
+          );
         },
       ),
     );
@@ -230,7 +252,9 @@ class _ProductsViewState extends State<ProductsView> {
       context: context,
       barrierDismissible: false,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusLg)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        ),
         content: Row(
           children: [
             const CircularProgressIndicator(),
@@ -264,105 +288,92 @@ class _ProductCard extends StatelessWidget {
     final bento = Theme.of(context).extension<BentoThemeExtension>()!;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: AppSpacing.lg),
-      padding: const EdgeInsets.all(AppSpacing.xl),
+      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
       decoration: bento.cardDecoration,
       child: Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   product.name,
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTypography.h2.copyWith(fontSize: 18, color: AppColors.text),
+                  style: AppTypography.bodyLg.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.text,
+                  ),
                 ),
-                const Gap(AppSpacing.sm),
+                const Gap(AppSpacing.xxs),
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
                   children: [
                     Text(
-                      'SR',
-                      style: AppTypography.bodySm.copyWith(
+                      product.price.toStringAsFixed(2),
+                      style: AppTypography.bodyMd.copyWith(
                         color: AppColors.secondary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const Gap(AppSpacing.xs),
+                    const Gap(AppSpacing.md),
+                    Icon(LucideIcons.barcode, size: 12, color: AppColors.grey),
+                    const Gap(AppSpacing.xxs),
                     Text(
-                      product.price.toStringAsFixed(2),
-                      style: AppTypography.h1.copyWith(
-                        fontSize: 24,
-                        color: AppColors.secondary,
+                      product.code,
+                      style: AppTypography.bodySm.copyWith(
+                        color: AppColors.greyDark,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
-                ),
-                const Gap(AppSpacing.md),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(LucideIcons.barcode, size: 14, color: AppColors.secondary),
-                      const Gap(AppSpacing.xs),
-                      Text(
-                        product.code,
-                        style: AppTypography.bodySm.copyWith(
-                          color: AppColors.secondary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ],
             ),
           ),
           Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Material(
-                color: AppColors.danger.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                child: InkWell(
-                  onTap: () => _showDeleteConfirmation(context),
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                  child: const Padding(
-                    padding: EdgeInsets.all(AppSpacing.md),
-                    child: Icon(LucideIcons.trash2, size: 22, color: AppColors.danger),
-                  ),
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                onPressed: () => _showDeleteConfirmation(context),
+                icon: const Icon(
+                  LucideIcons.trash2,
+                  size: 18,
+                  color: AppColors.danger,
                 ),
               ),
               const Gap(AppSpacing.sm),
-              Material(
-                color: AppColors.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                child: InkWell(
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (_) => ProductDialog(
-                        product: product,
-                        onSave: (updatedProduct, isUpdate) {
-                          context.read<ProductsCubit>().saveProduct(updatedProduct, isUpdate: isUpdate);
-                        },
-                      ),
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                  child: const Padding(
-                    padding: EdgeInsets.all(AppSpacing.md),
-                    child: Icon(LucideIcons.pencilLine, size: 22, color: AppColors.secondary),
-                  ),
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (_) => ProductDialog(
+                      product: product,
+                      onSave: (updatedProduct, isUpdate) {
+                        context.read<ProductsCubit>().saveProduct(
+                          updatedProduct,
+                          isUpdate: isUpdate,
+                        );
+                      },
+                    ),
+                  );
+                },
+                icon: const Icon(
+                  LucideIcons.pencilLine,
+                  size: 18,
+                  color: AppColors.secondary,
                 ),
               ),
             ],
@@ -406,7 +417,9 @@ class _ScannerBottomSheet extends StatelessWidget {
       height: MediaQuery.of(context).size.height * 0.7,
       decoration: const BoxDecoration(
         color: Colors.black,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusXl)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSpacing.radiusXl),
+        ),
       ),
       clipBehavior: Clip.antiAlias,
       child: Stack(
@@ -444,7 +457,11 @@ class _ScannerBottomSheet extends StatelessWidget {
             child: Center(
               child: Text(
                 AppStrings.centerBarcode,
-                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ),
@@ -453,7 +470,10 @@ class _ScannerBottomSheet extends StatelessWidget {
               width: 250,
               height: 250,
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.white.withOpacity(0.5), width: 2),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.5),
+                  width: 2,
+                ),
                 borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
               ),
             ),

@@ -75,7 +75,7 @@ class Invoice extends Equatable {
       total: json['total'],
       vatPercent: json['vatPercent'],
       currency: json['currency'],
-      type: InvoiceType.values.byName(json['type'] ?? 'cash'),
+      type: InvoiceType.values.byName(json['type'] ?? 'paid'),
       paymentMethod: PaymentMethod.values.byName(json['paymentMethod'] ?? 'cash'),
       paidAmount: json['paidAmount'] ?? json['total'],
       remainingAmount: json['remainingAmount'] ?? 0.0,

@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/constants/app_strings.dart';
 
 class NewInvoiceSearchHeader extends StatelessWidget {
   final TextEditingController controller;
@@ -23,7 +24,7 @@ class NewInvoiceSearchHeader extends StatelessWidget {
       child: TextField(
         controller: controller,
         decoration: InputDecoration(
-          hintText: 'Search products...',
+          hintText: AppStrings.searchProducts,
           prefixIcon: const Icon(LucideIcons.search),
           suffixIcon: IconButton(
             icon: const Icon(LucideIcons.scanLine),

@@ -78,4 +78,23 @@ class AppStrings {
   static String get quickScan => 'quick_scan'.tr();
   static String get scanProduct => 'scan_product'.tr();
   static String get productNotFoundInInventory => 'product_not_found_inventory'.tr();
+  static String get invoiceSavedSuccess => 'invoice_saved_success'.tr();
+  static String get noInvoiceInProgress => 'no_invoice_in_progress'.tr();
+  static String get invoiceSummary => 'invoice_summary'.tr();
+  static String get paymentOptions => 'payment_options'.tr();
+  static String get invoiceType => 'invoice_type'.tr();
+  static String get paymentMethod => 'payment_method'.tr();
+  static String get paidAmount => 'paid_amount'.tr();
+  static String get enterPaidAmount => 'enter_paid_amount'.tr();
+  static String get remainingAmount => 'remaining_amount'.tr();
+  static String get searchProducts => 'search_products'.tr();
+  static String get saveInvoice => 'save_invoice'.tr();
+  static String get onboardingWelcome => 'onboarding_welcome'.tr();
+  static String get onboardingBrandDesc => 'onboarding_brand_desc'.tr();
+  static String get onboardingTaxDesc => 'onboarding_tax_desc'.tr();
+  static String get onboardingLangDesc => 'onboarding_lang_desc'.tr();
+  static String get onboardingStart => 'onboarding_start'.tr();
+  static String get onboardingNext => 'onboarding_next'.tr();
+  static String get onboardingBack => 'onboarding_back'.tr();
+  static String get onboardingFinish => 'onboarding_finish'.tr();
 }

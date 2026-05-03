@@ -8,6 +8,7 @@ class AppSettings extends Equatable {
   final String language; // 'AR' or 'EN'
   final String? logoPath;
   final String currency;
+  final bool isOnboarded;
 
   const AppSettings({
     required this.brandName,
@@ -17,6 +18,7 @@ class AppSettings extends Equatable {
     required this.language,
     this.logoPath,
     required this.currency,
+    this.isOnboarded = false,
   });
 
   factory AppSettings.fromJson(Map<String, dynamic> json) {
@@ -28,6 +30,7 @@ class AppSettings extends Equatable {
       language: json['language'] ?? 'EN',
       logoPath: json['logoPath'],
       currency: json['currency'] ?? 'USD',
+      isOnboarded: json['isOnboarded'] ?? false,
     );
   }
 
@@ -41,6 +44,7 @@ class AppSettings extends Equatable {
       'language': language,
       'logoPath': logoPath,
       'currency': currency,
+      'isOnboarded': isOnboarded,
     };
   }
 
@@ -52,6 +56,7 @@ class AppSettings extends Equatable {
     String? language,
     String? logoPath,
     String? currency,
+    bool? isOnboarded,
   }) {
     return AppSettings(
       brandName: brandName ?? this.brandName,
@@ -61,6 +66,7 @@ class AppSettings extends Equatable {
       language: language ?? this.language,
       logoPath: logoPath ?? this.logoPath,
       currency: currency ?? this.currency,
+      isOnboarded: isOnboarded ?? this.isOnboarded,
     );
   }
 
@@ -73,5 +79,6 @@ class AppSettings extends Equatable {
         language,
         logoPath,
         currency,
+        isOnboarded,
       ];
 }
