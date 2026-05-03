@@ -15,25 +15,42 @@ class AddInvoiceInitial extends AddInvoiceState {}
 
 class AddInvoiceLoading extends AddInvoiceState {}
 
+class CartItem extends Equatable {
+  final Product product;
+  final int quantity;
+
+  const CartItem({required this.product, required this.quantity});
+
+  @override
+  List<Object?> get props => [product, quantity];
+
+  CartItem copyWith({Product? product, int? quantity}) {
+    return CartItem(
+      product: product ?? this.product,
+      quantity: quantity ?? this.quantity,
+    );
+  }
+}
+
 class AddInvoiceCreating extends AddInvoiceState {
-  final Map<int, int> cartItems; // productId -> qty
-  final List<Product> availableProducts;
+  final Map<int, CartItem> cartItems; // productId -> CartItem
+  final String? clientName;
   
   const AddInvoiceCreating({
     this.cartItems = const {},
-    this.availableProducts = const [],
+    this.clientName,
   });
 
   @override
-  List<Object?> get props => [cartItems, availableProducts];
+  List<Object?> get props => [cartItems, clientName];
 
   AddInvoiceCreating copyWith({
-    Map<int, int>? cartItems,
-    List<Product>? availableProducts,
+    Map<int, CartItem>? cartItems,
+    String? clientName,
   }) {
     return AddInvoiceCreating(
       cartItems: cartItems ?? this.cartItems,
-      availableProducts: availableProducts ?? this.availableProducts,
+      clientName: clientName ?? this.clientName,
     );
   }
 }
@@ -57,21 +74,34 @@ class AddInvoiceCubit extends Cubit<AddInvoiceState> {
 
   AddInvoiceCubit(this._repository) : super(AddInvoiceInitial());
 
-  void startNewInvoice(List<Product> products) {
-    emit(AddInvoiceCreating(availableProducts: products));
+  void startNewInvoice() {
+    emit(const AddInvoiceCreating());
+  }
+
+  void updateClientName(String? name) {
+    if (state is AddInvoiceCreating) {
+      final currentState = state as AddInvoiceCreating;
+      emit(currentState.copyWith(clientName: name));
+    }
   }
 
   void updateProductQty(Product product, int delta) {
     if (state is AddInvoiceCreating) {
       final currentState = state as AddInvoiceCreating;
-      final newCart = Map<int, int>.from(currentState.cartItems);
-      final currentQty = newCart[product.id] ?? 0;
-      final newQty = currentQty + delta;
+      final newCart = Map<int, CartItem>.from(currentState.cartItems);
+      final currentItem = newCart[product.id];
       
-      if (newQty <= 0) {
-        newCart.remove(product.id);
+      if (currentItem == null) {
+        if (delta > 0) {
+          newCart[product.id!] = CartItem(product: product, quantity: delta);
+        }
       } else {
-        newCart[product.id!] = newQty;
+        final newQty = currentItem.quantity + delta;
+        if (newQty <= 0) {
+          newCart.remove(product.id);
+        } else {
+          newCart[product.id!] = currentItem.copyWith(quantity: newQty);
+        }
       }
       
       emit(currentState.copyWith(cartItems: newCart));
@@ -80,22 +110,10 @@ class AddInvoiceCubit extends Cubit<AddInvoiceState> {
 
   Future<bool> addProductByCode(String code, ProductRepository productRepo) async {
     if (state is! AddInvoiceCreating) return false;
-    final currentState = state as AddInvoiceCreating;
 
-    // 1. Check if already in cart (by checking availableProducts first to find the product object)
-    Product? product;
-    try {
-      product = currentState.availableProducts.firstWhere((p) => p.code == code);
-    } catch (_) {
-      // Not in current list, fetch from repo
-      product = await productRepo.getProductByCode(code);
-      if (product != null) {
-        // Add to available products so we can track it
-        final newList = List<Product>.from(currentState.availableProducts)..add(product);
-        emit(currentState.copyWith(availableProducts: newList));
-      }
-    }
-
+    // Always fetch from repo to ensure we have the latest data and handle cases where it's not in a local list
+    final product = await productRepo.getProductByCode(code);
+    
     if (product != null) {
       updateProductQty(product, 1);
       return true;

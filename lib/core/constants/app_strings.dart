@@ -97,4 +97,7 @@ class AppStrings {
   static String get onboardingNext => 'onboarding_next'.tr();
   static String get onboardingBack => 'onboarding_back'.tr();
   static String get onboardingFinish => 'onboarding_finish'.tr();
+  static String get clientDetails => 'client_details'.tr();
+  static String get enterClientName => 'enter_client_name'.tr();
+  static String get searchByClient => 'search_by_client'.tr();
 }

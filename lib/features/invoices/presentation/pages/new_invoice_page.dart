@@ -18,26 +18,51 @@ import '../widgets/product_selection_card.dart';
 import '../widgets/scanner_bottom_sheet.dart';
 import '../widgets/new_invoice_search_header.dart';
 import '../widgets/new_invoice_bottom_bar.dart';
-
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/di/injection.dart';
 
-class NewInvoicePage extends StatefulWidget {
+class NewInvoicePage extends StatelessWidget {
   const NewInvoicePage({super.key});
 
   @override
-  State<NewInvoicePage> createState() => _NewInvoicePageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => sl<ProductsCubit>()..loadProducts(),
+      child: const NewInvoiceView(),
+    );
+  }
 }
 
-class _NewInvoicePageState extends State<NewInvoicePage> {
+class NewInvoiceView extends StatefulWidget {
+  const NewInvoiceView({super.key});
+
+  @override
+  State<NewInvoiceView> createState() => _NewInvoiceViewState();
+}
+
+class _NewInvoiceViewState extends State<NewInvoiceView> {
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    final productsState = context.read<ProductsCubit>().state;
-    if (productsState is ProductsLoaded) {
-      context.read<AddInvoiceCubit>().startNewInvoice(productsState.products);
+    _scrollController.addListener(_onScroll);
+    context.read<AddInvoiceCubit>().startNewInvoice();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<ProductsCubit>().loadProducts();
     }
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -62,15 +87,25 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                 if (state is ProductsLoaded) {
                   return BlocBuilder<AddInvoiceCubit, AddInvoiceState>(
                     builder: (context, invState) {
-                      final Map<int, int> cart = (invState is AddInvoiceCreating) ? invState.cartItems : {};
+                      final cart = (invState is AddInvoiceCreating) ? invState.cartItems : <int, CartItem>{};
 
                       return ListView.separated(
+                        controller: _scrollController,
                         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                        itemCount: state.products.length,
+                        itemCount: state.products.length + (state.hasMore ? 1 : 0),
                         separatorBuilder: (_, __) => const Gap(AppSpacing.sm),
                         itemBuilder: (context, index) {
+                          if (index == state.products.length) {
+                            return const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(AppSpacing.md),
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
+                          }
+
                           final product = state.products[index];
-                          final qty = cart[product.id] ?? 0;
+                          final qty = cart[product.id]?.quantity ?? 0;
                           return ProductSelectionCard(
                             product: product,
                             qty: qty,
@@ -93,7 +128,9 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const ScannerInvoicePage()),
+            MaterialPageRoute(
+              builder: (_) => const ScannerInvoicePage(),
+            ),
           );
         },
         icon: const Icon(LucideIcons.scanLine),

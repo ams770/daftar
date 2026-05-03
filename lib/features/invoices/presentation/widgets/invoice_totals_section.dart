@@ -57,7 +57,7 @@ class InvoiceTotalsSection extends StatelessWidget {
             currency: currency,
             isBold: true,
           ),
-          if (paidAmount != null && remainingAmount != null && remainingAmount! > 0) ...[
+          if (paidAmount != null && paidAmount! > 0) ...[
             const Gap(AppSpacing.md),
             const Divider(),
             const Gap(AppSpacing.md),
@@ -67,7 +67,11 @@ class InvoiceTotalsSection extends StatelessWidget {
               currency: currency,
               color: AppColors.success,
             ),
+          ],
+          if (remainingAmount != null && remainingAmount! > 0) ...[
             const Gap(AppSpacing.md),
+            if (paidAmount == null || paidAmount! == 0) const Divider(),
+            if (paidAmount == null || paidAmount! == 0) const Gap(AppSpacing.md),
             _TotalRow(
               label: AppStrings.remaining,
               value: remainingAmount!,

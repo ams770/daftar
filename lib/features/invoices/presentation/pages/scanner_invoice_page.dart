@@ -148,12 +148,9 @@ class _ScannerInvoicePageState extends State<ScannerInvoicePage> {
                 if (state is! AddInvoiceCreating) return const SizedBox();
                 
                 final cart = state.cartItems;
-                final products = state.availableProducts;
+                final cartItemsList = cart.values.toList();
                 
-                // Only show items that are in the cart
-                final cartProductIds = cart.keys.toList();
-                
-                if (cartProductIds.isEmpty) {
+                if (cartItemsList.isEmpty) {
                   return Center(
                     child: Text(
                       AppStrings.centerBarcode,
@@ -164,12 +161,12 @@ class _ScannerInvoicePageState extends State<ScannerInvoicePage> {
 
                 return ListView.separated(
                   padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                  itemCount: cartProductIds.length,
+                  itemCount: cartItemsList.length,
                   separatorBuilder: (_, __) => const Gap(AppSpacing.sm),
                   itemBuilder: (context, index) {
-                    final productId = cartProductIds[index];
-                    final product = products.firstWhere((p) => p.id == productId);
-                    final qty = cart[productId] ?? 0;
+                    final item = cartItemsList[index];
+                    final product = item.product;
+                    final qty = item.quantity;
                     
                     return ProductSelectionCard(
                       product: product,

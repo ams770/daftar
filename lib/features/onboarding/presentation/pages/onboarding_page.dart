@@ -36,10 +36,18 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.initialSettings.brandName);
-    _phoneController = TextEditingController(text: widget.initialSettings.phone);
-    _addressController = TextEditingController(text: widget.initialSettings.address);
-    _vatController = TextEditingController(text: widget.initialSettings.vatPercent.toString());
+    _nameController = TextEditingController(
+      text: widget.initialSettings.brandName,
+    );
+    _phoneController = TextEditingController(
+      text: widget.initialSettings.phone,
+    );
+    _addressController = TextEditingController(
+      text: widget.initialSettings.address,
+    );
+    _vatController = TextEditingController(
+      text: widget.initialSettings.vatPercent.toString(),
+    );
     _logoPath = widget.initialSettings.logoPath;
     _selectedLang = widget.initialSettings.language;
   }
@@ -103,6 +111,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             Expanded(
@@ -147,11 +156,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           child: Icon(icon, size: 48, color: AppColors.secondary),
         ),
         const Gap(AppSpacing.xl),
-        Text(
-          title,
-          style: AppTypography.h1,
-          textAlign: TextAlign.center,
-        ),
+        Text(title, style: AppTypography.h1, textAlign: TextAlign.center),
         const Gap(AppSpacing.md),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
@@ -270,7 +275,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
               children: [
                 Text(
                   AppStrings.vatPercentage,
-                  style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.bold),
+                  style: AppTypography.bodyLg.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const Gap(AppSpacing.lg),
                 Row(
@@ -281,7 +288,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       child: TextFormField(
                         controller: _vatController,
                         textAlign: TextAlign.center,
-                        style: AppTypography.h1.copyWith(color: AppColors.secondary),
+                        style: AppTypography.h1.copyWith(
+                          color: AppColors.secondary,
+                        ),
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
                           contentPadding: EdgeInsets.zero,
@@ -289,7 +298,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ),
                     ),
                     const Gap(AppSpacing.md),
-                    Text("%", style: AppTypography.h1.copyWith(color: AppColors.grey)),
+                    Text(
+                      "%",
+                      style: AppTypography.h1.copyWith(color: AppColors.grey),
+                    ),
                   ],
                 ),
               ],
@@ -348,39 +360,46 @@ class _OnboardingPageState extends State<OnboardingPage> {
           ),
         ],
       ),
-      child: Row(
-        children: [
-          if (_currentPage > 0)
-            TextButton(
-              onPressed: _previousPage,
-              child: Text(AppStrings.onboardingBack),
-            ),
-          const Spacer(),
-          Row(
-            children: List.generate(
-              3,
-              (index) => Container(
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                width: _currentPage == index ? 24 : 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: _currentPage == index ? AppColors.secondary : AppColors.greyLight,
-                  borderRadius: BorderRadius.circular(4),
+      child: SafeArea(
+        top: false,
+        child: Row(
+          children: [
+            if (_currentPage > 0)
+              TextButton(
+                onPressed: _previousPage,
+                child: Text(AppStrings.onboardingBack),
+              ),
+            const Spacer(),
+            Row(
+              children: List.generate(
+                3,
+                (index) => Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  width: _currentPage == index ? 24 : 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: _currentPage == index
+                        ? AppColors.secondary
+                        : AppColors.greyLight,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
                 ),
               ),
             ),
-          ),
-          const Spacer(),
-          ElevatedButton(
-            onPressed: _nextPage,
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+            const Spacer(),
+            ElevatedButton(
+              onPressed: _nextPage,
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+              ),
+              child: Text(
+                _currentPage == 2
+                    ? AppStrings.onboardingFinish
+                    : AppStrings.onboardingNext,
+              ),
             ),
-            child: Text(
-              _currentPage == 2 ? AppStrings.onboardingFinish : AppStrings.onboardingNext,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

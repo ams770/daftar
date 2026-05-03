@@ -94,5 +94,8 @@
   "onboarding_start": "GET STARTED",
   "onboarding_next": "NEXT",
   "onboarding_back": "BACK",
-  "onboarding_finish": "FINISH SETUP"
+  "onboarding_finish": "FINISH SETUP",
+  "client_details": "Client Details",
+  "enter_client_name": "Enter Client Name",
+  "search_by_client": "Search by Client Name..."
 }

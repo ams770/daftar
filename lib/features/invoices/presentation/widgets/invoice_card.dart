@@ -84,7 +84,18 @@ class InvoiceCard extends StatelessWidget {
                               letterSpacing: -0.5,
                             ),
                           ),
-                          const Gap(AppSpacing.xs),
+                          if (invoice.clientName != null && invoice.clientName!.isNotEmpty) ...[
+                            const Gap(2),
+                            Text(
+                              invoice.clientName!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTypography.bodySm.copyWith(
+                                color: AppColors.greyDark,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                           const Gap(AppSpacing.xs),
                           Row(
                             children: [

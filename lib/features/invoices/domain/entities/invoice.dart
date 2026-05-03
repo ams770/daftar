@@ -12,6 +12,7 @@ class Invoice extends Equatable {
   final double total;
   final int vatPercent;
   final String currency;
+  final String? clientName;
 
   final InvoiceType type;
   final PaymentMethod paymentMethod;
@@ -31,6 +32,7 @@ class Invoice extends Equatable {
     required this.paymentMethod,
     required this.paidAmount,
     required this.remainingAmount,
+    this.clientName,
   });
 
   @override
@@ -47,6 +49,7 @@ class Invoice extends Equatable {
         paymentMethod,
         paidAmount,
         remainingAmount,
+        clientName,
       ];
 
   Map<String, dynamic> toJson() {
@@ -62,6 +65,7 @@ class Invoice extends Equatable {
       'paymentMethod': paymentMethod.name,
       'paidAmount': paidAmount,
       'remainingAmount': remainingAmount,
+      'clientName': clientName,
     };
   }
 
@@ -79,6 +83,7 @@ class Invoice extends Equatable {
       paymentMethod: PaymentMethod.values.byName(json['paymentMethod'] ?? 'cash'),
       paidAmount: json['paidAmount'] ?? json['total'],
       remainingAmount: json['remainingAmount'] ?? 0.0,
+      clientName: json['clientName'],
     );
   }
 }

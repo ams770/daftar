@@ -19,13 +19,17 @@ import '../widgets/import_instructions_dialog.dart';
 import 'excel_validation_page.dart';
 import '../cubits/products_cubit.dart';
 import '../cubits/products_state.dart';
+import 'package:products_printer/core/widgets/bento_app_bar.dart';
 
 class ProductsPage extends StatelessWidget {
   const ProductsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const ProductsView();
+    return BlocProvider(
+      create: (context) => sl<ProductsCubit>()..loadProducts(),
+      child: const ProductsView(),
+    );
   }
 }
 
@@ -61,8 +65,8 @@ class _ProductsViewState extends State<ProductsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppStrings.inventory),
+      appBar: BentoAppBar(
+        title: AppStrings.inventory,
         actions: [
           IconButton(
             icon: const Icon(LucideIcons.fileUp),
@@ -112,8 +116,9 @@ class _ProductsViewState extends State<ProductsView> {
                   ),
                 );
               } else if (state is ProductsError) {
-                if (Navigator.canPop(context))
+                if (Navigator.canPop(context)) {
                   Navigator.pop(context); // Hide loading if showing
+                }
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(state.message),
@@ -151,19 +156,11 @@ class _ProductsViewState extends State<ProductsView> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            LucideIcons.package2,
-                            size: 64,
-                            color: AppColors.grey.withOpacity(0.5),
-                          ),
-                          const Gap(AppSpacing.lg),
-                          Text(
-                            AppStrings.noProducts,
-                            textAlign: TextAlign.center,
-                            style: AppTypography.bodyMd.copyWith(
-                              color: AppColors.grey,
-                            ),
-                          ),
+                          const Icon(LucideIcons.box,
+                              size: 48, color: AppColors.grey),
+                          const Gap(AppSpacing.md),
+                          Text(AppStrings.noProducts,
+                              style: AppTypography.bodyMd),
                         ],
                       ),
                     ),
@@ -171,27 +168,19 @@ class _ProductsViewState extends State<ProductsView> {
                 }
 
                 return SliverPadding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.lg,
-                    vertical: AppSpacing.sm,
-                  ),
-                  sliver: SliverList(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                  sliver: SliverGrid(
+                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: 400,
+                      mainAxisExtent: 80,
+                      crossAxisSpacing: AppSpacing.md,
+                      mainAxisSpacing: AppSpacing.sm,
+                    ),
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
-                        if (index == state.products.length) {
-                          return const Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: AppSpacing.sm,
-                            ),
-                            child: ProductShimmer(),
-                          );
-                        }
-
-                        final product = state.products[index];
-                        return _ProductCard(product: product);
+                        return _ProductCard(product: state.products[index]);
                       },
-                      childCount:
-                          state.products.length + (state.hasMore ? 1 : 0),
+                      childCount: state.products.length,
                     ),
                   ),
                 );
@@ -202,18 +191,39 @@ class _ProductsViewState extends State<ProductsView> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (_) => ProductDialog(
+              onSave: (product, isUpdate) {
+                context.read<ProductsCubit>().saveProduct(
+                      product,
+                      isUpdate: isUpdate,
+                    );
+              },
+            ),
+          );
+        },
+        icon: const Icon(LucideIcons.plus),
+        label: Text(AppStrings.addProduct),
+        backgroundColor: AppColors.secondary,
+        foregroundColor: AppColors.white,
+      ),
     );
   }
 
   void _openScanner(BuildContext context) async {
-    final result = await showModalBottomSheet<String>(
+    final String? result = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => const _ScannerBottomSheet(),
+      builder: (_) => const _ScannerBottomSheet(),
     );
 
-    if (result != null && mounted) {
+    if (result != null && context.mounted) {
       context.read<ProductsCubit>().scanBarcode(result);
     }
   }
@@ -228,9 +238,9 @@ class _ProductsViewState extends State<ProductsView> {
         initialCode: result.code,
         onSave: (product, isUpdate) {
           context.read<ProductsCubit>().saveProduct(
-            product,
-            isUpdate: isUpdate,
-          );
+                product,
+                isUpdate: isUpdate,
+              );
         },
       ),
     );
@@ -363,9 +373,9 @@ class _ProductCard extends StatelessWidget {
                       product: product,
                       onSave: (updatedProduct, isUpdate) {
                         context.read<ProductsCubit>().saveProduct(
-                          updatedProduct,
-                          isUpdate: isUpdate,
-                        );
+                              updatedProduct,
+                              isUpdate: isUpdate,
+                            );
                       },
                     ),
                   );

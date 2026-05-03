@@ -3,8 +3,15 @@ import '../../domain/entities/invoice.dart';
 
 abstract class InvoiceLocalDataSource {
   Future<int> saveInvoice(Invoice invoice);
-  Future<List<Invoice>> getAllInvoices();
+  Future<List<Invoice>> getInvoicesPaginated({
+    required int limit,
+    required int offset,
+    String? searchQuery,
+    DateTime? startDate,
+    DateTime? endDate,
+  });
   Future<List<InvoiceItem>> getInvoiceItems(int invoiceId);
+  Future<void> deleteInvoice(int id);
 }
 
 class InvoiceLocalDataSourceImpl implements InvoiceLocalDataSource {
@@ -29,9 +36,39 @@ class InvoiceLocalDataSourceImpl implements InvoiceLocalDataSource {
   }
 
   @override
-  Future<List<Invoice>> getAllInvoices() async {
+  Future<List<Invoice>> getInvoicesPaginated({
+    required int limit,
+    required int offset,
+    String? searchQuery,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
     final db = await _dbHelper.database;
-    final List<Map<String, dynamic>> maps = await db.query('invoices', orderBy: 'createdAt DESC');
+    
+    List<String> whereClauses = [];
+    List<dynamic> whereArgs = [];
+    
+    if (searchQuery != null && searchQuery.isNotEmpty) {
+      whereClauses.add('clientName LIKE ?');
+      whereArgs.add('%$searchQuery%');
+    }
+    
+    if (startDate != null && endDate != null) {
+      whereClauses.add('createdAt BETWEEN ? AND ?');
+      whereArgs.add(startDate.toIso8601String());
+      whereArgs.add(endDate.toIso8601String());
+    }
+    
+    final String? where = whereClauses.isEmpty ? null : whereClauses.join(' AND ');
+
+    final List<Map<String, dynamic>> maps = await db.query(
+      'invoices',
+      where: where,
+      whereArgs: whereArgs,
+      limit: limit,
+      offset: offset,
+      orderBy: 'createdAt DESC',
+    );
     
     List<Invoice> invoices = [];
     for (final map in maps) {
@@ -51,5 +88,10 @@ class InvoiceLocalDataSourceImpl implements InvoiceLocalDataSource {
     );
     
     return maps.map((item) => InvoiceItem.fromJson(item)).toList();
+  }
+
+  @override
+  Future<void> deleteInvoice(int id) async {
+    await _dbHelper.deleteInvoice(id);
   }
 }

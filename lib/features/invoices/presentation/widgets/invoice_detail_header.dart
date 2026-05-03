@@ -18,6 +18,7 @@ class InvoiceDetailHeader extends StatelessWidget {
   final InvoiceType type;
   final PaymentMethod paymentMethod;
   final double remainingAmount;
+  final String? clientName;
 
   const InvoiceDetailHeader({
     super.key,
@@ -28,6 +29,7 @@ class InvoiceDetailHeader extends StatelessWidget {
     required this.type,
     required this.paymentMethod,
     required this.remainingAmount,
+    this.clientName,
   });
 
   @override
@@ -82,6 +84,22 @@ class InvoiceDetailHeader extends StatelessWidget {
               ),
             ],
           ),
+          if (clientName != null && clientName!.isNotEmpty) ...[
+            const Gap(AppSpacing.lg),
+            Row(
+              children: [
+                Icon(LucideIcons.user, size: 14, color: AppColors.white.withValues(alpha: 0.7)),
+                const Gap(AppSpacing.xs),
+                Text(
+                  clientName!,
+                  style: AppTypography.bodySm.copyWith(
+                    color: AppColors.white.withValues(alpha: 0.9),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ],
           const Gap(AppSpacing.xl),
           Row(
             children: [

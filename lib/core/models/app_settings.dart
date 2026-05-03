@@ -30,7 +30,7 @@ class AppSettings extends Equatable {
       language: json['language'] ?? 'EN',
       logoPath: json['logoPath'],
       currency: json['currency'] ?? 'USD',
-      isOnboarded: json['isOnboarded'] ?? false,
+      isOnboarded: json['isOnboarded'] == 1 || json['isOnboarded'] == true,
     );
   }
 
@@ -44,7 +44,7 @@ class AppSettings extends Equatable {
       'language': language,
       'logoPath': logoPath,
       'currency': currency,
-      'isOnboarded': isOnboarded,
+      'isOnboarded': isOnboarded ? 1 : 0,
     };
   }
 

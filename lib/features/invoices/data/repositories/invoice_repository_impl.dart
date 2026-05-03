@@ -13,7 +13,24 @@ class InvoiceRepositoryImpl implements InvoiceRepository {
   }
 
   @override
-  Future<List<Invoice>> getAllInvoices() async {
-    return await localDataSource.getAllInvoices();
+  Future<List<Invoice>> getInvoicesPaginated({
+    required int limit,
+    required int offset,
+    String? searchQuery,
+    DateTime? startDate,
+    DateTime? endDate,
+  }) async {
+    return await localDataSource.getInvoicesPaginated(
+      limit: limit,
+      offset: offset,
+      searchQuery: searchQuery,
+      startDate: startDate,
+      endDate: endDate,
+    );
+  }
+
+  @override
+  Future<void> deleteInvoice(int id) async {
+    await localDataSource.deleteInvoice(id);
   }
 }

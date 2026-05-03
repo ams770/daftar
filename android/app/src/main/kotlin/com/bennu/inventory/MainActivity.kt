@@ -1,4 +1,4 @@
-package com.bennu.products_printer
+package com.bennu.inventory
 
 import io.flutter.embedding.android.FlutterActivity
 

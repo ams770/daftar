@@ -19,7 +19,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 3,
+      version: 5,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -35,6 +35,12 @@ class DatabaseHelper {
       await db.execute('ALTER TABLE invoices ADD COLUMN paymentMethod TEXT NOT NULL DEFAULT "cash"');
       await db.execute('ALTER TABLE invoices ADD COLUMN paidAmount REAL NOT NULL DEFAULT 0.0');
       await db.execute('ALTER TABLE invoices ADD COLUMN remainingAmount REAL NOT NULL DEFAULT 0.0');
+    }
+    if (oldVersion < 4) {
+      await db.execute('ALTER TABLE app_settings ADD COLUMN isOnboarded INTEGER DEFAULT 0');
+    }
+    if (oldVersion < 5) {
+      await db.execute('ALTER TABLE invoices ADD COLUMN clientName TEXT');
     }
   }
 
@@ -66,16 +72,18 @@ CREATE TABLE app_settings (
   vatPercent INTEGER DEFAULT 15,
   language TEXT DEFAULT 'EN',
   logoPath TEXT,
-  currency TEXT DEFAULT 'USD'
+  currency TEXT DEFAULT 'USD',
+  isOnboarded INTEGER DEFAULT 0
 )
 ''');
     // Insert default settings
     await db.insert('app_settings', {
       'id': 1,
-      'brandName': 'My Brand',
+      'brandName': '',
       'vatPercent': 15,
       'language': 'EN',
-      'currency': 'USD'
+      'currency': 'USD',
+      'isOnboarded': 0
     });
   }
 
@@ -92,7 +100,8 @@ CREATE TABLE invoices (
   type TEXT NOT NULL DEFAULT "cash",
   paymentMethod TEXT NOT NULL DEFAULT "cash",
   paidAmount REAL NOT NULL DEFAULT 0.0,
-  remainingAmount REAL NOT NULL DEFAULT 0.0
+  remainingAmount REAL NOT NULL DEFAULT 0.0,
+  clientName TEXT
 )
 ''');
 
@@ -109,6 +118,21 @@ CREATE TABLE invoice_items (
   FOREIGN KEY (invoiceId) REFERENCES invoices (id) ON DELETE CASCADE
 )
 ''');
+  }
+
+  Future<int> deleteInvoice(int id) async {
+    final db = await database;
+    // Also delete invoice items
+    await db.delete(
+      'invoice_items',
+      where: 'invoiceId = ?',
+      whereArgs: [id],
+    );
+    return await db.delete(
+      'invoices',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
   Future close() async {

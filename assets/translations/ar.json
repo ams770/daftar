@@ -94,5 +94,8 @@
   "onboarding_start": "ابدأ الآن",
   "onboarding_next": "التالي",
   "onboarding_back": "السابق",
-  "onboarding_finish": "إنهاء الإعداد"
+  "onboarding_finish": "إنهاء الإعداد",
+  "client_details": "تفاصيل العميل",
+  "enter_client_name": "أدخل اسم العميل",
+  "search_by_client": "بحث باسم العميل..."
 }

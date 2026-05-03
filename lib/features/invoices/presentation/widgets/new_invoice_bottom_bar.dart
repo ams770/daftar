@@ -19,7 +19,7 @@ class NewInvoiceBottomBar extends StatelessWidget {
         final cart = state.cartItems;
         if (cart.isEmpty) return const SizedBox();
 
-        final totalItems = cart.values.fold(0, (sum, q) => sum + q);
+        final totalItems = cart.values.fold(0, (sum, q) => (sum + q.quantity).toInt());
 
         return Container(
           padding: const EdgeInsets.all(AppSpacing.lg),

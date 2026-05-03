@@ -26,7 +26,7 @@ class SettingsServiceImpl implements SettingsService {
     } else {
       // Should not happen as we insert default on create, but just in case
       return const AppSettings(
-        brandName: 'My Brand',
+        brandName: '',
         phone: '',
         address: '',
         vatPercent: 15,

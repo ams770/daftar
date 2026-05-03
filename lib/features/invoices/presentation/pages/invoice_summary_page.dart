@@ -29,10 +29,22 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
   InvoiceType _type = InvoiceType.paid;
   PaymentMethod _method = PaymentMethod.cash;
   final TextEditingController _paidController = TextEditingController();
+  final TextEditingController _clientNameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    final cubit = context.read<AddInvoiceCubit>();
+    if (cubit.state is AddInvoiceCreating) {
+      _clientNameController.text =
+          (cubit.state as AddInvoiceCreating).clientName ?? '';
+    }
+  }
 
   @override
   void dispose() {
     _paidController.dispose();
+    _clientNameController.dispose();
     super.dispose();
   }
 
@@ -66,20 +78,18 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
           builder: (context, state) {
             if (state is! AddInvoiceCreating) {
               return Scaffold(
-                body: Center(
-                  child: Text(AppStrings.noInvoiceInProgress),
-                ),
+                body: Center(child: Text(AppStrings.noInvoiceInProgress)),
               );
             }
 
             final cart = state.cartItems;
-            final products = state.availableProducts;
 
             double subtotal = 0;
             final List<InvoiceItem> items = [];
 
-            cart.forEach((productId, qty) {
-              final product = products.firstWhere((p) => p.id == productId);
+            cart.forEach((productId, cartItem) {
+              final product = cartItem.product;
+              final qty = cartItem.quantity;
               final lineTotal = product.price * qty;
               subtotal += lineTotal;
               items.add(
@@ -107,9 +117,7 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
             final remainingAmountValue = total - paidAmountValue;
 
             return Scaffold(
-              appBar: AppBar(
-                title: Text(AppStrings.invoiceSummary),
-              ),
+              appBar: AppBar(title: Text(AppStrings.invoiceSummary)),
               body: Directionality(
                 textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                 child: SingleChildScrollView(
@@ -119,6 +127,20 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      SectionTitle(
+                        title: AppStrings.clientDetails,
+                        icon: LucideIcons.user,
+                      ),
+                      const Gap(AppSpacing.sm),
+                      TextField(
+                        controller: _clientNameController,
+                        decoration: InputDecoration(
+                          hintText: AppStrings.enterClientName,
+                        ),
+                        onChanged: (v) =>
+                            context.read<AddInvoiceCubit>().updateClientName(v),
+                      ),
+                      const Gap(AppSpacing.xl),
                       SectionTitle(
                         title: AppStrings.items,
                         icon: LucideIcons.box,
@@ -171,31 +193,47 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
                           settings.currency,
                         ),
                       ],
+
+                      const SizedBox(height: 200),
                     ],
                   ),
                 ),
               ),
-              bottomNavigationBar: SafeArea(
+              bottomSheet: SizedBox(
+                width: double.infinity,
                 child: Padding(
-                  padding: const EdgeInsets.all(AppSpacing.lg),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      final invoice = Invoice(
-                        createdAt: DateTime.now(),
-                        items: items,
-                        subtotal: subtotal,
-                        vatAmount: vatAmount,
-                        total: total,
-                        vatPercent: settings.vatPercent,
-                        currency: settings.currency,
-                        type: _type,
-                        paymentMethod: _method,
-                        paidAmount: paidAmountValue,
-                        remainingAmount: remainingAmountValue,
-                      );
-                      context.read<AddInvoiceCubit>().saveInvoice(invoice);
-                    },
-                    child: Text(AppStrings.saveInvoice),
+                  padding: const EdgeInsets.all(AppSpacing.xl),
+                  child: SafeArea(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (state.clientName == null ||
+                            state.clientName!.trim().isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(AppStrings.required),
+                              backgroundColor: AppColors.danger,
+                            ),
+                          );
+                          return;
+                        }
+                        final invoice = Invoice(
+                          createdAt: DateTime.now(),
+                          items: items,
+                          subtotal: subtotal,
+                          vatAmount: vatAmount,
+                          total: total,
+                          vatPercent: settings.vatPercent,
+                          currency: settings.currency,
+                          type: _type,
+                          paymentMethod: _method,
+                          paidAmount: paidAmountValue,
+                          remainingAmount: remainingAmountValue,
+                          clientName: state.clientName,
+                        );
+                        context.read<AddInvoiceCubit>().saveInvoice(invoice);
+                      },
+                      child: Text(AppStrings.saveInvoice),
+                    ),
                   ),
                 ),
               ),
@@ -259,9 +297,7 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
           inputFormatters: [
             FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
           ],
-          decoration: InputDecoration(
-            hintText: AppStrings.enterPaidAmount,
-          ),
+          decoration: InputDecoration(hintText: AppStrings.enterPaidAmount),
           onChanged: (v) {
             final val = double.tryParse(v) ?? 0;
             if (val > total) {

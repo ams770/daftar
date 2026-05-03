@@ -15,6 +15,7 @@ import '../../../settings/presentation/cubits/settings_cubit.dart';
 import '../../domain/entities/invoice.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
+import '../cubits/invoice_cubit.dart';
 import '../widgets/brand_header.dart';
 import '../widgets/invoice_detail_header.dart';
 import '../widgets/invoice_items_table.dart';
@@ -45,6 +46,11 @@ class InvoiceDetailsPage extends StatelessWidget {
             title: Text(AppStrings.invoiceDetails),
             actions: [
               IconButton(
+                icon: const Icon(LucideIcons.trash2, color: AppColors.danger),
+                onPressed: () => _showDeleteConfirmation(context),
+                tooltip: AppStrings.delete,
+              ),
+              IconButton(
                 icon: const Icon(LucideIcons.share2),
                 onPressed: () => _shareAsPdf(context, settings),
                 tooltip: AppStrings.shareAsPdf,
@@ -68,6 +74,7 @@ class InvoiceDetailsPage extends StatelessWidget {
                     type: invoice.type,
                     paymentMethod: invoice.paymentMethod,
                     remainingAmount: invoice.remainingAmount,
+                    clientName: invoice.clientName,
                   ),
 
                   const Gap(AppSpacing.xl),
@@ -165,6 +172,33 @@ class InvoiceDetailsPage extends StatelessWidget {
         );
       }
     }
+  }
+
+  void _showDeleteConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(AppStrings.delete),
+        content: const Text('Are you sure you want to delete this invoice?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(AppStrings.cancel),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(dialogContext); // Close dialog
+              context.read<InvoiceCubit>().deleteInvoice(invoice.id!);
+              Navigator.pop(context); // Close details page
+            },
+            child: Text(
+              AppStrings.delete,
+              style: const TextStyle(color: AppColors.danger),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showPrintOptions(BuildContext context, bool isArabic) {
