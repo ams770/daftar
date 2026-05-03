@@ -1,0 +1,54 @@
+import Foundation
+
+// Implementação do repositório Bluetooth
+public class BluetoothRepositoryImpl: BluetoothRepository {
+    private let dataSource: BluetoothDataSource
+
+    // Inicializador
+    public init(dataSource: BluetoothDataSource) {
+        self.dataSource = dataSource
+    }
+
+    // Escanear e retornar dispositivos Bluetooth disponíveis de forma assíncrona
+    public func scanDevices(completion: @escaping ([BluetoothDeviceEntity]) -> Void) {
+        dataSource.scanDevices { devices in
+            completion(devices)
+        }
+    }
+
+    // Conectar ao dispositivo pelo endereço
+    public func connectToDevice(address: String) -> Bool {
+        return dataSource.connectToDevice(address: address)
+    }
+
+    // Desconectar do dispositivo atualmente conectado
+    public func disconnectFromDevice() -> Bool {
+        return dataSource.disconnectFromDevice()
+    }
+
+    // Imprimir dados com tamanho, alinhamento e opção de negrito
+    public func printData(data: String, size: Int, align: Int, bold: Bool) -> Bool {
+        return dataSource.printData(data: data, size: size, align: align, bold: bold)
+    }
+
+    // Imprimir linha em branco um número específico de vezes
+    public func printEmptyLine(callTimes: Int) -> Bool {
+        return dataSource.printEmptyLine(callTimes: callTimes)
+    }
+
+    public func isConnected() -> Bool {
+        return dataSource.isConnected()
+    }
+
+    public func printImage(data: Data, align: Int) -> Bool {
+        return dataSource.printImage(data: data, align: align)
+    }
+
+    public func configurePrinter(paperWidth: Int) {
+        dataSource.configurePrinter(paperWidth: paperWidth)
+    }
+
+    public func commitPrint() -> Bool {
+        return dataSource.commitPrint()
+    }
+}

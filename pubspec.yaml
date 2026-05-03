@@ -30,6 +30,11 @@ dependencies:
   printing: ^5.14.0
   easy_localization: ^3.0.8
   lottie: ^3.3.0
+  shared_preferences: ^2.5.2
+  flutter_secure_storage: ^10.0.0
+  permission_handler: ^12.0.1
+  easy_blue_printer:
+    path: plugins/printer
 
 
 dev_dependencies:

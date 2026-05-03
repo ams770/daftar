@@ -15,6 +15,7 @@ import '../widgets/invoice_items_table.dart';
 import '../widgets/invoice_totals_section.dart';
 import '../widgets/section_title.dart';
 import '../widgets/invoice_summary_widgets.dart';
+import 'invoice_details_page.dart';
 
 class InvoiceSummaryPage extends StatefulWidget {
   const InvoiceSummaryPage({super.key});
@@ -70,7 +71,20 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
                 ),
               );
               context.read<InvoiceCubit>().loadInvoices(refresh: true);
-              Navigator.popUntil(context, (route) => route.isFirst);
+              
+              // Get the invoice to navigate to its details
+              context.read<InvoiceCubit>().getInvoiceById(state.invoiceId).then((invoice) {
+                if (invoice != null && context.mounted) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => InvoiceDetailsPage(invoice: invoice),
+                    ),
+                  );
+                } else if (context.mounted) {
+                  Navigator.popUntil(context, (route) => route.isFirst);
+                }
+              });
             }
           },
           builder: (context, state) {

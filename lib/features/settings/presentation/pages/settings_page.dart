@@ -8,6 +8,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/models/app_settings.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../printer/presentation/pages/printer_settings_page.dart';
 import '../cubits/settings_cubit.dart';
 import '../widgets/settings_widgets.dart';
 import '../widgets/settings_modals.dart';
@@ -166,6 +167,19 @@ class _SettingsContent extends StatelessWidget {
               value: settings.printingLanguage == 'AR'
                   ? AppStrings.arabic
                   : AppStrings.english,
+            ),
+          ),
+          const Gap(AppSpacing.xl),
+          SettingsSection(
+            title: "printer_settings".tr(),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const PrinterSettingsPage()),
+            ),
+            child: SettingRow(
+              icon: LucideIcons.bluetooth,
+              label: "printer_settings".tr(),
+              value: "",
             ),
           ),
         ],

@@ -11,6 +11,9 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../core/services/invoice_pdf_service.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/bento_theme_extension.dart';
+import '../../../printer/presentation/cubits/printer_cubit.dart';
+import '../../../printer/presentation/cubits/printer_state.dart';
+import '../../../printer/presentation/widgets/printer_status_indicator.dart';
 import '../../../settings/presentation/cubits/settings_cubit.dart';
 import '../../domain/entities/invoice.dart';
 import 'dart:ui' as ui;
@@ -23,6 +26,7 @@ import '../widgets/collect_money_bottom_sheet.dart';
 import '../../domain/entities/money_collection.dart';
 import '../cubits/money_collection_cubit.dart';
 import 'money_collection_details_page.dart';
+
 
 class InvoiceDetailsPage extends StatefulWidget {
   final Invoice invoice;
@@ -84,51 +88,75 @@ class _InvoiceDetailsPageState extends State<InvoiceDetailsPage> {
             textDirection: isArabic
                 ? ui.TextDirection.rtl
                 : ui.TextDirection.ltr,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildActionGrid(context, settings, isArabic),
-                  const Gap(AppSpacing.lg),
-                  _buildInfoCard(context, isArabic, dateFormat),
-
-                  const Gap(AppSpacing.xl),
-                  SectionTitle(title: AppStrings.items, icon: LucideIcons.box),
-                  const Gap(AppSpacing.sm),
-                  InvoiceItemsTable(
-                    items: _invoice.items,
-                    currency: settings.currency,
-                    isArabic: isArabic,
-                  ),
-                  const Gap(AppSpacing.xl),
-                  SectionTitle(
-                    title: AppStrings.summary,
-                    icon: LucideIcons.calculator,
-                  ),
-                  const Gap(AppSpacing.sm),
-                  InvoiceTotalsSection(
-                    subtotal: _invoice.subtotal,
-                    vatAmount: _invoice.vatAmount,
-                    total: _invoice.total,
-                    vatPercent: _invoice.vatPercent,
-                    currency: settings.currency,
-                    isArabic: isArabic,
-                    paidAmount: _invoice.paidAmount,
-                    remainingAmount: _invoice.remainingAmount,
-                  ),
-                  if (_collections.isNotEmpty) ...[
+            child: BlocListener<PrinterCubit, PrinterState>(
+              listener: (context, state) {
+                if (state is PrinterPrinting) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("printing".tr()),
+                      duration: const Duration(seconds: 1),
+                    ),
+                  );
+                } else if (state is PrinterPrintSuccess) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("print_success".tr()),
+                      backgroundColor: AppColors.success,
+                    ),
+                  );
+                } else if (state is PrinterError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(state.message),
+                      backgroundColor: AppColors.danger,
+                    ),
+                  );
+                }
+              },
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildActionGrid(context, settings, isArabic),
+                    const Gap(AppSpacing.lg),
+                    _buildInfoCard(context, isArabic, dateFormat),
+                    const Gap(AppSpacing.xl),
+                    SectionTitle(title: AppStrings.items, icon: LucideIcons.box),
+                    const Gap(AppSpacing.sm),
+                    InvoiceItemsTable(
+                      items: _invoice.items,
+                      currency: settings.currency,
+                      isArabic: isArabic,
+                    ),
                     const Gap(AppSpacing.xl),
                     SectionTitle(
-                      title: AppStrings.collections,
-                      icon: LucideIcons.history,
+                      title: AppStrings.summary,
+                      icon: LucideIcons.calculator,
                     ),
                     const Gap(AppSpacing.sm),
-                    _buildCollectionsList(settings.currency),
+                    InvoiceTotalsSection(
+                      subtotal: _invoice.subtotal,
+                      vatAmount: _invoice.vatAmount,
+                      total: _invoice.total,
+                      vatPercent: _invoice.vatPercent,
+                      currency: settings.currency,
+                      isArabic: isArabic,
+                      paidAmount: _invoice.paidAmount,
+                      remainingAmount: _invoice.remainingAmount,
+                    ),
+                    if (_collections.isNotEmpty) ...[
+                      const Gap(AppSpacing.xl),
+                      SectionTitle(
+                        title: AppStrings.collections,
+                        icon: LucideIcons.history,
+                      ),
+                      const Gap(AppSpacing.sm),
+                      _buildCollectionsList(settings.currency),
+                    ],
+                    SafeArea(child: const Gap(AppSpacing.tripleXl)),
                   ],
-
-                  SafeArea(child: const Gap(AppSpacing.tripleXl)),
-                ],
+                ),
               ),
             ),
           ),
@@ -216,7 +244,7 @@ class _InvoiceDetailsPageState extends State<InvoiceDetailsPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(AppStrings.invoiceDetails, style: AppTypography.h2),
-              _buildConnectionStatus(),
+              const PrinterStatusIndicator(),
             ],
           ),
           const Gap(AppSpacing.xl),
@@ -232,7 +260,7 @@ class _InvoiceDetailsPageState extends State<InvoiceDetailsPage> {
                 icon: LucideIcons.printer,
                 label: AppStrings.print,
                 color: AppColors.danger,
-                onTap: () => _showPrintOptions(context, isArabic),
+                onTap: () => context.read<PrinterCubit>().printInvoice(_invoice),
               ),
               _buildActionButton(
                 icon: LucideIcons.share2,
@@ -275,41 +303,6 @@ class _InvoiceDetailsPageState extends State<InvoiceDetailsPage> {
     if (result == true) {
       _loadCollections();
     }
-  }
-
-  Widget _buildConnectionStatus() {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.xs,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.greyLight.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.greyLight),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 8,
-            height: 8,
-            decoration: const BoxDecoration(
-              color: AppColors.grey,
-              shape: BoxShape.circle,
-            ),
-          ),
-          const Gap(AppSpacing.xs),
-          Text(
-            'No Connection',
-            style: AppTypography.label.copyWith(
-              color: AppColors.greyDark,
-              fontSize: 10,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildActionButton({

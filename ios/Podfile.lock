@@ -30,15 +30,22 @@ PODS:
   - DKPhotoGallery/Resource (0.0.19):
     - SDWebImage
     - SwiftyGif
+  - easy_blue_printer (1.0.0):
+    - Flutter
   - file_picker (0.0.1):
     - DKImagePickerController/PhotoGallery
     - Flutter
   - Flutter (1.0.0)
+  - flutter_secure_storage_darwin (10.0.0):
+    - Flutter
+    - FlutterMacOS
   - image_picker_ios (0.0.1):
     - Flutter
   - mobile_scanner (7.0.0):
     - Flutter
     - FlutterMacOS
+  - permission_handler_apple (9.3.0):
+    - Flutter
   - printing (1.0.0):
     - Flutter
   - SDWebImage (5.21.7):
@@ -55,10 +62,13 @@ PODS:
   - SwiftyGif (5.4.5)
 
 DEPENDENCIES:
+  - easy_blue_printer (from `.symlinks/plugins/easy_blue_printer/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Flutter (from `Flutter`)
+  - flutter_secure_storage_darwin (from `.symlinks/plugins/flutter_secure_storage_darwin/darwin`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - mobile_scanner (from `.symlinks/plugins/mobile_scanner/darwin`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - printing (from `.symlinks/plugins/printing/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
@@ -72,14 +82,20 @@ SPEC REPOS:
     - SwiftyGif
 
 EXTERNAL SOURCES:
+  easy_blue_printer:
+    :path: ".symlinks/plugins/easy_blue_printer/ios"
   file_picker:
     :path: ".symlinks/plugins/file_picker/ios"
   Flutter:
     :path: Flutter
+  flutter_secure_storage_darwin:
+    :path: ".symlinks/plugins/flutter_secure_storage_darwin/darwin"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   mobile_scanner:
     :path: ".symlinks/plugins/mobile_scanner/darwin"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
   printing:
     :path: ".symlinks/plugins/printing/ios"
   share_plus:
@@ -92,10 +108,13 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
+  easy_blue_printer: 71193bdafae78dd9b1ce07ab951bca66b5a7d5d8
   file_picker: a0560bc09d61de87f12d246fc47d2119e6ef37be
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  flutter_secure_storage_darwin: acdb3f316ed05a3e68f856e0353b133eec373a23
   image_picker_ios: e0ece4aa2a75771a7de3fa735d26d90817041326
   mobile_scanner: 9157936403f5a0644ca3779a38ff8404c5434a93
+  permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
   printing: 54ff03f28fe9ba3aa93358afb80a8595a071dd07
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a

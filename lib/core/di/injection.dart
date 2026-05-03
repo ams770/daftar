@@ -22,6 +22,11 @@ import '../../features/invoices/presentation/cubits/money_collection_cubit.dart'
 import '../../features/settings/presentation/cubits/settings_cubit.dart';
 import '../database/database_helper.dart';
 import '../services/settings_service.dart';
+import 'dart:io';
+import '../services/thermal_printer_service.dart';
+import '../services/android_thermal_printer_service.dart';
+import '../services/ios_thermal_printer_service.dart';
+import '../../features/printer/presentation/cubits/printer_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -42,6 +47,7 @@ Future<void> init() async {
   sl.registerFactory(() => InvoiceCubit(sl()));
   sl.registerFactory(() => AddInvoiceCubit(sl()));
   sl.registerFactory(() => MoneyCollectionCubit(sl()));
+  sl.registerFactory(() => PrinterCubit(sl(), sl()));
 
   // Use cases
   sl.registerLazySingleton(() => GetProductsPaginated(sl()));
@@ -72,6 +78,11 @@ Future<void> init() async {
   // Services
   sl.registerLazySingleton<ExcelService>(() => ExcelServiceImpl());
   sl.registerLazySingleton<SettingsService>(() => SettingsServiceImpl(sl()));
+  sl.registerLazySingleton<ThermalPrinterService>(
+    () => Platform.isAndroid
+        ? AndroidThermalPrinterService()
+        : IosThermalPrinterService(),
+  );
 
   // Core
   sl.registerLazySingleton(() => DatabaseHelper.instance);

@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:printing/printing.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/bento_theme_extension.dart';
 import '../../../../core/services/invoice_pdf_service.dart';
+import '../../../printer/presentation/cubits/printer_cubit.dart';
+import '../../../printer/presentation/cubits/printer_state.dart';
+import '../../../printer/presentation/widgets/printer_status_indicator.dart';
 import '../../../settings/presentation/cubits/settings_cubit.dart';
 import '../../domain/entities/money_collection.dart';
 import '../cubits/money_collection_cubit.dart';
 import '../cubits/invoice_cubit.dart';
 import 'invoice_details_page.dart';
+
 
 class MoneyCollectionDetailsPage extends StatelessWidget {
   final MoneyCollection collection;
@@ -37,17 +41,43 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(title: Text(AppStrings.collections)),
-          body: SingleChildScrollView(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildActionGrid(context, settings),
-                const Gap(AppSpacing.lg),
-                _buildMainCard(context, bento),
-                const Gap(AppSpacing.lg),
-                _buildInvoiceRefCard(context, bento),
-              ],
+          body: BlocListener<PrinterCubit, PrinterState>(
+            listener: (context, state) {
+              if (state is PrinterPrinting) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("printing".tr()),
+                    duration: const Duration(seconds: 1),
+                  ),
+                );
+              } else if (state is PrinterPrintSuccess) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text("print_success".tr()),
+                    backgroundColor: AppColors.success,
+                  ),
+                );
+              } else if (state is PrinterError) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.message),
+                    backgroundColor: AppColors.danger,
+                  ),
+                );
+              }
+            },
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildActionGrid(context, settings),
+                  const Gap(AppSpacing.lg),
+                  _buildMainCard(context, bento),
+                  const Gap(AppSpacing.lg),
+                  _buildInvoiceRefCard(context, bento),
+                ],
+              ),
             ),
           ),
         );
@@ -60,7 +90,17 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: bento.cardDecoration,
-      child: GridView.count(
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(AppStrings.summary, style: AppTypography.h3),
+              const PrinterStatusIndicator(),
+            ],
+          ),
+          const Gap(AppSpacing.xl),
+          GridView.count(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         crossAxisCount: 3,
@@ -72,7 +112,7 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
             icon: LucideIcons.printer,
             label: AppStrings.print,
             color: AppColors.secondary,
-            onTap: () {}, // Placeholder for print
+            onTap: () => context.read<PrinterCubit>().printCollection(collection),
           ),
           _buildActionButton(
             icon: LucideIcons.share2,
@@ -86,6 +126,8 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
             color: AppColors.danger,
             onTap: () => _showDeleteConfirmation(context),
           ),
+        ],
+      ),
         ],
       ),
     );

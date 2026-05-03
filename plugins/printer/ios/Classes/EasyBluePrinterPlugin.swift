@@ -1,0 +1,135 @@
+import Flutter
+import UIKit
+
+public class EasyBluePrinterPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
+    private var eventSink: FlutterEventSink?
+    private let printQueue = DispatchQueue(label: "com.maktubcompany.easy_blue_printer.print")
+
+    public static func register(with registrar: FlutterPluginRegistrar) {
+        let channel = FlutterMethodChannel(name: "easy_blue_printer", binaryMessenger: registrar.messenger())
+        let eventChannel = FlutterEventChannel(name: "easy_blue_printer_status", binaryMessenger: registrar.messenger())
+        let instance = EasyBluePrinterPlugin()
+        registrar.addMethodCallDelegate(instance, channel: channel)
+        eventChannel.setStreamHandler(instance)
+        
+        // Connect status callback from data source to event channel
+        AppModule.bluetoothDataSource.statusCallback = { status in
+            DispatchQueue.main.async {
+                instance.eventSink?(status)
+            }
+        }
+    }
+
+    public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
+        self.eventSink = events
+        // Send initial state
+        let status = AppModule.bluetoothDataSource.isConnected() ? "connected" : "disconnected"
+        events(status)
+        return nil
+    }
+
+    public func onCancel(withArguments arguments: Any?) -> FlutterError? {
+        self.eventSink = nil
+        return nil
+    }
+
+    public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        switch call.method {
+        case "getPairedDevices":
+            AppModule.scanDevicesUseCase.execute { devices in
+                DispatchQueue.main.async {
+                    let deviceList = devices.map { "\($0.name) (\($0.address))" }
+                    result(deviceList)
+                }
+            }
+
+        case "connectToDevice":
+            if let address = call.arguments as? [String: Any], let deviceAddress = address["address"] as? String {
+                DispatchQueue.global().async {
+                    let success = AppModule.connectDeviceUseCase.execute(address: deviceAddress)
+                    DispatchQueue.main.async {
+                        result(success)
+                    }
+                }
+            } else {
+                result(FlutterError(code: "400", message: "Invalid arguments", details: nil))
+            }
+
+        case "printData":
+            if let args = call.arguments as? [String: Any],
+               let data = args["data"] as? String,
+               let fontSize = args["fontSize"] as? Int,
+               let textAlign = args["textAlign"] as? Int,
+               let bold = args["bold"] as? Bool {
+                printQueue.async {
+                    let success = AppModule.printUseCase.execute(data: data, size: fontSize, align: textAlign, bold: bold)
+                    DispatchQueue.main.async {
+                        result(success)
+                    }
+                }
+            } else {
+                result(FlutterError(code: "400", message: "Invalid arguments", details: nil))
+            }
+
+        case "printEmptyLine":
+            if let args = call.arguments as? [String: Any], let callTimes = args["callTimes"] as? Int {
+                printQueue.async {
+                    let success = AppModule.feedLineUseCase.execute(callTimes: callTimes)
+                    DispatchQueue.main.async {
+                        result(success)
+                    }
+                }
+            } else {
+                result(FlutterError(code: "400", message: "Invalid arguments", details: nil))
+            }
+
+        case "disconnectFromDevice":
+            DispatchQueue.global().async {
+                let success = AppModule.disconnectDeviceUseCase.execute()
+                DispatchQueue.main.async {
+                    result(success)
+                }
+            }
+
+        case "isConnected":
+            let connected = AppModule.isConnectedUseCase.execute()
+            result(connected)
+
+        case "printImage":
+            if let args = call.arguments as? [String: Any],
+               let data = args["data"] as? FlutterStandardTypedData,
+               let textAlign = args["textAlign"] as? Int {
+                printQueue.async {
+                    let success = AppModule.printImageUseCase.execute(data: data.data, align: textAlign)
+                    DispatchQueue.main.async {
+                        result(success)
+                    }
+                }
+            } else {
+                result(FlutterError(code: "400", message: "Invalid arguments", details: nil))
+            }
+
+        case "configurePrinter":
+            if let args = call.arguments as? [String: Any], let paperWidth = args["paperWidth"] as? Int {
+                AppModule.configurePrinterUseCase.execute(paperWidth: paperWidth)
+                result(nil)
+            } else {
+                result(FlutterError(code: "400", message: "paperWidth is required", details: nil))
+            }
+
+        case "commitPrint":
+            printQueue.async {
+                let success = AppModule.commitPrintUseCase.execute()
+                DispatchQueue.main.async {
+                    result(success)
+                }
+            }
+
+        case "requestBluetoothPermissions":
+            result("Permissions are handled via Info.plist on iOS")
+
+        default:
+            result(FlutterMethodNotImplemented)
+        }
+    }
+}

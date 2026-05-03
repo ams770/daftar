@@ -80,5 +80,13 @@
 	<true/>
 	<key>UISupportsDocumentBrowser</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs access to location for bluetooth printer discovery.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app needs access to location for bluetooth printer discovery.</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>This app needs bluetooth access to connect and print to thermal printers.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>This app needs bluetooth access to connect and print to thermal printers.</string>
 </dict>
 </plist>
