@@ -55,5 +55,25 @@ class MoneyCollection extends Equatable {
     );
   }
 
+  MoneyCollection copyWith({
+    int? id,
+    int? invoiceId,
+    double? amount,
+    double? remainingBefore,
+    double? remainingAfter,
+    DateTime? createdAt,
+    String? clientName,
+  }) {
+    return MoneyCollection(
+      id: id ?? this.id,
+      invoiceId: invoiceId ?? this.invoiceId,
+      amount: amount ?? this.amount,
+      remainingBefore: remainingBefore ?? this.remainingBefore,
+      remainingAfter: remainingAfter ?? this.remainingAfter,
+      createdAt: createdAt ?? this.createdAt,
+      clientName: clientName ?? this.clientName,
+    );
+  }
+
   String get formattedDate => DateFormat('MMM dd, yyyy • HH:mm').format(createdAt);
 }

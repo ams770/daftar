@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:gap/gap.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -38,7 +40,10 @@ class _BrandEditModalState extends State<BrandEditModal> {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      setState(() => _logoPath = image.path);
+      final appDir = await getApplicationDocumentsDirectory();
+      final fileName = 'brand_logo${p.extension(image.path)}';
+      final savedImage = await File(image.path).copy('${appDir.path}/$fileName');
+      setState(() => _logoPath = savedImage.path);
     }
   }
 

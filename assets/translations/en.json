@@ -111,6 +111,7 @@
   "money_collected_success": "Money collected successfully!",
   "printing_language": "Printing Language",
   "printer_settings": "Printer Settings",
+  "printer_setup": "Printer Setup",
   "bluetooth_disabled": "Bluetooth is disabled",
   "status_connected": "Connected",
   "status_connecting": "Connecting",
@@ -129,5 +130,6 @@
   "printing": "Printing...",
   "print_success": "Print job sent!",
   "generating": "Generating...",
-  "connecting": "Connecting..."
+  "connecting": "Connecting...",
+  "print_all": "Print All"
 }

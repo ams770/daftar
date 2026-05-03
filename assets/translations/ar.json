@@ -111,6 +111,7 @@
   "money_collected_success": "تم تحصيل المبلغ بنجاح!",
   "printing_language": "لغة الطباعة",
   "printer_settings": "إعدادات الطابعة",
+  "printer_setup": "إعداد الطابعة",
   "bluetooth_disabled": "البلوتوث متوقف",
   "status_connected": "متصل",
   "status_connecting": "جاري الاتصال",
@@ -129,5 +130,6 @@
   "printing": "جاري الطباعة...",
   "print_success": "تم إرسال أمر الطباعة!",
   "generating": "جاري التجهيز...",
-  "connecting": "جاري الاتصال..."
+  "connecting": "جاري الاتصال...",
+  "print_all": "طباعة الكل"
 }

@@ -152,11 +152,12 @@ class MoneyCollectionCubit extends Cubit<MoneyCollectionState> {
     await loadCollections(refresh: true);
   }
 
-  Future<void> addCollection(MoneyCollection collection) async {
+  Future<int?> addCollection(MoneyCollection collection) async {
     try {
-      await repository.saveMoneyCollection(collection);
+      final id = await repository.saveMoneyCollection(collection);
       // Reload collections to show the new one
       await loadCollections(refresh: true);
+      return id;
     } catch (e) {
       emit(MoneyCollectionError(
         message: e.toString(),
@@ -166,6 +167,7 @@ class MoneyCollectionCubit extends Cubit<MoneyCollectionState> {
         startDate: state.startDate,
         endDate: state.endDate,
       ));
+      return null;
     }
   }
 

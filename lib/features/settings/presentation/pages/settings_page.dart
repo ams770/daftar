@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -15,11 +16,13 @@ import '../widgets/settings_modals.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppStrings.settings),
+        elevation: 0,
       ),
       body: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, state) {
@@ -31,7 +34,7 @@ class SettingsPage extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (state is SettingsLoaded) {
-            return _SettingsContent(settings: state.settings);
+            return _SettingsBody(settings: state.settings);
           }
           if (state is SettingsError) {
             return Center(
@@ -48,139 +51,125 @@ class SettingsPage extends StatelessWidget {
   }
 }
 
-class _SettingsContent extends StatelessWidget {
+class _SettingsBody extends StatelessWidget {
   final AppSettings settings;
-  const _SettingsContent({required this.settings});
+  const _SettingsBody({required this.settings});
 
   @override
   Widget build(BuildContext context) {
+    final isArabic = context.locale.languageCode == 'ar';
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: AppSpacing.xl,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SettingsSection(
-            title: AppStrings.brandDetails,
-            onTap: () => _showBrandEditModal(context),
-            child: Row(
-              children: [
-                LogoPreview(path: settings.logoPath),
-                const Gap(AppSpacing.lg),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(settings.brandName, style: AppTypography.h2),
-                      if (settings.phone.isNotEmpty) ...[
-                        const Gap(AppSpacing.xs),
-                        Text(
-                          settings.phone,
-                          style: AppTypography.bodySm.copyWith(
-                            color: AppColors.grey,
-                          ),
-                        ),
-                      ],
-                      if (settings.address.isNotEmpty) ...[
-                        const Gap(AppSpacing.xs),
-                        Text(
-                          settings.address,
-                          style: AppTypography.bodySm.copyWith(
-                            color: AppColors.grey,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ],
-                  ),
+          _BrandProfileCard(settings: settings),
+          const Gap(AppSpacing.xl),
+
+          _SectionLabel(AppStrings.language.toUpperCase()),
+          _SettingsCard(
+            children: [
+              _Tile(
+                icon: LucideIcons.languages,
+                label: AppStrings.language,
+                trailing: _LanguageToggle(
+                  isArabic: isArabic,
+                  onToggle: (ar) {
+                    context.setLocale(Locale(ar ? 'ar' : 'en'));
+                    final newSettings = settings.copyWith(language: ar ? 'AR' : 'EN');
+                    context.read<SettingsCubit>().saveSettings(newSettings);
+                  },
                 ),
-                const Icon(
-                  LucideIcons.chevronRight,
-                  color: AppColors.grey,
-                  size: 20,
+              ),
+              const _Divider(),
+              _Tile(
+                icon: LucideIcons.printer,
+                label: AppStrings.printingLanguage,
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      settings.printingLanguage == 'AR'
+                          ? AppStrings.arabic
+                          : AppStrings.english,
+                      style: AppTypography.bodySm.copyWith(color: AppColors.secondary),
+                    ),
+                    const Gap(AppSpacing.xs),
+                    const Icon(LucideIcons.chevronRight, size: 16, color: AppColors.grey),
+                  ],
                 ),
-              ],
-            ),
+                onTap: () => _showPrintingLanguageModal(context),
+              ),
+            ],
           ),
           const Gap(AppSpacing.xl),
-          SettingsSection(
-            title: AppStrings.taxation,
-            onTap: () => _showValueEditModal(
-              context,
-              title: AppStrings.editVat,
-              label: AppStrings.vatPercentage,
-              initialValue: settings.vatPercent.toString(),
-              icon: LucideIcons.percent,
-              keyboardType: TextInputType.number,
-              onSave: (val) {
-                final newSettings = settings.copyWith(
-                  vatPercent: int.tryParse(val) ?? 15,
-                );
-                context.read<SettingsCubit>().saveSettings(newSettings);
-              },
-            ),
-            child: SettingRow(
-              icon: LucideIcons.percent,
-              label: AppStrings.vatRate,
-              value: '${settings.vatPercent}%',
-            ),
+
+          _SectionLabel(AppStrings.taxation.toUpperCase()),
+          _SettingsCard(
+            children: [
+              _Tile(
+                icon: LucideIcons.percent,
+                label: AppStrings.vatRate,
+                trailing: Text(
+                  '${settings.vatPercent}%',
+                  style: AppTypography.h3.copyWith(color: AppColors.secondary),
+                ),
+                onTap: () => _showValueEditModal(
+                  context,
+                  title: AppStrings.editVat,
+                  label: AppStrings.vatPercentage,
+                  initialValue: settings.vatPercent.toString(),
+                  icon: LucideIcons.percent,
+                  keyboardType: TextInputType.number,
+                  onSave: (val) {
+                    final newSettings = settings.copyWith(
+                      vatPercent: int.tryParse(val) ?? 15,
+                    );
+                    context.read<SettingsCubit>().saveSettings(newSettings);
+                  },
+                ),
+              ),
+              const _Divider(),
+              _Tile(
+                icon: LucideIcons.banknote,
+                label: AppStrings.currency,
+                trailing: Text(
+                  settings.currency,
+                  style: AppTypography.h3.copyWith(color: AppColors.secondary),
+                ),
+                onTap: () => _showValueEditModal(
+                  context,
+                  title: AppStrings.editCurrency,
+                  label: AppStrings.currencyCode,
+                  initialValue: settings.currency,
+                  icon: LucideIcons.banknote,
+                  onSave: (val) {
+                    final newSettings = settings.copyWith(currency: val);
+                    context.read<SettingsCubit>().saveSettings(newSettings);
+                  },
+                ),
+              ),
+            ],
           ),
           const Gap(AppSpacing.xl),
-          SettingsSection(
-            title: AppStrings.currency,
-            onTap: () => _showValueEditModal(
-              context,
-              title: AppStrings.editCurrency,
-              label: AppStrings.currencyCode,
-              initialValue: settings.currency,
-              icon: LucideIcons.banknote,
-              onSave: (val) {
-                final newSettings = settings.copyWith(currency: val);
-                context.read<SettingsCubit>().saveSettings(newSettings);
-              },
-            ),
-            child: SettingRow(
-              icon: LucideIcons.banknote,
-              label: AppStrings.defaultCurrency,
-              value: settings.currency,
-            ),
-          ),
-          const Gap(AppSpacing.xl),
-          SettingsSection(
-            title: AppStrings.language,
-            onTap: () => _showLanguageModal(context),
-            child: SettingRow(
-              icon: LucideIcons.languages,
-              label: AppStrings.selectLanguage,
-              value: context.locale.languageCode == 'ar'
-                  ? AppStrings.arabic
-                  : AppStrings.english,
-            ),
-          ),
-          const Gap(AppSpacing.xl),
-          SettingsSection(
-            title: AppStrings.printingLanguage,
-            onTap: () => _showPrintingLanguageModal(context),
-            child: SettingRow(
-              icon: LucideIcons.printer,
-              label: AppStrings.selectLanguage,
-              value: settings.printingLanguage == 'AR'
-                  ? AppStrings.arabic
-                  : AppStrings.english,
-            ),
-          ),
-          const Gap(AppSpacing.xl),
-          SettingsSection(
-            title: "printer_settings".tr(),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const PrinterSettingsPage()),
-            ),
-            child: SettingRow(
-              icon: LucideIcons.bluetooth,
-              label: "printer_settings".tr(),
-              value: "",
-            ),
+
+          _SectionLabel("printer_setup".tr().toUpperCase()),
+          _SettingsCard(
+            children: [
+              _Tile(
+                icon: LucideIcons.bluetooth,
+                label: "printer_settings".tr(),
+                trailing: const Icon(LucideIcons.chevronRight, size: 20, color: AppColors.grey),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PrinterSettingsPage()),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -229,18 +218,6 @@ class _SettingsContent extends StatelessWidget {
     );
   }
 
-  void _showBrandEditModal(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => BlocProvider.value(
-        value: context.read<SettingsCubit>(),
-        child: BrandEditModal(settings: settings),
-      ),
-    );
-  }
-
   void _showValueEditModal(
     BuildContext context, {
     required String title,
@@ -264,48 +241,257 @@ class _SettingsContent extends StatelessWidget {
       ),
     );
   }
+}
 
-  void _showLanguageModal(BuildContext context) {
+class _BrandProfileCard extends StatelessWidget {
+  final AppSettings settings;
+  const _BrandProfileCard({required this.settings});
+
+  @override
+  Widget build(BuildContext context) {
+    final isArabic = context.locale.languageCode == 'ar';
+
+    return GestureDetector(
+      onTap: () => _showBrandEditModal(context),
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: AppColors.secondaryGradient,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.secondary.withValues(alpha: 0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: AppColors.white.withValues(alpha: 0.2),
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.white.withValues(alpha: 0.4), width: 2),
+                image: settings.logoPath != null
+                    ? DecorationImage(
+                        image: FileImage(File(settings.logoPath!)),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
+              ),
+              child: settings.logoPath == null
+                  ? const Icon(LucideIcons.store, color: AppColors.white, size: 30)
+                  : null,
+            ),
+            const Gap(AppSpacing.lg),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    AppStrings.brandDetails,
+                    style: AppTypography.label.copyWith(
+                      color: AppColors.white.withValues(alpha: 0.7),
+                      fontSize: 10,
+                    ),
+                  ),
+                  Text(
+                    settings.brandName,
+                    style: AppTypography.h1.copyWith(color: AppColors.white, fontSize: 20),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (settings.phone.isNotEmpty)
+                    Text(
+                      settings.phone,
+                      style: AppTypography.bodySm.copyWith(
+                        color: AppColors.white.withValues(alpha: 0.9),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const Icon(LucideIcons.pen, color: AppColors.white, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showBrandEditModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => Container(
-        padding: const EdgeInsets.all(AppSpacing.xl),
-        decoration: const BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(AppSpacing.radiusXl),
-          ),
+      builder: (_) => BlocProvider.value(
+        value: context.read<SettingsCubit>(),
+        child: BrandEditModal(settings: settings),
+      ),
+    );
+  }
+}
+
+class _SectionLabel extends StatelessWidget {
+  final String text;
+  const _SectionLabel(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: AppSpacing.sm, bottom: AppSpacing.sm),
+      child: Text(
+        text,
+        style: AppTypography.label.copyWith(
+          color: AppColors.greyDark,
+          fontSize: 11,
+          letterSpacing: 1.1,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+      ),
+    );
+  }
+}
+
+class _SettingsCard extends StatelessWidget {
+  final List<Widget> children;
+  const _SettingsCard({required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(color: AppColors.greyLight),
+      ),
+      clipBehavior: Clip.hardEdge,
+      child: Column(children: children),
+    );
+  }
+}
+
+class _Tile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Widget trailing;
+  final VoidCallback? onTap;
+
+  const _Tile({
+    required this.icon,
+    required this.label,
+    required this.trailing,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.lg,
+        ),
+        child: Row(
           children: [
-            Text(AppStrings.selectLanguage, style: AppTypography.h2),
-            const Gap(AppSpacing.lg),
-            LanguageOption(
-              label: AppStrings.english,
-              isSelected: context.locale.languageCode == 'en',
-              onTap: () {
-                context.setLocale(const Locale('en'));
-                final newSettings = settings.copyWith(language: 'EN');
-                context.read<SettingsCubit>().saveSettings(newSettings);
-                Navigator.pop(context);
-              },
-            ),
+            Icon(icon, size: 20, color: AppColors.greyDark),
             const Gap(AppSpacing.md),
-            LanguageOption(
-              label: AppStrings.arabic,
-              isSelected: context.locale.languageCode == 'ar',
-              onTap: () {
-                context.setLocale(const Locale('ar'));
-                final newSettings = settings.copyWith(language: 'AR');
-                context.read<SettingsCubit>().saveSettings(newSettings);
-                Navigator.pop(context);
-              },
+            Expanded(
+              child: Text(
+                label,
+                style: AppTypography.bodyMd.copyWith(
+                  color: AppColors.text,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ),
-            const Gap(AppSpacing.xl),
+            trailing,
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Divider extends StatelessWidget {
+  const _Divider();
+  @override
+  Widget build(BuildContext context) {
+    return Divider(
+      height: 1,
+      thickness: 1,
+      indent: 50,
+      color: AppColors.greyLight.withValues(alpha: 0.5),
+    );
+  }
+}
+
+class _LanguageToggle extends StatelessWidget {
+  final bool isArabic;
+  final Function(bool) onToggle;
+  const _LanguageToggle({required this.isArabic, required this.onToggle});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.greyLight.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      padding: const EdgeInsets.all(2),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _LangChip(
+            label: "EN",
+            isSelected: !isArabic,
+            onTap: () => onToggle(false),
+          ),
+          _LangChip(
+            label: "AR",
+            isSelected: isArabic,
+            onTap: () => onToggle(true),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LangChip extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+  const _LangChip({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.secondary : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? AppColors.white : AppColors.greyDark,
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );

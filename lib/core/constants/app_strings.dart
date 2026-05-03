@@ -114,4 +114,5 @@ class AppStrings {
   static String get extractingData => 'extracting_data'.tr();
   static String get generating => 'generating'.tr();
   static String get connecting => 'connecting'.tr();
+  static String get printAll => 'print_all'.tr();
 }

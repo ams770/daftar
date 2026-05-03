@@ -10,6 +10,7 @@ import '../../domain/entities/invoice.dart';
 import '../../domain/entities/money_collection.dart';
 import '../cubits/money_collection_cubit.dart';
 import '../cubits/invoice_cubit.dart';
+import '../pages/money_collection_details_page.dart';
 
 class CollectMoneyBottomSheet extends StatefulWidget {
   final Invoice invoice;
@@ -149,11 +150,23 @@ class _CollectMoneyBottomSheetState extends State<CollectMoneyBottomSheet> {
       clientName: widget.invoice.clientName,
     );
 
-    context.read<MoneyCollectionCubit>().addCollection(collection).then((_) {
+    context.read<MoneyCollectionCubit>().addCollection(collection).then((id) {
       if (mounted) {
         // Refresh invoices in the main list
         context.read<InvoiceCubit>().loadInvoices(refresh: true);
-        Navigator.pop(context, true);
+        
+        if (id != null) {
+          final savedCollection = collection.copyWith(id: id);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MoneyCollectionDetailsPage(collection: savedCollection),
+            ),
+          );
+        } else {
+          Navigator.pop(context, true);
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(AppStrings.moneyCollectedSuccess),
