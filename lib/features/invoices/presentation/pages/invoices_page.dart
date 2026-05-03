@@ -138,15 +138,22 @@ class _InvoicesPageState extends State<InvoicesPage> {
           ),
           BlocBuilder<InvoiceCubit, InvoiceState>(
             builder: (context, state) {
-              if (state is InvoiceInitial) {
-                context.read<InvoiceCubit>().loadInvoices();
-                return const SliverToBoxAdapter(child: InvoiceListShimmer());
+              if (state is InvoiceInitial || state is InvoiceLoading) {
+                // If it's the initial state, ensure we've triggered the load
+                if (state is InvoiceInitial) {
+                  context.read<InvoiceCubit>().loadInvoices();
+                }
+                return const SliverToBoxAdapter(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: AppSpacing.md),
+                    child: InvoiceListShimmer(),
+                  ),
+                );
               }
-              if (state is InvoiceLoading) {
-                return const SliverToBoxAdapter(child: InvoiceListShimmer());
-              }
+              
               if (state is InvoiceError) {
                 return SliverFillRemaining(
+                  hasScrollBody: false,
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -178,6 +185,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
               if (state is InvoiceLoaded) {
                 if (state.invoices.isEmpty) {
                   return const SliverFillRemaining(
+                    hasScrollBody: false,
                     child: InvoiceEmptyState(),
                   );
                 }
