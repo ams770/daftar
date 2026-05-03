@@ -121,7 +121,7 @@ class _ProductsViewContentState extends State<_ProductsViewContent> {
                         child: _ActionButton(
                           onPressed: () => _showImportInstructions(context),
                           icon: LucideIcons.fileSpreadsheet,
-                          label: AppStrings.import,
+                          label: 'Import Excel',
                           color: AppColors.white,
                         ),
                       ),
@@ -131,7 +131,7 @@ class _ProductsViewContentState extends State<_ProductsViewContent> {
                           onPressed: () =>
                               context.read<ProductsCubit>().exportToExcel(),
                           icon: LucideIcons.fileDown,
-                          label: AppStrings.export,
+                          label: 'Export Excel',
                           color: AppColors.white,
                         ),
                       ),
@@ -182,7 +182,7 @@ class _ProductsViewContentState extends State<_ProductsViewContent> {
                 current is ProductsLoaded ||
                 current is ProductsError,
             builder: (context, state) {
-              if (state is ProductsLoading) {
+              if (state is ProductsInitial || state is ProductsLoading) {
                 return const SliverProductListShimmer();
               }
 
@@ -344,19 +344,13 @@ class _ActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onPressed,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+        padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          // color: AppColors.white,
+          color: AppColors.white.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-          border: Border.all(color: AppColors.greyLight.withValues(alpha: 0.5)),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.black.withValues(alpha: 0.05),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          border: Border.all(color: AppColors.white.withValues(alpha: 0.2)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -365,9 +359,10 @@ class _ActionButton extends StatelessWidget {
             const Gap(AppSpacing.sm),
             Text(
               label,
-              style: AppTypography.bodyMd.copyWith(
+              style: AppTypography.bodySm.copyWith(
                 color: color,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
               ),
             ),
           ],

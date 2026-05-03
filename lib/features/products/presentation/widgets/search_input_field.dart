@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:gap/gap.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -42,41 +41,35 @@ class _SearchInputFieldState extends State<SearchInputField> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-      child: TextField(
-        controller: _controller,
-        onChanged: _onChanged,
-        style: AppTypography.bodyMd,
-        decoration: InputDecoration(
-          hintText: widget.hintText,
-          hintStyle: AppTypography.bodyMd.copyWith(color: AppColors.grey),
-          prefixIcon: const Icon(
-            LucideIcons.search,
-            color: AppColors.grey,
-            size: 20,
-          ),
-          suffixIcon: IconButton(
-            icon: const Icon(LucideIcons.scanLine),
-            onPressed: widget.onScannerTap,
-            color: AppColors.secondary,
-          ),
-          filled: true,
-          fillColor: AppColors.white,
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
-            borderSide: BorderSide(
-              color: AppColors.greyLight.withValues(alpha: 0.5),
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
-            borderSide: const BorderSide(color: AppColors.secondary, width: 2),
-          ),
-          contentPadding: const EdgeInsets.symmetric(
-            vertical: 0,
-            horizontal: AppSpacing.xl,
-          ),
+    return TextField(
+      controller: _controller,
+      onChanged: _onChanged,
+      style: const TextStyle(
+        color: AppColors.text,
+        fontSize: 14,
+      ),
+      decoration: InputDecoration(
+        hintText: widget.hintText,
+        hintStyle: AppTypography.bodyMd.copyWith(color: AppColors.grey),
+        prefixIcon: const Icon(
+          LucideIcons.search,
+          color: AppColors.grey,
+          size: 18,
+        ),
+        suffixIcon: IconButton(
+          icon: const Icon(LucideIcons.scanLine, size: 18),
+          onPressed: widget.onScannerTap,
+          color: AppColors.secondary,
+        ),
+        filled: true,
+        fillColor: AppColors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 12,
+          horizontal: AppSpacing.md,
         ),
       ),
     );

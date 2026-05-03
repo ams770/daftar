@@ -4,6 +4,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'core/constants/app_strings.dart';
 import 'features/products/presentation/pages/products_page.dart';
 import 'features/invoices/presentation/pages/invoices_page.dart';
+import 'features/invoices/presentation/pages/collections_page.dart';
 import 'features/settings/presentation/pages/settings_page.dart';
 import 'features/onboarding/presentation/pages/onboarding_page.dart';
 import 'features/settings/presentation/cubits/settings_cubit.dart';
@@ -22,6 +23,7 @@ class _AppShellState extends State<AppShell> {
   final List<Widget> _pages = [
     const ProductsPage(),
     const InvoicesPage(),
+    const CollectionsPage(),
     const SettingsPage(),
   ];
 
@@ -64,6 +66,11 @@ class _AppShellState extends State<AppShell> {
                         label: AppStrings.invoices,
                       ),
                       BottomNavigationBarItem(
+                        icon: const Icon(LucideIcons.wallet),
+                        activeIcon: const Icon(Icons.account_balance_wallet),
+                        label: AppStrings.collections,
+                      ),
+                      BottomNavigationBarItem(
                         icon: const Icon(LucideIcons.settings),
                         activeIcon: const Icon(LucideIcons.settings2),
                         label: AppStrings.settings,
@@ -79,9 +86,7 @@ class _AppShellState extends State<AppShell> {
 
   Widget _buildBody(SettingsState state) {
     if (state is! SettingsLoaded) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const ProductsPage();
     }
 
     final settings = state.settings;

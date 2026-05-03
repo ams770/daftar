@@ -2,6 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:products_printer/features/invoices/domain/repositories/invoice_repository.dart';
 import 'package:products_printer/features/invoices/presentation/cubits/invoice_state.dart';
 
+import '../../domain/entities/invoice.dart';
+
 export 'package:products_printer/features/invoices/presentation/cubits/invoice_state.dart';
 
 class InvoiceCubit extends Cubit<InvoiceState> {
@@ -105,6 +107,10 @@ class InvoiceCubit extends Cubit<InvoiceState> {
         endDate: end,
       );
     }
+  }
+
+  Future<Invoice?> getInvoiceById(int id) async {
+    return await _repository.getInvoiceById(id);
   }
 
   Future<void> deleteInvoice(int id) async {

@@ -102,5 +102,12 @@ class AppStrings {
   static String get clientDetails => 'client_details'.tr();
   static String get enterClientName => 'enter_client_name'.tr();
   static String get searchByClient => 'search_by_client'.tr();
+  static String get collections => 'collections'.tr();
+  static String get collectMoney => 'collect_money'.tr();
+  static String get collected => 'collected'.tr();
+  static String get remainingBefore => 'remaining_before'.tr();
+  static String get remainingAfter => 'remaining_after'.tr();
+  static String get amountToCollect => 'amount_to_collect'.tr();
+  static String get moneyCollectedSuccess => 'money_collected_success'.tr();
   static String get extractingData => 'extracting_data'.tr();
 }

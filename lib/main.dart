@@ -8,6 +8,7 @@ import 'features/products/presentation/cubits/products_cubit.dart';
 import 'features/settings/presentation/cubits/settings_cubit.dart';
 import 'features/invoices/presentation/cubits/invoice_cubit.dart';
 import 'features/invoices/presentation/cubits/add_invoice_cubit.dart';
+import 'features/invoices/presentation/cubits/money_collection_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => di.sl<SettingsCubit>()..loadSettings()),
         BlocProvider(create: (_) => di.sl<InvoiceCubit>()..loadInvoices()),
         BlocProvider(create: (_) => di.sl<AddInvoiceCubit>()),
+        BlocProvider(create: (_) => di.sl<MoneyCollectionCubit>()),
       ],
       child: MaterialApp(
         title: 'Products Printer',

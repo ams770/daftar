@@ -19,7 +19,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 5,
+      version: 6,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -42,6 +42,9 @@ class DatabaseHelper {
     if (oldVersion < 5) {
       await db.execute('ALTER TABLE invoices ADD COLUMN clientName TEXT');
     }
+    if (oldVersion < 6) {
+      await _createMoneyCollectionsTable(db);
+    }
   }
 
   Future _createDB(Database db, int version) async {
@@ -60,6 +63,22 @@ CREATE TABLE products (
 
     await _createSettingsTable(db);
     await _createInvoiceTables(db);
+    await _createMoneyCollectionsTable(db);
+  }
+
+  Future _createMoneyCollectionsTable(Database db) async {
+    await db.execute('''
+CREATE TABLE money_collections (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  invoiceId INTEGER NOT NULL,
+  amount REAL NOT NULL,
+  remainingBefore REAL NOT NULL,
+  remainingAfter REAL NOT NULL,
+  createdAt TEXT NOT NULL,
+  clientName TEXT,
+  FOREIGN KEY (invoiceId) REFERENCES invoices (id) ON DELETE CASCADE
+)
+''');
   }
 
   Future _createSettingsTable(Database db) async {

@@ -100,5 +100,12 @@
   "onboarding_finish": "إنهاء الإعداد",
   "client_details": "تفاصيل العميل",
   "enter_client_name": "أدخل اسم العميل",
-  "search_by_client": "بحث باسم العميل..."
+  "search_by_client": "بحث باسم العميل...",
+  "collections": "التحصيلات",
+  "collect_money": "تحصيل مبلغ",
+  "collected": "تم تحصيله",
+  "remaining_before": "المتبقي قبل",
+  "remaining_after": "المتبقي بعد",
+  "amount_to_collect": "المبلغ المراد تحصيله",
+  "money_collected_success": "تم تحصيل المبلغ بنجاح!"
 }
