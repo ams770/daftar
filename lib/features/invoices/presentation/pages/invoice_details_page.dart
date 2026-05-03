@@ -46,7 +46,9 @@ class _InvoiceDetailsPageState extends State<InvoiceDetailsPage> {
 
   Future<void> _loadCollections() async {
     // Reload invoice to get updated paid/remaining amounts
-    final updatedInvoice = await context.read<InvoiceCubit>().getInvoiceById(_invoice.id!);
+    final updatedInvoice = await context.read<InvoiceCubit>().getInvoiceById(
+      _invoice.id!,
+    );
     final collections = await context
         .read<MoneyCollectionCubit>()
         .getCollectionsByInvoice(_invoice.id!);
@@ -123,6 +125,8 @@ class _InvoiceDetailsPageState extends State<InvoiceDetailsPage> {
                     const Gap(AppSpacing.sm),
                     _buildCollectionsList(settings.currency),
                   ],
+
+                  SafeArea(child: const Gap(AppSpacing.tripleXl)),
                 ],
               ),
             ),
@@ -144,12 +148,11 @@ class _InvoiceDetailsPageState extends State<InvoiceDetailsPage> {
         itemBuilder: (context, index) {
           final collection = _collections[index];
           return ListTile(
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.lg,
-              vertical: AppSpacing.sm,
-            ),
+            titleAlignment: .center,
+
             title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: .spaceBetween,
+
               children: [
                 Text(
                   collection.formattedDate,
@@ -161,24 +164,21 @@ class _InvoiceDetailsPageState extends State<InvoiceDetailsPage> {
                 ),
               ],
             ),
-            subtitle: Padding(
-              padding: const EdgeInsets.only(top: 4.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '${AppStrings.remainingBefore}: ${collection.remainingBefore.toStringAsFixed(2)}',
-                    style: AppTypography.label.copyWith(fontSize: 10),
+            subtitle: Row(
+              mainAxisAlignment: .spaceBetween,
+              children: [
+                Text(
+                  '${AppStrings.remainingBefore}: ${collection.remainingBefore.toStringAsFixed(2)}',
+                  style: AppTypography.label.copyWith(fontSize: 10),
+                ),
+                Text(
+                  '${AppStrings.remainingAfter}: ${collection.remainingAfter.toStringAsFixed(2)}',
+                  style: AppTypography.label.copyWith(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
                   ),
-                  Text(
-                    '${AppStrings.remainingAfter}: ${collection.remainingAfter.toStringAsFixed(2)}',
-                    style: AppTypography.label.copyWith(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           );
         },
