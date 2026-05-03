@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:intl/intl.dart';
 import 'package:gap/gap.dart';
+import 'package:intl/intl.dart';
 import 'package:products_printer/core/constants/app_strings.dart';
 import 'package:products_printer/core/theme/app_colors.dart';
 import 'package:products_printer/core/theme/app_spacing.dart';
@@ -21,20 +21,13 @@ class InvoicesPage extends StatefulWidget {
 }
 
 class _InvoicesPageState extends State<InvoicesPage> {
-  final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    _searchController.dispose();
-    super.dispose();
   }
 
   void _onScroll() {
@@ -44,15 +37,18 @@ class _InvoicesPageState extends State<InvoicesPage> {
     }
   }
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   void _navigateToNewInvoice(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const NewInvoicePage()),
-    ).then((_) {
-      if (context.mounted) {
-        context.read<InvoiceCubit>().loadInvoices(refresh: true);
-      }
-    });
+    );
   }
 
   @override
@@ -61,86 +57,84 @@ class _InvoicesPageState extends State<InvoicesPage> {
       body: CustomScrollView(
         controller: _scrollController,
         slivers: [
-          BlocBuilder<InvoiceCubit, InvoiceState>(
-            builder: (context, state) {
-              return SliverAppBar(
-                pinned: true,
-                expandedHeight: 180,
-                backgroundColor: AppColors.secondary,
-                title: Text(AppStrings.invoices),
-                actions: [
-                  IconButton.filled(
-                    style: IconButton.styleFrom(
-                      backgroundColor: AppColors.white,
-                      foregroundColor: AppColors.secondary,
-                    ),
-                    icon: const Icon(LucideIcons.plus),
-                    onPressed: () => _navigateToNewInvoice(context),
-                    tooltip: AppStrings.newInvoice,
-                  ),
-                  const Gap(AppSpacing.md),
-                ],
-
-                bottom: PreferredSize(
-                  preferredSize: const Size.fromHeight(80),
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.lg,
-                      0,
-                      AppSpacing.lg,
-                      AppSpacing.lg,
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        TextField(
-                          controller: _searchController,
-                          style: const TextStyle(
-                            color: AppColors.text,
-                            fontSize: 14,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: AppStrings.searchByClient,
-                            fillColor: AppColors.white,
-                            filled: true,
-                            isDense: true,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.md,
-                              vertical: 8,
-                            ),
-                            prefixIcon: const Icon(
-                              LucideIcons.search,
-                              size: 18,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                AppSpacing.radiusMd,
-                              ),
-                              borderSide: BorderSide.none,
-                            ),
-                            suffixIcon: _searchController.text.isNotEmpty
-                                ? IconButton(
-                                    icon: const Icon(LucideIcons.x, size: 18),
-                                    onPressed: () {
-                                      _searchController.clear();
-                                      context
-                                          .read<InvoiceCubit>()
-                                          .setSearchQuery(null);
-                                    },
-                                  )
-                                : null,
-                          ),
-                          onChanged: (v) =>
-                              context.read<InvoiceCubit>().setSearchQuery(v),
-                        ),
-                        const Gap(AppSpacing.sm),
-                        _buildDateFilter(context, state),
-                      ],
-                    ),
-                  ),
+          SliverAppBar(
+            pinned: true,
+            backgroundColor: AppColors.secondary,
+            title: Text(AppStrings.invoices),
+            actions: [
+              IconButton.filled(
+                style: IconButton.styleFrom(
+                  backgroundColor: AppColors.white,
+                  foregroundColor: AppColors.secondary,
                 ),
-              );
-            },
+                icon: const Icon(LucideIcons.plus),
+                onPressed: () => _navigateToNewInvoice(context),
+                tooltip: AppStrings.newInvoice,
+              ),
+              const Gap(AppSpacing.md),
+            ],
+          ),
+          SliverToBoxAdapter(
+            child: Container(
+              color: AppColors.secondary,
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                0,
+                AppSpacing.lg,
+                AppSpacing.lg,
+              ),
+              child: BlocBuilder<InvoiceCubit, InvoiceState>(
+                builder: (context, state) {
+                  return Column(
+                    children: [
+                      TextField(
+                        controller: _searchController,
+                        style: const TextStyle(
+                          color: AppColors.text,
+                          fontSize: 14,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: AppStrings.searchByClient,
+                          fillColor: AppColors.white,
+                          filled: true,
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.md,
+                            vertical: 12,
+                          ),
+                          prefixIcon: const Icon(
+                            LucideIcons.search,
+                            size: 18,
+                            color: AppColors.grey,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              AppSpacing.radiusMd,
+                            ),
+                            borderSide: BorderSide.none,
+                          ),
+                          suffixIcon: _searchController.text.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(LucideIcons.x, size: 18),
+                                  onPressed: () {
+                                    _searchController.clear();
+                                    context
+                                        .read<InvoiceCubit>()
+                                        .setSearchQuery(null);
+                                  },
+                                )
+                              : null,
+                        ),
+                        onChanged: (v) =>
+                            context.read<InvoiceCubit>().setSearchQuery(v),
+                      ),
+                      const Gap(AppSpacing.md),
+                      _buildDateFilter(context, state),
+                    ],
+                  );
+                },
+              ),
+            ),
           ),
           BlocBuilder<InvoiceCubit, InvoiceState>(
             builder: (context, state) {
@@ -157,9 +151,16 @@ class _InvoicesPageState extends State<InvoicesPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        const Icon(
+                          LucideIcons.circleAlert,
+                          color: AppColors.danger,
+                          size: 48,
+                        ),
+                        const Gap(AppSpacing.md),
                         Text(
                           state.message,
-                          style: const TextStyle(color: AppColors.danger),
+                          textAlign: TextAlign.center,
+                          style: AppTypography.bodyMd,
                         ),
                         const Gap(AppSpacing.md),
                         ElevatedButton(
@@ -173,21 +174,23 @@ class _InvoicesPageState extends State<InvoicesPage> {
                   ),
                 );
               }
+
               if (state is InvoiceLoaded) {
                 if (state.invoices.isEmpty) {
-                  return const SliverToBoxAdapter(child: InvoiceEmptyState());
+                  return const SliverFillRemaining(
+                    child: InvoiceEmptyState(),
+                  );
                 }
+
                 return SliverPadding(
-                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  padding: const EdgeInsets.all(AppSpacing.md),
                   sliver: SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
-                        if (index == state.invoices.length) {
-                          return const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(AppSpacing.md),
-                              child: CircularProgressIndicator(),
-                            ),
+                        if (index >= state.invoices.length) {
+                          return const Padding(
+                            padding: EdgeInsets.all(AppSpacing.md),
+                            child: Center(child: CircularProgressIndicator()),
                           );
                         }
                         return InvoiceCard(invoice: state.invoices[index]);
@@ -198,7 +201,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
                   ),
                 );
               }
-              return const SliverToBoxAdapter(child: InvoiceEmptyState());
+              return const SliverToBoxAdapter(child: SizedBox());
             },
           ),
         ],
@@ -207,48 +210,102 @@ class _InvoicesPageState extends State<InvoicesPage> {
   }
 
   Widget _buildDateFilter(BuildContext context, InvoiceState state) {
+    return Row(
+      children: [
+        Expanded(
+          child: _DateSelector(
+            label: 'From',
+            date: state.startDate,
+            onTap: () async {
+              final date = await showDatePicker(
+                context: context,
+                initialDate: state.startDate,
+                firstDate: DateTime(2020),
+                lastDate: state.endDate,
+              );
+              if (date != null && context.mounted) {
+                context.read<InvoiceCubit>().setDateRange(date, state.endDate);
+              }
+            },
+          ),
+        ),
+        const Gap(AppSpacing.md),
+        Expanded(
+          child: _DateSelector(
+            label: 'To',
+            date: state.endDate,
+            onTap: () async {
+              final date = await showDatePicker(
+                context: context,
+                initialDate: state.endDate,
+                firstDate: state.startDate,
+                lastDate: DateTime.now().add(const Duration(days: 365)),
+              );
+              if (date != null && context.mounted) {
+                context.read<InvoiceCubit>().setDateRange(state.startDate, date);
+              }
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _DateSelector extends StatelessWidget {
+  final String label;
+  final DateTime date;
+  final VoidCallback onTap;
+
+  const _DateSelector({
+    required this.label,
+    required this.date,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final dateFormat = DateFormat('MMM dd, yyyy');
     return InkWell(
-      onTap: () async {
-        final range = await showDateRangePicker(
-          context: context,
-          initialDateRange: DateTimeRange(
-            start: state.startDate,
-            end: state.endDate,
-          ),
-          firstDate: DateTime(2020),
-          lastDate: DateTime.now().add(const Duration(days: 1)),
-        );
-        if (range != null && context.mounted) {
-          context.read<InvoiceCubit>().setDateRange(range.start, range.end);
-        }
-      },
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
       child: Container(
-        width: double.infinity,
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
-          vertical: 6,
+          vertical: 10,
         ),
         decoration: BoxDecoration(
-          color: AppColors.white.withValues(alpha: 0.1),
+          color: AppColors.white.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           border: Border.all(color: AppColors.white.withValues(alpha: 0.2)),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(LucideIcons.calendar, size: 14, color: AppColors.white),
-            const Gap(AppSpacing.sm),
-            Text(
-              '${dateFormat.format(state.startDate)} - ${dateFormat.format(state.endDate)}',
-              style: AppTypography.bodySm.copyWith(
-                color: AppColors.white,
-                fontSize: 12,
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  label,
+                  style: AppTypography.bodySm.copyWith(
+                    color: AppColors.white.withValues(alpha: 0.7),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  dateFormat.format(date),
+                  style: AppTypography.bodySm.copyWith(
+                    color: AppColors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
             ),
-            Spacer(),
+            const Spacer(),
             const Icon(
-              LucideIcons.chevronDown,
+              LucideIcons.calendar,
               size: 14,
               color: AppColors.white,
             ),
