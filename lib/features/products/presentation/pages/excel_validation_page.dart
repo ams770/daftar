@@ -2,89 +2,172 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:gap/gap.dart';
+import 'package:lottie/lottie.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/bento_theme_extension.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../domain/entities/excel_product.dart';
 import '../cubits/products_cubit.dart';
+import '../cubits/products_state.dart';
 
-class ExcelValidationPage extends StatelessWidget {
-  final List<ExcelProduct> products;
+class ExcelValidationPage extends StatefulWidget {
+  final String filePath;
 
-  const ExcelValidationPage({super.key, required this.products});
+  const ExcelValidationPage({super.key, required this.filePath});
+
+  @override
+  State<ExcelValidationPage> createState() => _ExcelValidationPageState();
+}
+
+class _ExcelValidationPageState extends State<ExcelValidationPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Start validation as soon as page is opened
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProductsCubit>().validateExcel(widget.filePath);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Review Import'),
-        actions: [
-          Builder(
-            builder: (context) {
-              final hasDuplicates = products.any((p) => p.status == ExcelProductStatus.duplicate);
-              return TextButton(
-                onPressed: (products.isEmpty || hasDuplicates)
-                    ? null
-                    : () {
-                        context.read<ProductsCubit>().importValidatedProducts();
-                        Navigator.pop(context);
-                      },
-                child: Text(
-                  'IMPORT',
-                  style: AppTypography.label.copyWith(
-                    color: (products.isEmpty || hasDuplicates) ? AppColors.grey : AppColors.secondary,
+    return BlocBuilder<ProductsCubit, ProductsState>(
+      builder: (context, state) {
+        bool isLoading = state is ExcelValidationLoading;
+        List<ExcelProduct> products = [];
+        if (state is ExcelValidationLoaded) {
+          products = state.excelProducts;
+        }
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(AppStrings.importExcel),
+            actions: [
+              if (!isLoading && products.isNotEmpty)
+                Builder(
+                  builder: (context) {
+                    final hasDuplicates = products.any((p) => p.status == ExcelProductStatus.duplicate);
+                    return TextButton(
+                      onPressed: hasDuplicates
+                          ? null
+                          : () {
+                              context.read<ProductsCubit>().importValidatedProducts();
+                              Navigator.pop(context);
+                            },
+                      child: Text(
+                        AppStrings.import.toUpperCase(),
+                        style: AppTypography.label.copyWith(
+                          color: hasDuplicates ? AppColors.grey : AppColors.white,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              const Gap(AppSpacing.sm),
+            ],
+          ),
+          body: _buildBody(context, state, products, isLoading),
+        );
+      },
+    );
+  }
+
+  Widget _buildBody(BuildContext context, ProductsState state, List<ExcelProduct> products, bool isLoading) {
+    if (isLoading) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Lottie.asset(
+              'assets/lottie/loading-data.json',
+              width: 250,
+              height: 250,
+            ),
+            const Gap(AppSpacing.lg),
+            Text(
+              AppStrings.extractingData,
+              style: AppTypography.h3.copyWith(color: AppColors.secondary),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (state is ProductsError) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(LucideIcons.circleAlert, size: 64, color: AppColors.danger),
+              const Gap(AppSpacing.lg),
+              Text(
+                state.message,
+                textAlign: TextAlign.center,
+                style: AppTypography.bodyMd,
+              ),
+              const Gap(AppSpacing.xl),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(AppStrings.confirm),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (products.isEmpty) {
+      return Center(
+        child: Text(AppStrings.noProducts),
+      );
+    }
+
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Container(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            margin: const EdgeInsets.all(AppSpacing.lg),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+              border: Border.all(color: AppColors.secondary.withValues(alpha: 0.3)),
+            ),
+            child: Row(
+              children: [
+                const Icon(LucideIcons.info, color: AppColors.secondary, size: 20),
+                const Gap(AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    '${products.length} products found. Review before importing.',
+                    style: AppTypography.bodySm.copyWith(color: AppColors.text),
                   ),
                 ),
-              );
-            },
-          ),
-          const Gap(AppSpacing.sm),
-        ],
-      ),
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Container(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              margin: const EdgeInsets.all(AppSpacing.lg),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                border: Border.all(color: AppColors.primary.withValues(alpha: 0.5)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(LucideIcons.info, color: AppColors.secondary, size: 20),
-                  const Gap(AppSpacing.sm),
-                  Expanded(
-                    child: Text(
-                      '${products.length} products found. Review before importing.',
-                      style: AppTypography.bodySm.copyWith(color: AppColors.text),
-                    ),
-                  ),
-                ],
-              ),
+              ],
             ),
           ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final product = products[index];
-                  return _ExcelProductCard(
-                    product: product,
-                    onEdit: () => _editProduct(context, index, product),
-                    onRemove: () => context.read<ProductsCubit>().removeExcelProduct(index),
-                  );
-                },
-                childCount: products.length,
-              ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final product = products[index];
+                return _ExcelProductCard(
+                  product: product,
+                  onEdit: () => _editProduct(context, index, product),
+                  onRemove: () => context.read<ProductsCubit>().removeExcelProduct(index),
+                );
+              },
+              childCount: products.length,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -97,25 +180,25 @@ class ExcelValidationPage extends StatelessWidget {
       context: context,
       builder: (diagContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusLg)),
-        title: const Text('Edit Row', style: AppTypography.h2),
+        title: Text(AppStrings.editProduct, style: AppTypography.h2),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: nameController,
-              decoration: const InputDecoration(labelText: 'Name'),
+              decoration: InputDecoration(labelText: AppStrings.productName),
               style: AppTypography.bodyMd,
             ),
             const Gap(AppSpacing.md),
             TextField(
               controller: codeController,
-              decoration: const InputDecoration(labelText: 'Code'),
+              decoration: InputDecoration(labelText: AppStrings.productCode),
               style: AppTypography.bodyMd,
             ),
             const Gap(AppSpacing.md),
             TextField(
               controller: priceController,
-              decoration: const InputDecoration(labelText: 'Price'),
+              decoration: InputDecoration(labelText: AppStrings.price),
               style: AppTypography.bodyMd,
               keyboardType: TextInputType.number,
             ),
@@ -124,7 +207,7 @@ class ExcelValidationPage extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(diagContext),
-            child: Text('Cancel', style: AppTypography.bodyMd.copyWith(color: AppColors.grey)),
+            child: Text(AppStrings.cancel, style: AppTypography.bodyMd.copyWith(color: AppColors.grey)),
           ),
           TextButton(
             onPressed: () {
@@ -136,7 +219,7 @@ class ExcelValidationPage extends StatelessWidget {
               context.read<ProductsCubit>().updateExcelProduct(index, updated);
               Navigator.pop(diagContext);
             },
-            child: Text('Save', style: AppTypography.bodyMd.copyWith(color: AppColors.secondary, fontWeight: FontWeight.bold)),
+            child: Text(AppStrings.save, style: AppTypography.bodyMd.copyWith(color: AppColors.secondary, fontWeight: FontWeight.bold)),
           ),
         ],
       ),

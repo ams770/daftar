@@ -23,6 +23,7 @@ class ScannerInvoicePage extends StatefulWidget {
 }
 
 class _ScannerInvoicePageState extends State<ScannerInvoicePage> {
+  final MobileScannerController _controller = MobileScannerController();
   String? _lastScannedCode;
   Timer? _resetTimer;
   bool _isProcessing = false;
@@ -30,6 +31,7 @@ class _ScannerInvoicePageState extends State<ScannerInvoicePage> {
   @override
   void dispose() {
     _resetTimer?.cancel();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -107,6 +109,7 @@ class _ScannerInvoicePageState extends State<ScannerInvoicePage> {
             child: Stack(
               children: [
                 MobileScanner(
+                  controller: _controller,
                   onDetect: _onDetect,
                 ),
                 // Overlay
@@ -200,10 +203,15 @@ class _ScannerInvoicePageState extends State<ScannerInvoicePage> {
             child: SafeArea(
               child: ElevatedButton(
                 onPressed: hasItems ? () {
+                  _controller.stop();
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const InvoiceSummaryPage()),
-                  );
+                  ).then((_) {
+                    if (mounted) {
+                      _controller.start();
+                    }
+                  });
                 } : null,
                 child: Text(AppStrings.confirm.toUpperCase()),
               ),

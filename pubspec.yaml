@@ -29,6 +29,7 @@ dependencies:
   pdf: ^3.11.3
   printing: ^5.14.0
   easy_localization: ^3.0.8
+  lottie: ^3.3.0
 
 
 dev_dependencies:
@@ -41,6 +42,7 @@ flutter:
 
   assets:
     - assets/translations/
+    - assets/lottie/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

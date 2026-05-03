@@ -24,6 +24,12 @@ class AppTypography {
     fontWeight: FontWeight.w600,
     color: AppColors.text,
   );
+  static const TextStyle h3 = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    color: AppColors.text,
+  );
 
   static const TextStyle bodyLg = TextStyle(
     fontFamily: fontFamily,

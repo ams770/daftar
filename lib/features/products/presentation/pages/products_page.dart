@@ -9,6 +9,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/bento_theme_extension.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/widgets/loading_dialog.dart';
 import '../../../settings/presentation/cubits/settings_cubit.dart';
 import '../../domain/entities/excel_product.dart';
 import '../../domain/entities/product.dart';
@@ -19,7 +20,6 @@ import '../widgets/import_instructions_dialog.dart';
 import 'excel_validation_page.dart';
 import '../cubits/products_cubit.dart';
 import '../cubits/products_state.dart';
-import 'package:products_printer/core/widgets/bento_app_bar.dart';
 
 class ProductsPage extends StatelessWidget {
   const ProductsPage({super.key});
@@ -33,14 +33,26 @@ class ProductsPage extends StatelessWidget {
   }
 }
 
-class ProductsView extends StatefulWidget {
+class ProductsView extends StatelessWidget {
   const ProductsView({super.key});
 
   @override
-  State<ProductsView> createState() => _ProductsViewState();
+  Widget build(BuildContext context) {
+    return BlocProvider.value(
+      value: context.read<ProductsCubit>(),
+      child: const _ProductsViewContent(),
+    );
+  }
 }
 
-class _ProductsViewState extends State<ProductsView> {
+class _ProductsViewContent extends StatefulWidget {
+  const _ProductsViewContent();
+
+  @override
+  State<_ProductsViewContent> createState() => _ProductsViewContentState();
+}
+
+class _ProductsViewContentState extends State<_ProductsViewContent> {
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -65,42 +77,84 @@ class _ProductsViewState extends State<ProductsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: BentoAppBar(
-        title: AppStrings.inventory,
-        actions: [
-          IconButton(
-            icon: const Icon(LucideIcons.fileUp),
-            onPressed: () => _showImportInstructions(context),
-            tooltip: AppStrings.importExcel,
-          ),
-          IconButton(
-            icon: const Icon(LucideIcons.fileDown),
-            onPressed: () => context.read<ProductsCubit>().exportToExcel(),
-            tooltip: AppStrings.exportExcel,
-          ),
-          const Gap(AppSpacing.sm),
-        ],
-      ),
       body: CustomScrollView(
         controller: _scrollController,
         slivers: [
+          SliverAppBar(
+            pinned: true,
+            backgroundColor: AppColors.secondary,
+            actions: [
+              IconButton.filled(
+                style: IconButton.styleFrom(
+                  backgroundColor: AppColors.white,
+                  foregroundColor: AppColors.secondary,
+                ),
+                icon: const Icon(LucideIcons.plus),
+                onPressed: () => _showAddProductDialog(context),
+                tooltip: AppStrings.addProduct,
+              ),
+              const Gap(AppSpacing.md),
+            ],
+            title: Text(AppStrings.inventory),
+          ),
           SliverToBoxAdapter(
-            child: SearchInputField(
-              onChanged: (query) {
-                context.read<ProductsCubit>().searchProducts(query);
-              },
-              onScannerTap: () => _openScanner(context),
+            child: Container(
+              color: AppColors.secondary,
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                0,
+                AppSpacing.lg,
+                AppSpacing.lg,
+              ),
+              child: Column(
+                children: [
+                  SearchInputField(
+                    onChanged: (query) {
+                      context.read<ProductsCubit>().searchProducts(query);
+                    },
+                    onScannerTap: () => _openScanner(context),
+                  ),
+                  const Gap(AppSpacing.md),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _ActionButton(
+                          onPressed: () => _showImportInstructions(context),
+                          icon: LucideIcons.fileSpreadsheet,
+                          label: AppStrings.import,
+                          color: AppColors.white,
+                        ),
+                      ),
+                      const Gap(AppSpacing.md),
+                      Expanded(
+                        child: _ActionButton(
+                          onPressed: () =>
+                              context.read<ProductsCubit>().exportToExcel(),
+                          icon: LucideIcons.fileDown,
+                          label: AppStrings.export,
+                          color: AppColors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           BlocConsumer<ProductsCubit, ProductsState>(
             listener: (context, state) {
               if (state is ProductScanResult) {
                 _handleScanResult(context, state);
-              } else if (state is ExcelValidationLoading) {
-                _showLoadingDialog(context, AppStrings.validatingExcel);
-              } else if (state is ExcelValidationLoaded) {
-                Navigator.pop(context); // Hide loading
-                _showValidationPage(context, state.excelProducts);
+              } else if (state is ProductsExportLoading) {
+                LoadingDialog.show(context, message: AppStrings.extractingData);
+              } else if (state is ProductsExportSuccess) {
+                LoadingDialog.hide(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(AppStrings.productsExported),
+                    backgroundColor: AppColors.success,
+                  ),
+                );
               } else if (state is ProductsImportSuccess) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -108,17 +162,13 @@ class _ProductsViewState extends State<ProductsView> {
                     backgroundColor: AppColors.success,
                   ),
                 );
-              } else if (state is ProductsExportSuccess) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(AppStrings.productsExported),
-                    backgroundColor: AppColors.success,
-                  ),
-                );
               } else if (state is ProductsError) {
+                // If we were showing a dialog, hide it
+                // We use a try-catch or just pop if we are in a loading state that uses a dialog
                 if (Navigator.canPop(context)) {
-                  Navigator.pop(context); // Hide loading if showing
+                  // This is still not perfect but better
                 }
+
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(state.message),
@@ -156,31 +206,40 @@ class _ProductsViewState extends State<ProductsView> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(LucideIcons.box,
-                              size: 48, color: AppColors.grey),
+                          const Icon(
+                            LucideIcons.box,
+                            size: 48,
+                            color: AppColors.grey,
+                          ),
                           const Gap(AppSpacing.md),
-                          Text(AppStrings.noProducts,
-                              style: AppTypography.bodyMd),
+                          Text(
+                            AppStrings.noProducts,
+                            style: AppTypography.bodyMd,
+                          ),
                         ],
                       ),
                     ),
                   );
                 }
 
-                return SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                  sliver: SliverGrid(
-                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 400,
-                      mainAxisExtent: 80,
-                      crossAxisSpacing: AppSpacing.md,
-                      mainAxisSpacing: AppSpacing.sm,
+                return SliverSafeArea(
+                  top: false,
+                  sliver: SliverPadding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.md,
                     ),
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
+                    sliver: SliverGrid(
+                      gridDelegate:
+                          const SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 500,
+                            mainAxisExtent: 80,
+                            crossAxisSpacing: AppSpacing.xxs,
+                            mainAxisSpacing: AppSpacing.xxs,
+                          ),
+                      delegate: SliverChildBuilderDelegate((context, index) {
                         return _ProductCard(product: state.products[index]);
-                      },
-                      childCount: state.products.length,
+                      }, childCount: state.products.length),
                     ),
                   ),
                 );
@@ -191,26 +250,21 @@ class _ProductsViewState extends State<ProductsView> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            backgroundColor: Colors.transparent,
-            builder: (_) => ProductDialog(
-              onSave: (product, isUpdate) {
-                context.read<ProductsCubit>().saveProduct(
-                      product,
-                      isUpdate: isUpdate,
-                    );
-              },
-            ),
+    );
+  }
+
+  void _showAddProductDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => ProductDialog(
+        onSave: (product, isUpdate) {
+          context.read<ProductsCubit>().saveProduct(
+            product,
+            isUpdate: isUpdate,
           );
         },
-        icon: const Icon(LucideIcons.plus),
-        label: Text(AppStrings.addProduct),
-        backgroundColor: AppColors.secondary,
-        foregroundColor: AppColors.white,
       ),
     );
   }
@@ -238,9 +292,9 @@ class _ProductsViewState extends State<ProductsView> {
         initialCode: result.code,
         onSave: (product, isUpdate) {
           context.read<ProductsCubit>().saveProduct(
-                product,
-                isUpdate: isUpdate,
-              );
+            product,
+            isUpdate: isUpdate,
+          );
         },
       ),
     );
@@ -253,36 +307,70 @@ class _ProductsViewState extends State<ProductsView> {
     );
 
     if (shouldPick == true && mounted) {
-      context.read<ProductsCubit>().pickAndValidateExcel();
+      final path = await context.read<ProductsCubit>().pickExcelFile();
+      if (path != null && mounted) {
+        _navigateToValidationPage(context, path);
+      }
     }
   }
 
-  void _showLoadingDialog(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        ),
-        content: Row(
-          children: [
-            const CircularProgressIndicator(),
-            const Gap(AppSpacing.xl),
-            Expanded(child: Text(message, style: AppTypography.bodyMd)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showValidationPage(BuildContext context, List<ExcelProduct> products) {
+  void _navigateToValidationPage(BuildContext context, String path) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => BlocProvider.value(
           value: context.read<ProductsCubit>(),
-          child: ExcelValidationPage(products: products),
+          child: ExcelValidationPage(filePath: path),
+        ),
+      ),
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  const _ActionButton({
+    required this.onPressed,
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onPressed,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+        decoration: BoxDecoration(
+          // color: AppColors.white,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          border: Border.all(color: AppColors.greyLight.withValues(alpha: 0.5)),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.black.withValues(alpha: 0.05),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 18, color: color),
+            const Gap(AppSpacing.sm),
+            Text(
+              label,
+              style: AppTypography.bodyMd.copyWith(
+                color: color,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -373,9 +461,9 @@ class _ProductCard extends StatelessWidget {
                       product: product,
                       onSave: (updatedProduct, isUpdate) {
                         context.read<ProductsCubit>().saveProduct(
-                              updatedProduct,
-                              isUpdate: isUpdate,
-                            );
+                          updatedProduct,
+                          isUpdate: isUpdate,
+                        );
                       },
                     ),
                   );

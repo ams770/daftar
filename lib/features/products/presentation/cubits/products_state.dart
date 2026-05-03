@@ -69,4 +69,5 @@ class ExcelValidationLoaded extends ProductsState {
 }
 
 class ProductsImportSuccess extends ProductsState {}
+class ProductsExportLoading extends ProductsState {}
 class ProductsExportSuccess extends ProductsState {}

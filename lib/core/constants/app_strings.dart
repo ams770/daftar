@@ -43,6 +43,8 @@ class AppStrings {
   static String get inventory => 'inventory'.tr();
   static String get importExcel => 'import_excel'.tr();
   static String get exportExcel => 'export_excel'.tr();
+  static String get import => 'import'.tr();
+  static String get export => 'export'.tr();
   static String get validatingExcel => 'validating_excel'.tr();
   static String get productsImported => 'products_imported'.tr();
   static String get productsExported => 'products_exported'.tr();
@@ -100,4 +102,5 @@ class AppStrings {
   static String get clientDetails => 'client_details'.tr();
   static String get enterClientName => 'enter_client_name'.tr();
   static String get searchByClient => 'search_by_client'.tr();
+  static String get extractingData => 'extracting_data'.tr();
 }

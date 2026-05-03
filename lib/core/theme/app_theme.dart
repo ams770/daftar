@@ -20,19 +20,38 @@ class AppTheme {
         onSecondary: AppColors.white,
         onSurface: AppColors.text,
       ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.background,
+      textTheme: TextTheme(
+        titleLarge: AppTypography.h1.copyWith(
+          color: AppColors.white,
+          fontWeight: FontWeight.w800,
+        ),
+        titleMedium: AppTypography.h2.copyWith(
+          color: AppColors.white,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: AppColors.secondary,
         elevation: 0,
-        centerTitle: true,
-        titleTextStyle: AppTypography.h2,
-        iconTheme: IconThemeData(color: AppColors.text),
+        // centerTitle: false,
+        titleTextStyle: AppTypography.h1.copyWith(
+          color: AppColors.white,
+          fontSize: 32,
+          fontWeight: FontWeight.w800,
+          letterSpacing: -0.5,
+        ),
+        iconTheme: const IconThemeData(color: AppColors.white, size: 24),
+        actionsIconTheme: const IconThemeData(color: AppColors.white, size: 24),
       ),
       cardTheme: CardThemeData(
         color: AppColors.white,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-          side: BorderSide(color: AppColors.greyLight.withValues(alpha: 0.5), width: 1),
+          side: BorderSide(
+            color: AppColors.greyLight.withValues(alpha: 0.5),
+            width: 1,
+          ),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -48,7 +67,10 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
           ),
-          textStyle: AppTypography.label.copyWith(fontSize: 14, letterSpacing: 1),
+          textStyle: AppTypography.label.copyWith(
+            fontSize: 14,
+            letterSpacing: 1,
+          ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -56,11 +78,15 @@ class AppTheme {
         fillColor: AppColors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-          borderSide: BorderSide(color: AppColors.greyLight.withValues(alpha: 0.5)),
+          borderSide: BorderSide(
+            color: AppColors.greyLight.withValues(alpha: 0.5),
+          ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-          borderSide: BorderSide(color: AppColors.greyLight.withValues(alpha: 0.5)),
+          borderSide: BorderSide(
+            color: AppColors.greyLight.withValues(alpha: 0.5),
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
@@ -70,7 +96,10 @@ class AppTheme {
           horizontal: AppSpacing.xl,
           vertical: AppSpacing.lg,
         ),
-        floatingLabelStyle: AppTypography.bodyMd.copyWith(color: AppColors.secondary, fontWeight: FontWeight.bold),
+        floatingLabelStyle: AppTypography.bodyMd.copyWith(
+          color: AppColors.secondary,
+          fontWeight: FontWeight.bold,
+        ),
       ),
       extensions: [
         BentoThemeExtension(
@@ -78,7 +107,10 @@ class AppTheme {
           cardDecoration: BoxDecoration(
             color: AppColors.white,
             borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-            border: Border.all(color: AppColors.greyLight.withValues(alpha: 0.4), width: 1),
+            border: Border.all(
+              color: AppColors.greyLight.withValues(alpha: 0.4),
+              width: 1,
+            ),
             boxShadow: [
               BoxShadow(
                 color: AppColors.text.withValues(alpha: 0.04),
@@ -99,7 +131,10 @@ class AppTheme {
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-            border: Border.all(color: AppColors.primary.withValues(alpha: 0.8), width: 1.5),
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.8),
+              width: 1.5,
+            ),
             boxShadow: [
               BoxShadow(
                 color: AppColors.primary.withValues(alpha: 0.1),

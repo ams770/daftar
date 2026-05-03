@@ -44,6 +44,22 @@ class ExcelServiceImpl implements ExcelService {
 
   @override
   Future<String> exportProductsToExcel(List<Product> products) async {
+    final directory = await getTemporaryDirectory();
+    final filePath = '${directory.path}/products_export_${DateTime.now().millisecondsSinceEpoch}.xlsx';
+
+    // Use compute for the heavy lifting of generating and saving the excel file
+    final fileBytes = await compute(_generateExcel, products);
+    
+    if (fileBytes != null) {
+      File(filePath)
+        ..createSync(recursive: true)
+        ..writeAsBytesSync(fileBytes);
+    }
+
+    return filePath;
+  }
+
+  static Uint8List? _generateExcel(List<Product> products) {
     final excel = Excel.createExcel();
     final sheet = excel['Products'];
     
@@ -63,16 +79,7 @@ class ExcelServiceImpl implements ExcelService {
       ]);
     }
 
-    final directory = await getTemporaryDirectory();
-    final filePath = '${directory.path}/products_export_${DateTime.now().millisecondsSinceEpoch}.xlsx';
-    final fileBytes = excel.save();
-    
-    if (fileBytes != null) {
-      File(filePath)
-        ..createSync(recursive: true)
-        ..writeAsBytesSync(fileBytes);
-    }
-
-    return filePath;
+    final bytes = excel.save();
+    return bytes != null ? Uint8List.fromList(bytes) : null;
   }
 }

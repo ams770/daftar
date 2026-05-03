@@ -118,44 +118,49 @@ class ProductsCubit extends Cubit<ProductsState> {
 
   // --- Excel Features ---
 
-  Future<void> pickAndValidateExcel() async {
-    if (_isPickingFile) return;
+  Future<String?> pickExcelFile() async {
+    if (_isPickingFile) return null;
     _isPickingFile = true;
 
     try {
       await Future.delayed(const Duration(milliseconds: 500));
-      print('DEBUG: Calling FilePicker.platform.pickFiles()...');
-      
-      // Attempting the simplest possible call
-      final result = await FilePicker.pickFiles();
-      
-      print('DEBUG: FilePicker returned: ${result == null ? "null" : "result with ${result.files.length} files"}');
+      final result = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['xlsx'],
+      );
 
       if (result != null && result.files.single.path != null) {
-        final path = result.files.single.path!;
-        if (!path.toLowerCase().endsWith('.xlsx')) {
-          emit(const ProductsError('Please select a valid .xlsx file.'));
-          return;
-        }
-        emit(ExcelValidationLoading());
-        
-        final file = File(path);
-        final rawProducts = await excelService.readProductsFromExcel(file);
-        
-        if (rawProducts.isEmpty) {
-          emit(const ProductsError('The Excel file is empty or invalid.'));
-          return;
-        }
-
-        final validatedProducts = await validateExcelProducts(rawProducts);
-        emit(ExcelValidationLoaded(validatedProducts));
+        return result.files.single.path;
       }
     } catch (e) {
-      emit(ProductsError('Failed to pick or process file: $e'));
+      emit(ProductsError('Failed to pick file: $e'));
     } finally {
       _isPickingFile = false;
     }
+    return null;
   }
+
+  Future<void> validateExcel(String path) async {
+    try {
+      emit(ExcelValidationLoading());
+      
+      final file = File(path);
+      final rawProducts = await excelService.readProductsFromExcel(file);
+      
+      if (rawProducts.isEmpty) {
+        emit(const ProductsError('The Excel file is empty or invalid.'));
+        return;
+      }
+
+      final validatedProducts = await validateExcelProducts(rawProducts);
+      emit(ExcelValidationLoaded(validatedProducts));
+    } catch (e) {
+      emit(ProductsError('Failed to process file: $e'));
+    }
+  }
+
+  // Remove old pickAndValidateExcel if not used.
+  // I'll keep it for now but I'll update ProductsPage to use the new flow.
 
   Future<void> updateExcelProduct(int index, ExcelProduct updated) async {
     if (state is ExcelValidationLoaded) {
@@ -193,6 +198,7 @@ class ProductsCubit extends Cubit<ProductsState> {
 
   Future<void> exportToExcel() async {
     try {
+      emit(ProductsExportLoading());
       await exportProductsToExcel();
       emit(ProductsExportSuccess());
     } catch (e) {

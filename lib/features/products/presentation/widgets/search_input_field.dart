@@ -43,7 +43,7 @@ class _SearchInputFieldState extends State<SearchInputField> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
       child: TextField(
         controller: _controller,
         onChanged: _onChanged,
@@ -51,7 +51,11 @@ class _SearchInputFieldState extends State<SearchInputField> {
         decoration: InputDecoration(
           hintText: widget.hintText,
           hintStyle: AppTypography.bodyMd.copyWith(color: AppColors.grey),
-          prefixIcon: const Icon(LucideIcons.search, color: AppColors.grey, size: 20),
+          prefixIcon: const Icon(
+            LucideIcons.search,
+            color: AppColors.grey,
+            size: 20,
+          ),
           suffixIcon: IconButton(
             icon: const Icon(LucideIcons.scanLine),
             onPressed: widget.onScannerTap,
@@ -61,13 +65,18 @@ class _SearchInputFieldState extends State<SearchInputField> {
           fillColor: AppColors.white,
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
-            borderSide: BorderSide(color: AppColors.greyLight.withValues(alpha: 0.5)),
+            borderSide: BorderSide(
+              color: AppColors.greyLight.withValues(alpha: 0.5),
+            ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
             borderSide: const BorderSide(color: AppColors.secondary, width: 2),
           ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: AppSpacing.xl),
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 0,
+            horizontal: AppSpacing.xl,
+          ),
         ),
       ),
     );

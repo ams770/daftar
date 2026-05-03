@@ -12,15 +12,13 @@ import '../cubits/settings_cubit.dart';
 import '../widgets/settings_widgets.dart';
 import '../widgets/settings_modals.dart';
 
-import 'package:products_printer/core/widgets/bento_app_bar.dart';
-
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: BentoAppBar(
-        title: AppStrings.settings,
+      appBar: AppBar(
+        title: Text(AppStrings.settings),
       ),
       body: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, state) {
