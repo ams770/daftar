@@ -20,32 +20,19 @@ class NewInvoiceSearchHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.lg),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: controller,
-              decoration: const InputDecoration(
-                hintText: 'Search products...',
-                prefixIcon: Icon(LucideIcons.search),
-                contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-              ),
-              onChanged: onChanged,
-            ),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          hintText: 'Search products...',
+          prefixIcon: const Icon(LucideIcons.search),
+          suffixIcon: IconButton(
+            icon: const Icon(LucideIcons.scanLine),
+            onPressed: onScanTap,
+            color: AppColors.secondary,
           ),
-          const Gap(AppSpacing.md),
-          GestureDetector(
-            onTap: onScanTap,
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.secondary,
-                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-              ),
-              child: const Icon(LucideIcons.scanLine, color: AppColors.white),
-            ),
-          ),
-        ],
+          contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+        ),
+        onChanged: onChanged,
       ),
     );
   }

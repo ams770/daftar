@@ -4,6 +4,7 @@ import 'package:gap/gap.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../cubits/invoice_cubit.dart';
+import '../cubits/add_invoice_cubit.dart';
 import '../pages/invoice_summary_page.dart';
 
 class NewInvoiceBottomBar extends StatelessWidget {
@@ -11,9 +12,9 @@ class NewInvoiceBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<InvoiceCubit, InvoiceState>(
+    return BlocBuilder<AddInvoiceCubit, AddInvoiceState>(
       builder: (context, state) {
-        if (state is! InvoiceCreating) return const SizedBox();
+        if (state is! AddInvoiceCreating) return const SizedBox();
 
         final cart = state.cartItems;
         if (cart.isEmpty) return const SizedBox();

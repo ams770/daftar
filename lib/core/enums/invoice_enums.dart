@@ -1,3 +1,5 @@
+import '../constants/app_strings.dart';
+
 enum InvoiceType {
   cash,
   credit;
@@ -5,9 +7,9 @@ enum InvoiceType {
   String label(bool isArabic) {
     switch (this) {
       case InvoiceType.cash:
-        return isArabic ? 'نقدي' : 'Cash';
+        return AppStrings.cash;
       case InvoiceType.credit:
-        return isArabic ? 'آجل' : 'Credit';
+        return AppStrings.credit;
     }
   }
 }
@@ -19,9 +21,9 @@ enum PaymentMethod {
   String label(bool isArabic) {
     switch (this) {
       case PaymentMethod.cash:
-        return isArabic ? 'نقد' : 'Cash';
+        return AppStrings.cash;
       case PaymentMethod.bankTransfer:
-        return isArabic ? 'تحويل بنكي' : 'Bank Transfer';
+        return AppStrings.bankTransfer;
     }
   }
 }

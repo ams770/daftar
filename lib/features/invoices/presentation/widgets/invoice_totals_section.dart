@@ -4,6 +4,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/bento_theme_extension.dart';
+import '../../../../core/constants/app_strings.dart';
 
 class InvoiceTotalsSection extends StatelessWidget {
   final double subtotal;
@@ -37,13 +38,13 @@ class InvoiceTotalsSection extends StatelessWidget {
       child: Column(
         children: [
           _TotalRow(
-            label: isArabic ? 'المجموع الفرعي' : 'Subtotal',
+            label: AppStrings.subtotal,
             value: subtotal,
             currency: currency,
           ),
           const Gap(AppSpacing.md),
           _TotalRow(
-            label: '${isArabic ? 'ضريبة القيمة المضافة' : 'VAT'} ($vatPercent%)',
+            label: '${AppStrings.vat} ($vatPercent%)',
             value: vatAmount,
             currency: currency,
           ),
@@ -51,7 +52,7 @@ class InvoiceTotalsSection extends StatelessWidget {
           const Divider(),
           const Gap(AppSpacing.md),
           _TotalRow(
-            label: isArabic ? 'الإجمالي النهائي' : 'Grand Total',
+            label: AppStrings.grandTotal,
             value: total,
             currency: currency,
             isBold: true,
@@ -61,14 +62,14 @@ class InvoiceTotalsSection extends StatelessWidget {
             const Divider(),
             const Gap(AppSpacing.md),
             _TotalRow(
-              label: isArabic ? 'المدفوع' : 'Paid',
+              label: AppStrings.paid,
               value: paidAmount!,
               currency: currency,
               color: AppColors.success,
             ),
             const Gap(AppSpacing.md),
             _TotalRow(
-              label: isArabic ? 'المتبقي' : 'Remaining',
+              label: AppStrings.remaining,
               value: remainingAmount!,
               currency: currency,
               color: AppColors.danger,

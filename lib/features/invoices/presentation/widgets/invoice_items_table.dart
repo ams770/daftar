@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/bento_theme_extension.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../domain/entities/invoice.dart';
 
 class InvoiceItemsTable extends StatelessWidget {
@@ -32,20 +33,20 @@ class InvoiceItemsTable extends StatelessWidget {
         columns: [
           DataColumn(
             label: Text(
-              isArabic ? 'المنتج' : 'Product',
+              AppStrings.product,
               style: AppTypography.label,
             ),
           ),
           DataColumn(
             label: Text(
-              isArabic ? 'الكمية' : 'Qty',
+              AppStrings.qty,
               style: AppTypography.label,
             ),
             numeric: true,
           ),
           DataColumn(
             label: Text(
-              isArabic ? 'الإجمالي' : 'Total',
+              AppStrings.total,
               style: AppTypography.label,
             ),
             numeric: true,

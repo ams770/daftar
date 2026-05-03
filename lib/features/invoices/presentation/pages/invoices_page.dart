@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
+import 'package:easy_localization/easy_localization.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -23,6 +25,11 @@ class InvoicesPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Invoices')),
       body: BlocBuilder<InvoiceCubit, InvoiceState>(
+        buildWhen: (previous, current) =>
+            current is InvoiceInitial ||
+            current is InvoiceLoading ||
+            current is InvoiceLoaded ||
+            current is InvoiceError,
         builder: (context, state) {
           if (state is InvoiceInitial) {
             context.read<InvoiceCubit>().loadInvoices();
@@ -62,7 +69,7 @@ class InvoicesPage extends StatelessWidget {
           );
         },
         icon: const Icon(LucideIcons.plus),
-        label: const Text('NEW INVOICE'),
+        label: Text(AppStrings.newInvoice),
         backgroundColor: AppColors.secondary,
         foregroundColor: AppColors.white,
       ),

@@ -17,6 +17,7 @@ import '../../features/invoices/data/datasources/invoice_local_datasource.dart';
 import '../../features/invoices/data/repositories/invoice_repository_impl.dart';
 import '../../features/invoices/domain/repositories/invoice_repository.dart';
 import '../../features/invoices/presentation/cubits/invoice_cubit.dart';
+import '../../features/invoices/presentation/cubits/add_invoice_cubit.dart';
 import '../../features/settings/presentation/cubits/settings_cubit.dart';
 import '../database/database_helper.dart';
 import '../services/settings_service.dart';
@@ -38,6 +39,7 @@ Future<void> init() async {
       ));
   sl.registerFactory(() => SettingsCubit(sl()));
   sl.registerFactory(() => InvoiceCubit(sl()));
+  sl.registerFactory(() => AddInvoiceCubit(sl()));
 
   // Use cases
   sl.registerLazySingleton(() => GetProductsPaginated(sl()));

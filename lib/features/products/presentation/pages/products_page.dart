@@ -8,6 +8,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/bento_theme_extension.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../domain/entities/excel_product.dart';
 import '../../domain/entities/product.dart';
 import '../widgets/product_dialog.dart';
@@ -59,17 +60,17 @@ class _ProductsViewState extends State<ProductsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Inventory'),
+        title: Text(AppStrings.inventory),
         actions: [
           IconButton(
             icon: const Icon(LucideIcons.fileUp),
             onPressed: () => _showImportInstructions(context),
-            tooltip: 'Import Excel',
+            tooltip: AppStrings.importExcel,
           ),
           IconButton(
             icon: const Icon(LucideIcons.fileDown),
             onPressed: () => context.read<ProductsCubit>().exportToExcel(),
-            tooltip: 'Export Excel',
+            tooltip: AppStrings.exportExcel,
           ),
           const Gap(AppSpacing.sm),
         ],
@@ -90,21 +91,21 @@ class _ProductsViewState extends State<ProductsView> {
               if (state is ProductScanResult) {
                 _handleScanResult(context, state);
               } else if (state is ExcelValidationLoading) {
-                _showLoadingDialog(context, 'Validating Excel data...');
+                _showLoadingDialog(context, AppStrings.validatingExcel);
               } else if (state is ExcelValidationLoaded) {
                 Navigator.pop(context); // Hide loading
                 _showValidationPage(context, state.excelProducts);
               } else if (state is ProductsImportSuccess) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Products imported successfully!'),
+                  SnackBar(
+                    content: Text(AppStrings.productsImported),
                     backgroundColor: AppColors.success,
                   ),
                 );
               } else if (state is ProductsExportSuccess) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Products exported successfully!'),
+                  SnackBar(
+                    content: Text(AppStrings.productsExported),
                     backgroundColor: AppColors.success,
                   ),
                 );
@@ -146,7 +147,7 @@ class _ProductsViewState extends State<ProductsView> {
                           Icon(LucideIcons.package2, size: 64, color: AppColors.grey.withOpacity(0.5)),
                           const Gap(AppSpacing.lg),
                           Text(
-                            'No products found.',
+                            AppStrings.noProducts,
                             textAlign: TextAlign.center,
                             style: AppTypography.bodyMd.copyWith(color: AppColors.grey),
                           ),
@@ -375,12 +376,12 @@ class _ProductCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete Product'),
-        content: Text('Are you sure you want to delete "${product.name}"? This action cannot be undone, but historical invoices will remain unchanged.'),
+        title: Text(AppStrings.deleteProduct),
+        content: Text(AppStrings.deleteProductConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('CANCEL'),
+            child: Text(AppStrings.cancel.toUpperCase()),
           ),
           TextButton(
             onPressed: () {
@@ -388,7 +389,7 @@ class _ProductCard extends StatelessWidget {
               context.read<ProductsCubit>().removeProduct(product.id!);
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.danger),
-            child: const Text('DELETE'),
+            child: Text(AppStrings.delete.toUpperCase()),
           ),
         ],
       ),
@@ -440,10 +441,10 @@ class _ScannerBottomSheet extends StatelessWidget {
             bottom: 40,
             left: 0,
             right: 0,
-            child: const Center(
+            child: Center(
               child: Text(
-                'Center the barcode in the frame',
-                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
+                AppStrings.centerBarcode,
+                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
               ),
             ),
           ),

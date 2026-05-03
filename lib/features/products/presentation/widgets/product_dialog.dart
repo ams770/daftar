@@ -4,9 +4,10 @@ import 'package:gap/gap.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../domain/entities/product.dart';
 
-class ProductDialog extends StatefulWidget {
+class ProductDialog extends StatelessWidget {
   final Product? product;
   final String? initialCode;
   final void Function(Product product, bool isUpdate) onSave;
@@ -19,10 +20,31 @@ class ProductDialog extends StatefulWidget {
   });
 
   @override
-  State<ProductDialog> createState() => _ProductDialogState();
+  Widget build(BuildContext context) {
+    return _ProductDialogContent(
+      product: product,
+      initialCode: initialCode,
+      onSave: onSave,
+    );
+  }
 }
 
-class _ProductDialogState extends State<ProductDialog> {
+class _ProductDialogContent extends StatefulWidget {
+  final Product? product;
+  final String? initialCode;
+  final void Function(Product product, bool isUpdate) onSave;
+
+  const _ProductDialogContent({
+    this.product,
+    this.initialCode,
+    required this.onSave,
+  });
+
+  @override
+  State<_ProductDialogContent> createState() => _ProductDialogContentState();
+}
+
+class _ProductDialogContentState extends State<_ProductDialogContent> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _codeController;
@@ -75,14 +97,14 @@ class _ProductDialogState extends State<ProductDialog> {
               ),
               const Gap(AppSpacing.xl),
               Text(
-                isUpdate ? 'Edit Product' : (fromScan ? 'Add New Product' : 'Add Product'),
+                isUpdate ? AppStrings.editProduct : (fromScan ? AppStrings.addNewProduct : AppStrings.addProduct),
                 style: AppTypography.h1,
                 textAlign: TextAlign.center,
               ),
               if (fromScan && !isUpdate) ...[
                 const Gap(AppSpacing.sm),
                 Text(
-                  'Barcode "${widget.initialCode}" not found.',
+                  '${AppStrings.barcodeNotFound} "${widget.initialCode}"',
                   style: AppTypography.bodyMd.copyWith(color: AppColors.warning, fontWeight: FontWeight.w500),
                   textAlign: TextAlign.center,
                 ),
@@ -93,12 +115,12 @@ class _ProductDialogState extends State<ProductDialog> {
                 maxLength: 100,
                 style: AppTypography.bodyMd,
                 decoration: InputDecoration(
-                  labelText: 'Product Name',
+                  labelText: AppStrings.productName,
                   prefixIcon: const Icon(LucideIcons.shoppingBag, size: 20),
                   counterText: '',
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Required';
+                  if (value == null || value.isEmpty) return AppStrings.required;
                   if (value.length > 100) return 'Too long (max 100 chars)';
                   return null;
                 },
@@ -107,24 +129,24 @@ class _ProductDialogState extends State<ProductDialog> {
               TextFormField(
                 controller: _codeController,
                 style: AppTypography.bodyMd,
-                decoration: const InputDecoration(
-                  labelText: 'Product Code',
-                  prefixIcon: Icon(LucideIcons.qrCode, size: 20),
+                decoration: InputDecoration(
+                  labelText: AppStrings.productCode,
+                  prefixIcon: const Icon(LucideIcons.qrCode, size: 20),
                 ),
-                validator: (value) => value == null || value.isEmpty ? 'Required' : null,
+                validator: (value) => value == null || value.isEmpty ? AppStrings.required : null,
               ),
               const Gap(AppSpacing.lg),
               TextFormField(
                 controller: _priceController,
                 style: AppTypography.bodyMd,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(
-                  labelText: 'Price',
-                  prefixIcon: Icon(LucideIcons.dollarSign, size: 20),
+                decoration: InputDecoration(
+                  labelText: AppStrings.price,
+                  prefixIcon: const Icon(LucideIcons.dollarSign, size: 20),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Required';
-                  if (double.tryParse(value) == null) return 'Invalid number';
+                  if (value == null || value.isEmpty) return AppStrings.required;
+                  if (double.tryParse(value) == null) return AppStrings.invalidNumber;
                   return null;
                 },
               ),
@@ -153,7 +175,7 @@ class _ProductDialogState extends State<ProductDialog> {
                   shadowColor: AppColors.secondary.withValues(alpha: 0.4),
                 ),
                 child: Text(
-                  isUpdate ? 'Update Product' : 'Save Product',
+                  isUpdate ? AppStrings.updateProduct : AppStrings.saveProduct,
                   style: AppTypography.label.copyWith(
                     color: AppColors.white,
                     fontSize: 16,

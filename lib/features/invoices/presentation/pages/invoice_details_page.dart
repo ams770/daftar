@@ -4,11 +4,13 @@ import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:printing/printing.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/bento_theme_extension.dart';
 import '../../../../core/services/invoice_pdf_service.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../../settings/presentation/cubits/settings_cubit.dart';
 import '../../domain/entities/invoice.dart';
 import 'dart:io';
@@ -40,12 +42,12 @@ class InvoiceDetailsPage extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(isArabic ? 'تفاصيل الفاتورة' : 'Invoice Details'),
+            title: Text(AppStrings.invoiceDetails),
             actions: [
               IconButton(
                 icon: const Icon(LucideIcons.share2),
                 onPressed: () => _shareAsPdf(context, settings),
-                tooltip: isArabic ? 'مشاركة كـ PDF' : 'Share as PDF',
+                tooltip: AppStrings.shareAsPdf,
               ),
             ],
           ),
@@ -70,7 +72,7 @@ class InvoiceDetailsPage extends StatelessWidget {
 
                   const Gap(AppSpacing.xl),
                   SectionTitle(
-                    title: isArabic ? 'الأصناف' : 'Items',
+                    title: AppStrings.items,
                     icon: LucideIcons.box,
                   ),
                   const Gap(AppSpacing.sm),
@@ -81,7 +83,7 @@ class InvoiceDetailsPage extends StatelessWidget {
                   ),
                   const Gap(AppSpacing.xl),
                   SectionTitle(
-                    title: isArabic ? 'الملخص' : 'Summary',
+                    title: AppStrings.summary,
                     icon: LucideIcons.calculator,
                   ),
                   const Gap(AppSpacing.sm),
@@ -108,7 +110,7 @@ class InvoiceDetailsPage extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: () => _shareAsPdf(context, settings),
                       icon: const Icon(LucideIcons.fileText),
-                      label: Text(isArabic ? 'مشاركة كـ PDF' : 'SHARE AS PDF'),
+                      label: Text(AppStrings.shareAsPdf.toUpperCase()),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.secondary,
                         foregroundColor: AppColors.white,
@@ -123,9 +125,7 @@ class InvoiceDetailsPage extends StatelessWidget {
                     child: ElevatedButton.icon(
                       onPressed: () => _showPrintOptions(context, isArabic),
                       icon: const Icon(LucideIcons.printer),
-                      label: Text(
-                        isArabic ? 'طباعة الفاتورة' : 'PRINT INVOICE',
-                      ),
+                      label: Text(AppStrings.printInvoice.toUpperCase()),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.success,
                         foregroundColor: AppColors.white,
@@ -184,19 +184,19 @@ class InvoiceDetailsPage extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  isArabic ? 'اختر عرض الطابعة' : 'Select Printer Width',
+                  AppStrings.selectPrinterWidth,
                   style: AppTypography.h2,
                 ),
                 const Gap(AppSpacing.xl),
                 ListTile(
                   leading: const Icon(LucideIcons.printer),
-                  title: Text(isArabic ? '3 بوصة' : '3 Inch'),
+                  title: Text(AppStrings.threeInch),
                   onTap: () => Navigator.pop(context),
                 ),
                 const Divider(),
                 ListTile(
                   leading: const Icon(LucideIcons.printer),
-                  title: Text(isArabic ? '4 بوصة' : '4 Inch'),
+                  title: Text(AppStrings.fourInch),
                   onTap: () => Navigator.pop(context),
                 ),
               ],

@@ -4,11 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:gap/gap.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/bento_theme_extension.dart';
 import '../../../../core/models/app_settings.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../cubits/settings_cubit.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -18,7 +20,7 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text(AppStrings.settings),
       ),
       body: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, state) {
@@ -49,7 +51,7 @@ class SettingsPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _SettingsSection(
-            title: 'Brand Details',
+            title: AppStrings.brandDetails,
             onTap: () => _showBrandEditModal(context, settings),
             child: Row(
               children: [
@@ -77,11 +79,11 @@ class SettingsPage extends StatelessWidget {
           ),
           const Gap(AppSpacing.xl),
           _SettingsSection(
-            title: 'Taxation',
+            title: AppStrings.taxation,
             onTap: () => _showValueEditModal(
               context,
-              title: 'Edit VAT',
-              label: 'VAT Percentage (%)',
+              title: AppStrings.editVat,
+              label: AppStrings.vatPercentage,
               initialValue: settings.vatPercent.toString(),
               icon: LucideIcons.percent,
               keyboardType: TextInputType.number,
@@ -90,15 +92,15 @@ class SettingsPage extends StatelessWidget {
                 context.read<SettingsCubit>().saveSettings(newSettings);
               },
             ),
-            child: _buildSimpleRow(LucideIcons.percent, 'VAT Rate', '${settings.vatPercent}%'),
+            child: _buildSimpleRow(LucideIcons.percent, AppStrings.vatRate, '${settings.vatPercent}%'),
           ),
           const Gap(AppSpacing.xl),
           _SettingsSection(
-            title: 'Currency',
+            title: AppStrings.currency,
             onTap: () => _showValueEditModal(
               context,
-              title: 'Edit Currency',
-              label: 'Currency Code',
+              title: AppStrings.editCurrency,
+              label: AppStrings.currencyCode,
               initialValue: settings.currency,
               icon: LucideIcons.banknote,
               onSave: (val) {
@@ -106,7 +108,17 @@ class SettingsPage extends StatelessWidget {
                 context.read<SettingsCubit>().saveSettings(newSettings);
               },
             ),
-            child: _buildSimpleRow(LucideIcons.banknote, 'Default Currency', settings.currency),
+            child: _buildSimpleRow(LucideIcons.banknote, AppStrings.defaultCurrency, settings.currency),
+          ),
+          const Gap(AppSpacing.xl),
+          _SettingsSection(
+            title: AppStrings.language,
+            onTap: () => _showLanguageModal(context, settings),
+            child: _buildSimpleRow(
+              LucideIcons.languages,
+              AppStrings.selectLanguage,
+              context.locale.languageCode == 'ar' ? AppStrings.arabic : AppStrings.english,
+            ),
           ),
         ],
       ),
@@ -179,6 +191,71 @@ class SettingsPage extends StatelessWidget {
         icon: icon,
         onSave: onSave,
         keyboardType: keyboardType,
+      ),
+    );
+  }
+
+  void _showLanguageModal(BuildContext context, AppSettings settings) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        decoration: const BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusXl)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(AppStrings.selectLanguage, style: AppTypography.h2),
+            const Gap(AppSpacing.lg),
+            _buildLanguageOption(
+              context,
+              AppStrings.english,
+              'en',
+              context.locale.languageCode == 'en',
+              settings,
+            ),
+            const Gap(AppSpacing.md),
+            _buildLanguageOption(
+              context,
+              AppStrings.arabic,
+              'ar',
+              context.locale.languageCode == 'ar',
+              settings,
+            ),
+            const Gap(AppSpacing.xl),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageOption(BuildContext context, String label, String code, bool isSelected, AppSettings settings) {
+    return InkWell(
+      onTap: () {
+        context.setLocale(Locale(code));
+        final newSettings = settings.copyWith(language: code.toUpperCase());
+        context.read<SettingsCubit>().saveSettings(newSettings);
+        Navigator.pop(context);
+      },
+      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary.withValues(alpha: 0.1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          border: Border.all(color: isSelected ? AppColors.primary : AppColors.grey.withValues(alpha: 0.2)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label, style: AppTypography.bodyMd.copyWith(fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
+            if (isSelected) const Icon(LucideIcons.check, color: AppColors.primary, size: 20),
+          ],
+        ),
       ),
     );
   }
@@ -274,7 +351,7 @@ class _BrandEditModalState extends State<_BrandEditModal> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Brand Details', style: AppTypography.h2),
+              Text(AppStrings.brandDetails, style: AppTypography.h2),
               IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(LucideIcons.x)),
             ],
           ),
@@ -311,18 +388,18 @@ class _BrandEditModalState extends State<_BrandEditModal> {
           const Gap(AppSpacing.xl),
           TextFormField(
             controller: _nameController,
-            decoration: const InputDecoration(labelText: 'Brand Name', prefixIcon: Icon(LucideIcons.building2)),
+            decoration: InputDecoration(labelText: AppStrings.brandName, prefixIcon: const Icon(LucideIcons.building2)),
           ),
           const Gap(AppSpacing.lg),
           TextFormField(
             controller: _phoneController,
-            decoration: const InputDecoration(labelText: 'Phone Number', prefixIcon: Icon(LucideIcons.phone)),
+            decoration: InputDecoration(labelText: AppStrings.phoneNumber, prefixIcon: const Icon(LucideIcons.phone)),
             keyboardType: TextInputType.phone,
           ),
           const Gap(AppSpacing.lg),
           TextFormField(
             controller: _addressController,
-            decoration: const InputDecoration(labelText: 'Address', prefixIcon: Icon(LucideIcons.mapPin)),
+            decoration: InputDecoration(labelText: AppStrings.address, prefixIcon: const Icon(LucideIcons.mapPin)),
             maxLines: 2,
           ),
           const Gap(AppSpacing.xl),
@@ -337,7 +414,7 @@ class _BrandEditModalState extends State<_BrandEditModal> {
               context.read<SettingsCubit>().saveSettings(updated);
               Navigator.pop(context);
             },
-            child: const Text('SAVE CHANGES'),
+            child: Text(AppStrings.saveChanges),
           ),
         ],
       ),
@@ -412,7 +489,7 @@ class _SimpleEditModalState extends State<_SimpleEditModal> {
               widget.onSave(_controller.text);
               Navigator.pop(context);
             },
-            child: const Text('SAVE'),
+            child: Text(AppStrings.save),
           ),
         ],
       ),

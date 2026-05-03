@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'core/constants/app_strings.dart';
 import 'features/products/presentation/pages/products_page.dart';
 import 'features/invoices/presentation/pages/invoices_page.dart';
 import 'features/settings/presentation/pages/settings_page.dart';
@@ -44,21 +45,21 @@ class _AppShellState extends State<AppShell> {
           showSelectedLabels: true,
           showUnselectedLabels: true,
           type: BottomNavigationBarType.fixed,
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              icon: Icon(LucideIcons.package),
-              activeIcon: Icon(LucideIcons.package2),
-              label: 'Inventory',
+              icon: const Icon(LucideIcons.package),
+              activeIcon: const Icon(LucideIcons.package2),
+              label: AppStrings.inventory,
             ),
             BottomNavigationBarItem(
-              icon: Icon(LucideIcons.fileText),
-              activeIcon: Icon(LucideIcons.filePlus2),
-              label: 'Invoices',
+              icon: const Icon(LucideIcons.fileText),
+              activeIcon: const Icon(LucideIcons.filePlus2),
+              label: AppStrings.invoices,
             ),
             BottomNavigationBarItem(
-              icon: Icon(LucideIcons.settings),
-              activeIcon: Icon(LucideIcons.settings2),
-              label: 'Settings',
+              icon: const Icon(LucideIcons.settings),
+              activeIcon: const Icon(LucideIcons.settings2),
+              label: AppStrings.settings,
             ),
           ],
         ),

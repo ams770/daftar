@@ -11,11 +11,15 @@ import '../../../products/domain/entities/product.dart';
 import '../../../products/presentation/cubits/products_cubit.dart';
 import '../../../products/presentation/cubits/products_state.dart';
 import '../cubits/invoice_cubit.dart';
+import '../cubits/add_invoice_cubit.dart';
+import 'scanner_invoice_page.dart';
 import 'invoice_summary_page.dart';
 import '../widgets/product_selection_card.dart';
 import '../widgets/scanner_bottom_sheet.dart';
 import '../widgets/new_invoice_search_header.dart';
 import '../widgets/new_invoice_bottom_bar.dart';
+
+import '../../../../core/constants/app_strings.dart';
 
 class NewInvoicePage extends StatefulWidget {
   const NewInvoicePage({super.key});
@@ -32,7 +36,7 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
     super.initState();
     final productsState = context.read<ProductsCubit>().state;
     if (productsState is ProductsLoaded) {
-      context.read<InvoiceCubit>().startNewInvoice(productsState.products);
+      context.read<AddInvoiceCubit>().startNewInvoice(productsState.products);
     }
   }
 
@@ -40,7 +44,7 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select Products'),
+        title: Text(AppStrings.selectProducts),
       ),
       body: Column(
         children: [
@@ -56,9 +60,9 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (state is ProductsLoaded) {
-                  return BlocBuilder<InvoiceCubit, InvoiceState>(
+                  return BlocBuilder<AddInvoiceCubit, AddInvoiceState>(
                     builder: (context, invState) {
-                      final Map<int, int> cart = (invState is InvoiceCreating) ? invState.cartItems : {};
+                      final Map<int, int> cart = (invState is AddInvoiceCreating) ? invState.cartItems : {};
 
                       return ListView.separated(
                         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
@@ -70,8 +74,8 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
                           return ProductSelectionCard(
                             product: product,
                             qty: qty,
-                            onAdd: () => context.read<InvoiceCubit>().updateProductQty(product, 1),
-                            onRemove: () => context.read<InvoiceCubit>().updateProductQty(product, -1),
+                            onAdd: () => context.read<AddInvoiceCubit>().updateProductQty(product, 1),
+                            onRemove: () => context.read<AddInvoiceCubit>().updateProductQty(product, -1),
                           );
                         },
                       );
@@ -85,6 +89,18 @@ class _NewInvoicePageState extends State<NewInvoicePage> {
         ],
       ),
       bottomNavigationBar: const NewInvoiceBottomBar(),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ScannerInvoicePage()),
+          );
+        },
+        icon: const Icon(LucideIcons.scanLine),
+        label: Text(AppStrings.quickScan),
+        backgroundColor: AppColors.success,
+        foregroundColor: AppColors.white,
+      ),
     );
   }
 

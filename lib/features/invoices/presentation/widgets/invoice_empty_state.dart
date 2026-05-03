@@ -4,6 +4,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/constants/app_strings.dart';
 
 class InvoiceEmptyState extends StatelessWidget {
   const InvoiceEmptyState({super.key});
@@ -21,12 +22,12 @@ class InvoiceEmptyState extends StatelessWidget {
           ),
           const Gap(AppSpacing.lg),
           Text(
-            'No invoices found.',
+            AppStrings.noInvoices,
             style: AppTypography.bodyMd.copyWith(color: AppColors.grey),
           ),
           const Gap(AppSpacing.sm),
           Text(
-            'Tap + to create your first invoice.',
+            AppStrings.createFirstInvoice,
             style: AppTypography.bodySm.copyWith(color: AppColors.grey),
           ),
         ],

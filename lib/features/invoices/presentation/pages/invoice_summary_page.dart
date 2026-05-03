@@ -11,6 +11,7 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/bento_theme_extension.dart';
 import '../../../settings/presentation/cubits/settings_cubit.dart';
 import '../cubits/invoice_cubit.dart';
+import '../cubits/add_invoice_cubit.dart';
 import '../../domain/entities/invoice.dart';
 import '../widgets/invoice_items_table.dart';
 import '../widgets/invoice_totals_section.dart';
@@ -47,20 +48,22 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
         final settings = settingsState.settings;
         final isArabic = settings.language == 'AR';
 
-        return BlocConsumer<InvoiceCubit, InvoiceState>(
+        return BlocConsumer<AddInvoiceCubit, AddInvoiceState>(
           listener: (context, state) {
-            if (state is InvoiceSaveSuccess) {
+            if (state is AddInvoiceSaveSuccess) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(isArabic ? 'تم حفظ الفاتورة بنجاح!' : 'Invoice saved successfully!'),
                   backgroundColor: AppColors.success,
                 ),
               );
+              // Refresh the invoices list
+              context.read<InvoiceCubit>().loadInvoices();
               Navigator.popUntil(context, (route) => route.isFirst);
             }
           },
           builder: (context, state) {
-            if (state is! InvoiceCreating) {
+            if (state is! AddInvoiceCreating) {
               return Scaffold(
                 body: Center(child: Text(isArabic ? 'لا توجد فاتورة قيد التنفيذ' : 'No invoice in progress')),
               );
@@ -171,7 +174,7 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
                       paidAmount: paidAmountValue,
                       remainingAmount: remainingAmountValue,
                     );
-                    context.read<InvoiceCubit>().saveInvoice(invoice);
+                    context.read<AddInvoiceCubit>().saveInvoice(invoice);
                   },
                   child: Text(isArabic ? 'حفظ الفاتورة' : 'SAVE INVOICE'),
                 ),

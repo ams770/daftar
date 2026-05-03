@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../../core/enums/invoice_enums.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/bento_theme_extension.dart';
+import '../../../../core/constants/app_strings.dart';
 
 class InvoiceDetailHeader extends StatelessWidget {
   final int? invoiceId;
@@ -55,7 +57,7 @@ class InvoiceDetailHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${isArabic ? 'فاتورة' : 'Invoice'} ${type.label(isArabic)}',
+                    '${AppStrings.invoice} ${type.label(isArabic)}',
                     style: AppTypography.label.copyWith(
                       color: AppColors.white.withValues(alpha: 0.8),
                       letterSpacing: 1.2,
@@ -92,7 +94,7 @@ class InvoiceDetailHeader extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              _buildStatusBadge(isArabic, isFullyPaid),
+              _buildStatusBadge(isFullyPaid),
             ],
           ),
           const Gap(AppSpacing.md),
@@ -113,7 +115,7 @@ class InvoiceDetailHeader extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusBadge(bool isArabic, bool isFullyPaid) {
+  Widget _buildStatusBadge(bool isFullyPaid) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
@@ -122,9 +124,7 @@ class InvoiceDetailHeader extends StatelessWidget {
         border: Border.all(color: AppColors.white.withValues(alpha: 0.2)),
       ),
       child: Text(
-        isFullyPaid
-            ? (isArabic ? 'مدفوع بالكامل' : 'FULLY PAID')
-            : (isArabic ? 'متبقي' : 'REMAINING'),
+        isFullyPaid ? AppStrings.fullyPaid : AppStrings.remaining,
         style: AppTypography.label.copyWith(
           color: AppColors.white,
           fontSize: 10,
