@@ -112,4 +112,6 @@ class AppStrings {
   static String get moneyCollectedSuccess => 'money_collected_success'.tr();
   static String get printingLanguage => 'printing_language'.tr();
   static String get extractingData => 'extracting_data'.tr();
+  static String get generating => 'generating'.tr();
+  static String get connecting => 'connecting'.tr();
 }

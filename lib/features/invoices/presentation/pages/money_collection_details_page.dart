@@ -108,11 +108,31 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
         crossAxisSpacing: AppSpacing.md,
         childAspectRatio: 1.5,
         children: [
-          _buildActionButton(
-            icon: LucideIcons.printer,
-            label: AppStrings.print,
-            color: AppColors.secondary,
-            onTap: () => context.read<PrinterCubit>().printCollection(collection),
+          BlocBuilder<PrinterCubit, PrinterState>(
+            builder: (context, state) {
+              Color buttonColor = AppColors.secondary;
+              String buttonLabel = AppStrings.print;
+
+              if (state is PrinterPrinting) {
+                buttonColor = AppColors.warning;
+                buttonLabel = 'printing'.tr();
+              } else if (state is PrinterGeneratingInvoice) {
+                buttonColor = AppColors.warning;
+                buttonLabel = AppStrings.generating;
+              } else if (state is PrinterConnecting || state is PrinterSearching) {
+                buttonColor = AppColors.warning;
+                buttonLabel = AppStrings.connecting;
+              } else if (state is! PrinterConnected && state is! PrinterPrintSuccess) {
+                buttonColor = AppColors.grey;
+              }
+
+              return _buildActionButton(
+                icon: LucideIcons.printer,
+                label: buttonLabel,
+                color: buttonColor,
+                onTap: () => context.read<PrinterCubit>().printCollection(collection),
+              );
+            },
           ),
           _buildActionButton(
             icon: LucideIcons.share2,

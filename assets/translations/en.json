@@ -127,5 +127,7 @@
   "printer_3_inch": "3 Inch (80mm)",
   "printer_4_inch": "4 Inch (110mm)",
   "printing": "Printing...",
-  "print_success": "Print job sent!"
+  "print_success": "Print job sent!",
+  "generating": "Generating...",
+  "connecting": "Connecting..."
 }

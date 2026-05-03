@@ -127,5 +127,7 @@
   "printer_3_inch": "3 بوصة (80 مم)",
   "printer_4_inch": "4 بوصة (110 مم)",
   "printing": "جاري الطباعة...",
-  "print_success": "تم إرسال أمر الطباعة!"
+  "print_success": "تم إرسال أمر الطباعة!",
+  "generating": "جاري التجهيز...",
+  "connecting": "جاري الاتصال..."
 }
