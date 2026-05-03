@@ -43,9 +43,7 @@ class AppSelectionGroup<T> extends StatelessWidget {
             final isSelected = item == selectedItem;
             return Expanded(
               child: Padding(
-                padding: EdgeInsets.only(
-                  right: item == items.last ? 0 : AppSpacing.md,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
                 child: _SelectionItem(
                   label: itemLabel(item),
                   icon: itemIcon(item),
@@ -83,10 +81,14 @@ class _SelectionItem extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.success.withValues(alpha: 0.1) : AppColors.white,
+          color: isSelected
+              ? AppColors.success.withValues(alpha: 0.1)
+              : AppColors.white,
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
           border: Border.all(
-            color: isSelected ? AppColors.success : AppColors.greyLight.withValues(alpha: 0.5),
+            color: isSelected
+                ? AppColors.success
+                : AppColors.greyLight.withValues(alpha: 0.5),
             width: isSelected ? 2 : 1,
           ),
         ),

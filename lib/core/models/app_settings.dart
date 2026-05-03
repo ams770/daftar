@@ -6,6 +6,7 @@ class AppSettings extends Equatable {
   final String address;
   final int vatPercent;
   final String language; // 'AR' or 'EN'
+  final String printingLanguage; // 'AR' or 'EN'
   final String? logoPath;
   final String currency;
   final bool isOnboarded;
@@ -16,6 +17,7 @@ class AppSettings extends Equatable {
     required this.address,
     required this.vatPercent,
     required this.language,
+    required this.printingLanguage,
     this.logoPath,
     required this.currency,
     this.isOnboarded = false,
@@ -28,6 +30,7 @@ class AppSettings extends Equatable {
       address: json['address'] ?? '',
       vatPercent: json['vatPercent'] ?? 15,
       language: json['language'] ?? 'EN',
+      printingLanguage: json['printingLanguage'] ?? 'EN',
       logoPath: json['logoPath'],
       currency: json['currency'] ?? 'USD',
       isOnboarded: json['isOnboarded'] == 1 || json['isOnboarded'] == true,
@@ -42,6 +45,7 @@ class AppSettings extends Equatable {
       'address': address,
       'vatPercent': vatPercent,
       'language': language,
+      'printingLanguage': printingLanguage,
       'logoPath': logoPath,
       'currency': currency,
       'isOnboarded': isOnboarded ? 1 : 0,
@@ -54,6 +58,7 @@ class AppSettings extends Equatable {
     String? address,
     int? vatPercent,
     String? language,
+    String? printingLanguage,
     String? logoPath,
     String? currency,
     bool? isOnboarded,
@@ -64,6 +69,7 @@ class AppSettings extends Equatable {
       address: address ?? this.address,
       vatPercent: vatPercent ?? this.vatPercent,
       language: language ?? this.language,
+      printingLanguage: printingLanguage ?? this.printingLanguage,
       logoPath: logoPath ?? this.logoPath,
       currency: currency ?? this.currency,
       isOnboarded: isOnboarded ?? this.isOnboarded,
@@ -77,6 +83,7 @@ class AppSettings extends Equatable {
         address,
         vatPercent,
         language,
+        printingLanguage,
         logoPath,
         currency,
         isOnboarded,

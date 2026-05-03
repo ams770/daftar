@@ -63,7 +63,7 @@
   "product": "المنتج",
   "qty": "الكمية",
   "grand_total": "الإجمالي النهائي",
-  "paid": "المدفوع",
+  "paid": "مدفوع",
   "no_invoices": "لم يتم العثور على فواتير.",
   "create_first_invoice": "اضغط على + لإنشاء أول فاتورة لك.",
   "edit_product": "تعديل المنتج",
@@ -107,5 +107,6 @@
   "remaining_before": "المتبقي قبل",
   "remaining_after": "المتبقي بعد",
   "amount_to_collect": "المبلغ المراد تحصيله",
-  "money_collected_success": "تم تحصيل المبلغ بنجاح!"
+  "money_collected_success": "تم تحصيل المبلغ بنجاح!",
+  "printing_language": "لغة الطباعة"
 }

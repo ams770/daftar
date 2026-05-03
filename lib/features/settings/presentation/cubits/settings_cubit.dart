@@ -54,6 +54,22 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
   }
 
+  Future<void> updateLanguage(String lang) async {
+    if (state is SettingsLoaded) {
+      final currentSettings = (state as SettingsLoaded).settings;
+      final newSettings = currentSettings.copyWith(language: lang);
+      await saveSettings(newSettings);
+    }
+  }
+
+  Future<void> updatePrintingLanguage(String lang) async {
+    if (state is SettingsLoaded) {
+      final currentSettings = (state as SettingsLoaded).settings;
+      final newSettings = currentSettings.copyWith(printingLanguage: lang);
+      await saveSettings(newSettings);
+    }
+  }
+
   Future<void> updateLogo(String? path) async {
     if (state is SettingsLoaded) {
       final currentSettings = (state as SettingsLoaded).settings;

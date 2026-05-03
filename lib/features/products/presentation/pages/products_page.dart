@@ -97,47 +97,46 @@ class _ProductsViewContentState extends State<_ProductsViewContent> {
             ],
             title: Text(AppStrings.inventory),
           ),
-          SliverToBoxAdapter(
-            child: Container(
-              color: AppColors.secondary,
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.lg,
-                0,
-                AppSpacing.lg,
-                AppSpacing.lg,
-              ),
-              child: Column(
-                children: [
-                  SearchInputField(
-                    onChanged: (query) {
-                      context.read<ProductsCubit>().searchProducts(query);
-                    },
-                    onScannerTap: () => _openScanner(context),
-                  ),
-                  const Gap(AppSpacing.md),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _ActionButton(
-                          onPressed: () => _showImportInstructions(context),
-                          icon: LucideIcons.fileSpreadsheet,
-                          label: 'Import Excel',
-                          color: AppColors.white,
+          SliverAppBar(
+            pinned: false,
+            floating: true,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                color: AppColors.secondary,
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                child: Column(
+                  children: [
+                    SearchInputField(
+                      onChanged: (query) {
+                        context.read<ProductsCubit>().searchProducts(query);
+                      },
+                      onScannerTap: () => _openScanner(context),
+                    ),
+                    const Gap(AppSpacing.md),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _ActionButton(
+                            onPressed: () => _showImportInstructions(context),
+                            icon: LucideIcons.fileSpreadsheet,
+                            label: 'Import Excel',
+                            color: AppColors.white,
+                          ),
                         ),
-                      ),
-                      const Gap(AppSpacing.md),
-                      Expanded(
-                        child: _ActionButton(
-                          onPressed: () =>
-                              context.read<ProductsCubit>().exportToExcel(),
-                          icon: LucideIcons.fileDown,
-                          label: 'Export Excel',
-                          color: AppColors.white,
+                        const Gap(AppSpacing.md),
+                        Expanded(
+                          child: _ActionButton(
+                            onPressed: () =>
+                                context.read<ProductsCubit>().exportToExcel(),
+                            icon: LucideIcons.fileDown,
+                            label: 'Export Excel',
+                            color: AppColors.white,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

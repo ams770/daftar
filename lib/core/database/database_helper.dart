@@ -19,7 +19,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 6,
+      version: 7,
       onCreate: _createDB,
       onUpgrade: _onUpgrade,
     );
@@ -44,6 +44,9 @@ class DatabaseHelper {
     }
     if (oldVersion < 6) {
       await _createMoneyCollectionsTable(db);
+    }
+    if (oldVersion < 7) {
+      await db.execute('ALTER TABLE app_settings ADD COLUMN printingLanguage TEXT NOT NULL DEFAULT "EN"');
     }
   }
 
@@ -90,6 +93,7 @@ CREATE TABLE app_settings (
   address TEXT,
   vatPercent INTEGER DEFAULT 15,
   language TEXT DEFAULT 'EN',
+  printingLanguage TEXT NOT NULL DEFAULT "EN",
   logoPath TEXT,
   currency TEXT DEFAULT 'USD',
   isOnboarded INTEGER DEFAULT 0
@@ -101,6 +105,7 @@ CREATE TABLE app_settings (
       'brandName': '',
       'vatPercent': 15,
       'language': 'EN',
+      'printingLanguage': 'EN',
       'currency': 'USD',
       'isOnboarded': 0
     });

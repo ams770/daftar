@@ -107,5 +107,6 @@
   "remaining_before": "Remaining Before",
   "remaining_after": "Remaining After",
   "amount_to_collect": "Amount to Collect",
-  "money_collected_success": "Money collected successfully!"
+  "money_collected_success": "Money collected successfully!",
+  "printing_language": "Printing Language"
 }

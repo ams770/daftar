@@ -156,7 +156,61 @@ class _SettingsContent extends StatelessWidget {
                   : AppStrings.english,
             ),
           ),
+          const Gap(AppSpacing.xl),
+          SettingsSection(
+            title: AppStrings.printingLanguage,
+            onTap: () => _showPrintingLanguageModal(context),
+            child: SettingRow(
+              icon: LucideIcons.printer,
+              label: AppStrings.selectLanguage,
+              value: settings.printingLanguage == 'AR'
+                  ? AppStrings.arabic
+                  : AppStrings.english,
+            ),
+          ),
         ],
+      ),
+    );
+  }
+
+  void _showPrintingLanguageModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        decoration: const BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(AppSpacing.radiusXl),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(AppStrings.printingLanguage, style: AppTypography.h2),
+            const Gap(AppSpacing.lg),
+            LanguageOption(
+              label: AppStrings.english,
+              isSelected: settings.printingLanguage == 'EN',
+              onTap: () {
+                context.read<SettingsCubit>().updatePrintingLanguage('EN');
+                Navigator.pop(context);
+              },
+            ),
+            const Gap(AppSpacing.md),
+            LanguageOption(
+              label: AppStrings.arabic,
+              isSelected: settings.printingLanguage == 'AR',
+              onTap: () {
+                context.read<SettingsCubit>().updatePrintingLanguage('AR');
+                Navigator.pop(context);
+              },
+            ),
+            const Gap(AppSpacing.xl),
+          ],
+        ),
       ),
     );
   }

@@ -27,22 +27,45 @@ class _CollectMoneyBottomSheetState extends State<CollectMoneyBottomSheet> {
   @override
   void initState() {
     super.initState();
-    _amountController.addListener(() {
-      setState(() {
-        _amount = double.tryParse(_amountController.text) ?? 0.0;
-      });
+    _amountController.addListener(_onAmountChanged);
+  }
+
+  void _onAmountChanged() {
+    final text = _amountController.text;
+    if (text.isEmpty) {
+      setState(() => _amount = 0.0);
+      return;
+    }
+
+    double? val = double.tryParse(text);
+    if (val == null) return;
+
+    if (val > widget.invoice.remainingAmount) {
+      val = widget.invoice.remainingAmount;
+      _amountController.value = TextEditingValue(
+        text: val.toStringAsFixed(2),
+        selection: TextSelection.collapsed(offset: val.toStringAsFixed(2).length),
+      );
+    }
+
+    setState(() {
+      _amount = val!;
     });
   }
 
   @override
   void dispose() {
+    _amountController.removeListener(_onAmountChanged);
     _amountController.dispose();
     super.dispose();
   }
 
-  double get _newRemaining => widget.invoice.remainingAmount - _amount;
+  double get _newRemaining {
+    final res = widget.invoice.remainingAmount - _amount;
+    return res < 0.001 ? 0.0 : res; // Handle potential precision issues
+  }
 
-  bool get _isValid => _amount > 0 && _amount <= widget.invoice.remainingAmount;
+  bool get _isValid => _amount > 0 && _amount <= (widget.invoice.remainingAmount + 0.001);
 
   @override
   Widget build(BuildContext context) {

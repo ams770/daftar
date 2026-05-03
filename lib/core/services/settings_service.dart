@@ -31,6 +31,7 @@ class SettingsServiceImpl implements SettingsService {
         address: '',
         vatPercent: 15,
         language: 'EN',
+        printingLanguage: 'EN',
         currency: 'USD',
       );
     }

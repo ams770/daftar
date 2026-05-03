@@ -26,7 +26,9 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
     return BlocBuilder<SettingsCubit, SettingsState>(
       builder: (context, settingsState) {
         if (settingsState is! SettingsLoaded) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
 
         final settings = settingsState.settings;
@@ -108,7 +110,10 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
           children: [
             Icon(icon, color: color),
             const Gap(4),
-            Text(label, style: AppTypography.label.copyWith(color: color, fontSize: 10)),
+            Text(
+              label,
+              style: AppTypography.label.copyWith(color: color, fontSize: 10),
+            ),
           ],
         ),
       ),
@@ -121,18 +126,31 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
       decoration: bento.cardDecoration,
       child: Column(
         children: [
-          Text(AppStrings.collected, style: AppTypography.bodySm.copyWith(color: AppColors.grey)),
+          Text(
+            AppStrings.collected,
+            style: AppTypography.bodySm.copyWith(color: AppColors.grey),
+          ),
           const Gap(4),
           Text(
             '${collection.amount.toStringAsFixed(2)}',
-            style: AppTypography.h1.copyWith(color: AppColors.success, fontSize: 32),
+            style: AppTypography.h1.copyWith(
+              color: AppColors.success,
+              fontSize: 32,
+            ),
           ),
           const Gap(AppSpacing.xl),
           const Divider(),
           const Gap(AppSpacing.xl),
-          _buildDetailRow(AppStrings.remainingBefore, collection.remainingBefore.toStringAsFixed(2)),
+          _buildDetailRow(
+            AppStrings.remainingBefore,
+            collection.remainingBefore.toStringAsFixed(2),
+          ),
           const Gap(AppSpacing.md),
-          _buildDetailRow(AppStrings.remainingAfter, collection.remainingAfter.toStringAsFixed(2), isBold: true),
+          _buildDetailRow(
+            AppStrings.remainingAfter,
+            collection.remainingAfter.toStringAsFixed(2),
+            isBold: true,
+          ),
           const Gap(AppSpacing.xl),
           const Divider(),
           const Gap(AppSpacing.xl),
@@ -148,9 +166,7 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
       borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.xl),
-        decoration: bento.cardDecoration.copyWith(
-          color: AppColors.secondary.withValues(alpha: 0.05),
-        ),
+        decoration: bento.cardDecoration,
         child: Row(
           children: [
             const Icon(LucideIcons.fileText, color: AppColors.secondary),
@@ -159,8 +175,14 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Related Invoice', style: AppTypography.label.copyWith(color: AppColors.grey)),
-                  Text('Invoice #${collection.invoiceId}', style: AppTypography.h3),
+                  Text(
+                    'Related Invoice',
+                    style: AppTypography.label.copyWith(color: AppColors.grey),
+                  ),
+                  Text(
+                    'Invoice #${collection.invoiceId}',
+                    style: AppTypography.h3,
+                  ),
                   if (collection.clientName != null)
                     Text(collection.clientName!, style: AppTypography.bodySm),
                 ],
@@ -180,14 +202,18 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
         Text(label, style: AppTypography.bodyMd),
         Text(
           value,
-          style: isBold ? AppTypography.h3 : AppTypography.bodyMd.copyWith(fontWeight: FontWeight.w600),
+          style: isBold
+              ? AppTypography.h3
+              : AppTypography.bodyMd.copyWith(fontWeight: FontWeight.w600),
         ),
       ],
     );
   }
 
   void _navigateToInvoice(BuildContext context) async {
-    final invoice = await context.read<InvoiceCubit>().getInvoiceById(collection.invoiceId);
+    final invoice = await context.read<InvoiceCubit>().getInvoiceById(
+      collection.invoiceId,
+    );
     if (invoice != null && context.mounted) {
       Navigator.push(
         context,
@@ -212,7 +238,10 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: AppColors.danger),
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: AppColors.danger,
+          ),
         );
       }
     }
@@ -223,18 +252,28 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(AppStrings.delete),
-        content: const Text('Are you sure you want to delete this collection? This will increase the invoice remaining amount.'),
+        content: const Text(
+          'Are you sure you want to delete this collection? This will increase the invoice remaining amount.',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(AppStrings.cancel)),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(AppStrings.cancel),
+          ),
           TextButton(
             onPressed: () {
               Navigator.pop(dialogContext);
-              context.read<MoneyCollectionCubit>().deleteCollection(collection.id!);
+              context.read<MoneyCollectionCubit>().deleteCollection(
+                collection.id!,
+              );
               // Refresh invoice list in case we go back to it
               context.read<InvoiceCubit>().loadInvoices(refresh: true);
               Navigator.pop(context);
             },
-            child: Text(AppStrings.delete, style: const TextStyle(color: AppColors.danger)),
+            child: Text(
+              AppStrings.delete,
+              style: const TextStyle(color: AppColors.danger),
+            ),
           ),
         ],
       ),
