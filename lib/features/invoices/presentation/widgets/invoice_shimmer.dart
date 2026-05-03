@@ -92,10 +92,8 @@ class InvoiceListShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      itemCount: count,
-      itemBuilder: (context, index) => const InvoiceShimmer(),
+    return Column(
+      children: List.generate(count, (index) => const InvoiceShimmer()),
     );
   }
 }
