@@ -97,9 +97,9 @@ class _ProductsViewContentState extends State<_ProductsViewContent> {
             ],
             title: Text(AppStrings.inventory),
           ),
-          SliverAppBar(
+          SliverAppBar.medium(
             pinned: false,
-            floating: true,
+
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 color: AppColors.secondary,
@@ -110,6 +110,7 @@ class _ProductsViewContentState extends State<_ProductsViewContent> {
                       onChanged: (query) {
                         context.read<ProductsCubit>().searchProducts(query);
                       },
+                      hintText: AppStrings.searchProducts,
                       onScannerTap: () => _openScanner(context),
                     ),
                     const Gap(AppSpacing.md),
@@ -119,7 +120,7 @@ class _ProductsViewContentState extends State<_ProductsViewContent> {
                           child: _ActionButton(
                             onPressed: () => _showImportInstructions(context),
                             icon: LucideIcons.fileSpreadsheet,
-                            label: 'Import Excel',
+                            label: AppStrings.importExcel,
                             color: AppColors.white,
                           ),
                         ),
@@ -129,7 +130,7 @@ class _ProductsViewContentState extends State<_ProductsViewContent> {
                             onPressed: () =>
                                 context.read<ProductsCubit>().exportToExcel(),
                             icon: LucideIcons.fileDown,
-                            label: 'Export Excel',
+                            label: AppStrings.exportExcel,
                             color: AppColors.white,
                           ),
                         ),

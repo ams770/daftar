@@ -7,13 +7,13 @@ import '../../../../core/theme/app_typography.dart';
 
 class SearchInputField extends StatefulWidget {
   final ValueChanged<String> onChanged;
-  final VoidCallback onScannerTap;
+  final VoidCallback? onScannerTap;
   final String hintText;
 
   const SearchInputField({
     super.key,
     required this.onChanged,
-    required this.onScannerTap,
+    this.onScannerTap,
     this.hintText = 'Search by name or code...',
   });
 
@@ -44,10 +44,7 @@ class _SearchInputFieldState extends State<SearchInputField> {
     return TextField(
       controller: _controller,
       onChanged: _onChanged,
-      style: const TextStyle(
-        color: AppColors.text,
-        fontSize: 14,
-      ),
+      style: const TextStyle(color: AppColors.text, fontSize: 14),
       decoration: InputDecoration(
         hintText: widget.hintText,
         hintStyle: AppTypography.bodyMd.copyWith(color: AppColors.grey),
@@ -56,11 +53,13 @@ class _SearchInputFieldState extends State<SearchInputField> {
           color: AppColors.grey,
           size: 18,
         ),
-        suffixIcon: IconButton(
-          icon: const Icon(LucideIcons.scanLine, size: 18),
-          onPressed: widget.onScannerTap,
-          color: AppColors.secondary,
-        ),
+        suffixIcon: widget.onScannerTap == null
+            ? null
+            : IconButton(
+                icon: const Icon(LucideIcons.scanLine, size: 18),
+                onPressed: widget.onScannerTap,
+                color: AppColors.secondary,
+              ),
         filled: true,
         fillColor: AppColors.white,
         border: OutlineInputBorder(

@@ -13,6 +13,8 @@ import 'package:products_printer/features/invoices/presentation/widgets/invoice_
 import 'package:products_printer/features/invoices/presentation/widgets/invoice_empty_state.dart';
 import 'package:products_printer/features/invoices/presentation/widgets/invoice_card.dart';
 
+import '../../../products/presentation/widgets/search_input_field.dart';
+
 class InvoicesPage extends StatefulWidget {
   const InvoicesPage({super.key});
 
@@ -74,65 +76,27 @@ class _InvoicesPageState extends State<InvoicesPage> {
               const Gap(AppSpacing.md),
             ],
           ),
-          SliverToBoxAdapter(
-            child: Container(
-              color: AppColors.secondary,
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.lg,
-                0,
-                AppSpacing.lg,
-                AppSpacing.lg,
-              ),
-              child: BlocBuilder<InvoiceCubit, InvoiceState>(
-                builder: (context, state) {
-                  return Column(
-                    children: [
-                      TextField(
-                        controller: _searchController,
-                        style: const TextStyle(
-                          color: AppColors.text,
-                          fontSize: 14,
-                        ),
-                        decoration: InputDecoration(
+          SliverAppBar.medium(
+            pinned: false,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                color: AppColors.secondary,
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                child: BlocBuilder<InvoiceCubit, InvoiceState>(
+                  builder: (context, state) {
+                    return Column(
+                      children: [
+                        SearchInputField(
                           hintText: AppStrings.searchByClient,
-                          fillColor: AppColors.white,
-                          filled: true,
-                          isDense: true,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.md,
-                            vertical: 12,
-                          ),
-                          prefixIcon: const Icon(
-                            LucideIcons.search,
-                            size: 18,
-                            color: AppColors.grey,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              AppSpacing.radiusMd,
-                            ),
-                            borderSide: BorderSide.none,
-                          ),
-                          suffixIcon: _searchController.text.isNotEmpty
-                              ? IconButton(
-                                  icon: const Icon(LucideIcons.x, size: 18),
-                                  onPressed: () {
-                                    _searchController.clear();
-                                    context
-                                        .read<InvoiceCubit>()
-                                        .setSearchQuery(null);
-                                  },
-                                )
-                              : null,
+                          onChanged: (v) =>
+                              context.read<InvoiceCubit>().setSearchQuery(v),
                         ),
-                        onChanged: (v) =>
-                            context.read<InvoiceCubit>().setSearchQuery(v),
-                      ),
-                      const Gap(AppSpacing.md),
-                      _buildDateFilter(context, state),
-                    ],
-                  );
-                },
+                        const Gap(AppSpacing.md),
+                        _buildDateFilter(context, state),
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           ),
@@ -150,7 +114,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
                   ),
                 );
               }
-              
+
               if (state is InvoiceError) {
                 return SliverFillRemaining(
                   hasScrollBody: false,
@@ -250,7 +214,10 @@ class _InvoicesPageState extends State<InvoicesPage> {
                 lastDate: DateTime.now().add(const Duration(days: 365)),
               );
               if (date != null && context.mounted) {
-                context.read<InvoiceCubit>().setDateRange(state.startDate, date);
+                context.read<InvoiceCubit>().setDateRange(
+                  state.startDate,
+                  date,
+                );
               }
             },
           ),
@@ -312,11 +279,7 @@ class _DateSelector extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            const Icon(
-              LucideIcons.calendar,
-              size: 14,
-              color: AppColors.white,
-            ),
+            const Icon(LucideIcons.calendar, size: 14, color: AppColors.white),
           ],
         ),
       ),

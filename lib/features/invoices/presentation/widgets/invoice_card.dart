@@ -1,7 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:products_printer/core/constants/app_strings.dart';
 import '../../../../core/enums/invoice_enums.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -101,15 +103,15 @@ class InvoiceCard extends StatelessWidget {
                           Row(
                             children: [
                               _StatusBadge(
-                                label: invoice.type == InvoiceType.paid
-                                    ? 'CASH'
-                                    : 'CREDIT',
+                                label: invoice.type.label(
+                                  context.locale.languageCode == 'ar',
+                                ),
                                 color: AppColors.grey,
                               ),
                               if (invoice.remainingAmount > 0) ...[
                                 const Gap(4),
-                                const _StatusBadge(
-                                  label: 'REMAINING',
+                                _StatusBadge(
+                                  label: AppStrings.remaining,
                                   color: AppColors.danger,
                                 ),
                               ],

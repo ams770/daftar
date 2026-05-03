@@ -8,6 +8,7 @@ class AppStrings {
   static String get currency => 'currency'.tr();
   static String get defaultCurrency => 'default_currency'.tr();
   static String get editVat => 'edit_vat'.tr();
+  static String get date => 'date'.tr();
   static String get vatPercentage => 'vat_percentage'.tr();
   static String get editCurrency => 'edit_currency'.tr();
   static String get currencyCode => 'currency_code'.tr();

@@ -32,7 +32,7 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
         }
 
         final settings = settingsState.settings;
-        final isArabic = settings.language == 'AR';
+        // final isArabic = settings.language == 'AR';
         final bento = Theme.of(context).extension<BentoThemeExtension>()!;
 
         return Scaffold(
@@ -154,7 +154,7 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
           const Gap(AppSpacing.xl),
           const Divider(),
           const Gap(AppSpacing.xl),
-          _buildDetailRow('Date', collection.formattedDate),
+          _buildDetailRow(AppStrings.date, collection.formattedDate),
         ],
       ),
     );
@@ -176,11 +176,11 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Related Invoice',
+                   AppStrings.invoice,
                     style: AppTypography.label.copyWith(color: AppColors.grey),
                   ),
                   Text(
-                    'Invoice #${collection.invoiceId}',
+                    '${AppStrings.invoice} #${collection.invoiceId}',
                     style: AppTypography.h3,
                   ),
                   if (collection.clientName != null)

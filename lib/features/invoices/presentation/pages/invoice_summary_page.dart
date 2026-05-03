@@ -69,7 +69,7 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
                   backgroundColor: AppColors.success,
                 ),
               );
-              context.read<InvoiceCubit>().loadInvoices();
+              context.read<InvoiceCubit>().loadInvoices(refresh: true);
               Navigator.popUntil(context, (route) => route.isFirst);
             }
           },
@@ -104,8 +104,8 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
             final vatAmount = subtotal * (settings.vatPercent / 100);
             final total = subtotal + vatAmount;
 
-            double paidAmountValue = _type == InvoiceType.paid 
-                ? total 
+            double paidAmountValue = _type == InvoiceType.paid
+                ? total
                 : (double.tryParse(_paidController.text) ?? 0.0);
             final remainingAmountValue = total - paidAmountValue;
 
@@ -116,7 +116,8 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
                 child: Form(
                   key: _formKey,
                   child: SingleChildScrollView(
-                    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
                     padding: const EdgeInsets.all(AppSpacing.lg),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -137,7 +138,9 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
                             }
                             return null;
                           },
-                          onChanged: (v) => context.read<AddInvoiceCubit>().updateClientName(v),
+                          onChanged: (v) => context
+                              .read<AddInvoiceCubit>()
+                              .updateClientName(v),
                         ),
                         const Gap(AppSpacing.xl),
                         SectionTitle(
@@ -162,7 +165,8 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
                           onSelect: (val) {
                             setState(() {
                               _type = val;
-                              if (_type == InvoiceType.paid) _paidController.clear();
+                              if (_type == InvoiceType.paid)
+                                _paidController.clear();
                             });
                           },
                         ),
@@ -176,7 +180,8 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
                             onChanged: () => setState(() {}),
                           ),
                         ],
-                        if (_type == InvoiceType.paid || _paidController.text.isNotEmpty) ...[
+                        if (_type == InvoiceType.paid ||
+                            _paidController.text.isNotEmpty) ...[
                           const Gap(AppSpacing.lg),
                           PaymentMethodSelection(
                             isArabic: isArabic,
@@ -197,8 +202,12 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
                           vatPercent: settings.vatPercent,
                           currency: settings.currency,
                           isArabic: isArabic,
-                          paidAmount: _type == InvoiceType.credit ? paidAmountValue : null,
-                          remainingAmount: _type == InvoiceType.credit ? remainingAmountValue : null,
+                          paidAmount: _type == InvoiceType.credit
+                              ? paidAmountValue
+                              : null,
+                          remainingAmount: _type == InvoiceType.credit
+                              ? remainingAmountValue
+                              : null,
                         ),
                         const Gap(AppSpacing.tripleXl),
                         const Gap(AppSpacing.tripleXl),
@@ -207,35 +216,43 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
                   ),
                 ),
               ),
-              bottomSheet: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(AppSpacing.xl),
-                color: Theme.of(context).scaffoldBackgroundColor,
-                child: SafeArea(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        final invoice = Invoice(
-                          createdAt: DateTime.now(),
-                          items: items,
-                          subtotal: subtotal,
-                          vatAmount: vatAmount,
-                          total: total,
-                          vatPercent: settings.vatPercent,
-                          currency: settings.currency,
-                          type: _type,
-                          paymentMethod: _method,
-                          paidAmount: paidAmountValue,
-                          remainingAmount: remainingAmountValue,
-                          clientName: _clientNameController.text.trim(),
-                        );
-                        context.read<AddInvoiceCubit>().saveInvoice(invoice);
-                      }
-                    },
-                    child: Text(AppStrings.saveInvoice),
-                  ),
-                ),
-              ),
+              bottomSheet: MediaQuery.of(context).viewInsets.bottom > 0
+                  ? null
+                  : Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(AppSpacing.xl),
+
+                      color: AppColors.white,
+                      child: SafeArea(
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: AppSpacing.xl),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                final invoice = Invoice(
+                                  createdAt: DateTime.now(),
+                                  items: items,
+                                  subtotal: subtotal,
+                                  vatAmount: vatAmount,
+                                  total: total,
+                                  vatPercent: settings.vatPercent,
+                                  currency: settings.currency,
+                                  type: _type,
+                                  paymentMethod: _method,
+                                  paidAmount: paidAmountValue,
+                                  remainingAmount: remainingAmountValue,
+                                  clientName: _clientNameController.text.trim(),
+                                );
+                                context.read<AddInvoiceCubit>().saveInvoice(
+                                  invoice,
+                                );
+                              }
+                            },
+                            child: Text(AppStrings.saveInvoice),
+                          ),
+                        ),
+                      ),
+                    ),
             );
           },
         );

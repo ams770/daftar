@@ -68,9 +68,11 @@ class InvoiceLocalDataSourceImpl implements InvoiceLocalDataSource {
     }
     
     if (startDate != null && endDate != null) {
+      final start = DateTime(startDate.year, startDate.month, startDate.day);
+      final end = DateTime(endDate.year, endDate.month, endDate.day, 23, 59, 59);
       whereClauses.add('createdAt BETWEEN ? AND ?');
-      whereArgs.add(startDate.toIso8601String());
-      whereArgs.add(endDate.toIso8601String());
+      whereArgs.add(start.toIso8601String());
+      whereArgs.add(end.toIso8601String());
     }
     
     final String? where = whereClauses.isEmpty ? null : whereClauses.join(' AND ');
@@ -176,9 +178,11 @@ class InvoiceLocalDataSourceImpl implements InvoiceLocalDataSource {
     }
 
     if (startDate != null && endDate != null) {
+      final start = DateTime(startDate.year, startDate.month, startDate.day);
+      final end = DateTime(endDate.year, endDate.month, endDate.day, 23, 59, 59);
       whereClauses.add('createdAt BETWEEN ? AND ?');
-      whereArgs.add(startDate.toIso8601String());
-      whereArgs.add(endDate.toIso8601String());
+      whereArgs.add(start.toIso8601String());
+      whereArgs.add(end.toIso8601String());
     }
 
     final String? where = whereClauses.isEmpty ? null : whereClauses.join(' AND ');

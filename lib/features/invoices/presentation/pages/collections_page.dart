@@ -8,6 +8,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/bento_theme_extension.dart';
+import '../../../products/presentation/widgets/search_input_field.dart';
 import '../cubits/money_collection_cubit.dart';
 import '../../domain/entities/money_collection.dart';
 
@@ -56,76 +57,41 @@ class _CollectionsPageState extends State<CollectionsPage> {
             backgroundColor: AppColors.secondary,
             title: Text(AppStrings.collections),
           ),
-          SliverToBoxAdapter(
-            child: Container(
-              color: AppColors.secondary,
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.lg,
-                0,
-                AppSpacing.lg,
-                AppSpacing.lg,
-              ),
-              child: BlocBuilder<MoneyCollectionCubit, MoneyCollectionState>(
-                builder: (context, state) {
-                  return Column(
-                    children: [
-                      TextField(
-                        controller: _searchController,
-                        style: const TextStyle(
-                          color: AppColors.text,
-                          fontSize: 14,
-                        ),
-                        decoration: InputDecoration(
+          SliverAppBar.medium(
+            pinned: false,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                color: AppColors.secondary,
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                child: BlocBuilder<MoneyCollectionCubit, MoneyCollectionState>(
+                  builder: (context, state) {
+                    return Column(
+                      children: [
+                        SearchInputField(
                           hintText: AppStrings.searchByClient,
-                          fillColor: AppColors.white,
-                          filled: true,
-                          isDense: true,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.md,
-                            vertical: 12,
-                          ),
-                          prefixIcon: const Icon(
-                            LucideIcons.search,
-                            size: 18,
-                            color: AppColors.grey,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              AppSpacing.radiusMd,
-                            ),
-                            borderSide: BorderSide.none,
-                          ),
-                          suffixIcon: _searchController.text.isNotEmpty
-                              ? IconButton(
-                                  icon: const Icon(LucideIcons.x, size: 18),
-                                  onPressed: () {
-                                    _searchController.clear();
-                                    context
-                                        .read<MoneyCollectionCubit>()
-                                        .setSearchQuery(null);
-                                  },
-                                )
-                              : null,
+                          onChanged: (v) => context
+                              .read<MoneyCollectionCubit>()
+                              .setSearchQuery(v),
                         ),
-                        onChanged: (v) =>
-                            context.read<MoneyCollectionCubit>().setSearchQuery(v),
-                      ),
-                      const Gap(AppSpacing.md),
-                      _buildDateFilter(context, state),
-                    ],
-                  );
-                },
+                        const Gap(AppSpacing.md),
+                        _buildDateFilter(context, state),
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           ),
           BlocBuilder<MoneyCollectionCubit, MoneyCollectionState>(
             builder: (context, state) {
-              if (state is MoneyCollectionInitial || state is MoneyCollectionLoading && state.collections.isEmpty) {
+              if (state is MoneyCollectionInitial ||
+                  state is MoneyCollectionLoading &&
+                      state.collections.isEmpty) {
                 return const SliverFillRemaining(
                   child: Center(child: CircularProgressIndicator()),
                 );
               }
-              
+
               if (state is MoneyCollectionError && state.collections.isEmpty) {
                 return SliverFillRemaining(
                   hasScrollBody: false,
@@ -162,10 +128,14 @@ class _CollectionsPageState extends State<CollectionsPage> {
                             ),
                           );
                           if (context.mounted) {
-                            context.read<MoneyCollectionCubit>().loadCollections(refresh: true);
+                            context
+                                .read<MoneyCollectionCubit>()
+                                .loadCollections(refresh: true);
                           }
                         },
-                        child: _CollectionCard(collection: state.collections[index]),
+                        child: _CollectionCard(
+                          collection: state.collections[index],
+                        ),
                       );
                     },
                     childCount:
@@ -195,7 +165,10 @@ class _CollectionsPageState extends State<CollectionsPage> {
                 lastDate: state.endDate,
               );
               if (date != null && context.mounted) {
-                context.read<MoneyCollectionCubit>().setDateRange(date, state.endDate);
+                context.read<MoneyCollectionCubit>().setDateRange(
+                  date,
+                  state.endDate,
+                );
               }
             },
           ),
@@ -213,7 +186,10 @@ class _CollectionsPageState extends State<CollectionsPage> {
                 lastDate: DateTime.now().add(const Duration(days: 365)),
               );
               if (date != null && context.mounted) {
-                context.read<MoneyCollectionCubit>().setDateRange(state.startDate, date);
+                context.read<MoneyCollectionCubit>().setDateRange(
+                  state.startDate,
+                  date,
+                );
               }
             },
           ),
@@ -273,7 +249,11 @@ class _CollectionCard extends StatelessWidget {
                 children: [
                   _buildMiniLabel('Before', collection.remainingBefore),
                   const Gap(AppSpacing.md),
-                  _buildMiniLabel('After', collection.remainingAfter, isBold: true),
+                  _buildMiniLabel(
+                    'After',
+                    collection.remainingAfter,
+                    isBold: true,
+                  ),
                 ],
               ),
             ],
@@ -352,11 +332,7 @@ class _DateSelector extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            const Icon(
-              LucideIcons.calendar,
-              size: 14,
-              color: AppColors.white,
-            ),
+            const Icon(LucideIcons.calendar, size: 14, color: AppColors.white),
           ],
         ),
       ),
