@@ -351,6 +351,7 @@ class InvoicePdfService {
               settings.currency,
               baseStyle.copyWith(fontSize: 10),
             ),
+            pw.SizedBox(height: 3),
             _buildTotalRow(
               '${isArabic ? 'الضريبة' : 'VAT'} (${invoice.vatPercent}%)',
               invoice.vatAmount,
