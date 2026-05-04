@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'thermal_printer_service.dart';
 
 class AndroidThermalPrinterService implements ThermalPrinterService {
-  static const _channel = MethodChannel('com.bennu.inventory/printer');
-  static const _stateChannel = EventChannel('com.bennu.inventory/printer_state');
+  static const _channel = MethodChannel('com.bennu.daftar/printer');
+  static const _stateChannel = EventChannel('com.bennu.daftar/printer_state');
 
   // ── State stream ──────────────────────────────────────────────────────────
   final StreamController<PrinterConnectionState> _stateController =

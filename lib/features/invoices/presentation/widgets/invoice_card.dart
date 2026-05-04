@@ -8,7 +8,7 @@ import '../../../../core/enums/invoice_enums.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/theme/bento_theme_extension.dart';
+import '../../../../core/theme/daftar_theme_extension.dart';
 import '../../domain/entities/invoice.dart';
 import '../pages/invoice_details_page.dart';
 
@@ -18,12 +18,12 @@ class InvoiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bento = Theme.of(context).extension<BentoThemeExtension>()!;
+    final daftar = Theme.of(context).extension<DaftarThemeExtension>()!;
     final dateFormat = DateFormat('MMM dd, yyyy • HH:mm');
 
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.lg),
-      decoration: bento.cardDecoration.copyWith(
+      decoration: daftar.cardDecoration.copyWith(
         boxShadow: [
           BoxShadow(
             color: AppColors.text.withValues(alpha: 0.04),

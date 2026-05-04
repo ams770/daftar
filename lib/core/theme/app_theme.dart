@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'app_colors.dart';
 import 'app_spacing.dart';
 import 'app_typography.dart';
-import 'bento_theme_extension.dart';
+import 'daftar_theme_extension.dart';
 
 class AppTheme {
   static ThemeData get light {
@@ -102,7 +102,7 @@ class AppTheme {
         ),
       ),
       extensions: [
-        BentoThemeExtension(
+        DaftarThemeExtension(
           surfaceColor: AppColors.surface,
           cardDecoration: BoxDecoration(
             color: AppColors.white,
@@ -124,7 +124,7 @@ class AppTheme {
               ),
             ],
           ),
-          bentoBoxDecoration: BoxDecoration(
+          daftarBoxDecoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: AppColors.surfaceGradient,
               begin: Alignment.topLeft,

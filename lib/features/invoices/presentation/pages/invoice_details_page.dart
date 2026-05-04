@@ -10,7 +10,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/services/invoice_pdf_service.dart';
 import '../../../../core/constants/app_strings.dart';
-import '../../../../core/theme/bento_theme_extension.dart';
+import '../../../../core/theme/daftar_theme_extension.dart';
 import '../../../printer/presentation/cubits/printer_cubit.dart';
 import '../../../printer/presentation/cubits/printer_state.dart';
 import '../../../printer/presentation/widgets/printer_status_indicator.dart';
@@ -26,7 +26,6 @@ import '../widgets/collect_money_bottom_sheet.dart';
 import '../../domain/entities/money_collection.dart';
 import '../cubits/money_collection_cubit.dart';
 import 'money_collection_details_page.dart';
-
 
 class InvoiceDetailsPage extends StatefulWidget {
   final Invoice invoice;
@@ -122,7 +121,10 @@ class _InvoiceDetailsPageState extends State<InvoiceDetailsPage> {
                     const Gap(AppSpacing.lg),
                     _buildInfoCard(context, isArabic, dateFormat),
                     const Gap(AppSpacing.xl),
-                    SectionTitle(title: AppStrings.items, icon: LucideIcons.box),
+                    SectionTitle(
+                      title: AppStrings.items,
+                      icon: LucideIcons.box,
+                    ),
                     const Gap(AppSpacing.sm),
                     InvoiceItemsTable(
                       items: _invoice.items,
@@ -166,9 +168,9 @@ class _InvoiceDetailsPageState extends State<InvoiceDetailsPage> {
   }
 
   Widget _buildCollectionsList(String currency) {
-    final bento = Theme.of(context).extension<BentoThemeExtension>()!;
+    final daftar = Theme.of(context).extension<DaftarThemeExtension>()!;
     return Container(
-      decoration: bento.cardDecoration,
+      decoration: daftar.cardDecoration,
       child: ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -181,9 +183,8 @@ class _InvoiceDetailsPageState extends State<InvoiceDetailsPage> {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => MoneyCollectionDetailsPage(
-                    collection: collection,
-                  ),
+                  builder: (context) =>
+                      MoneyCollectionDetailsPage(collection: collection),
                 ),
               );
               _loadCollections();
@@ -231,12 +232,12 @@ class _InvoiceDetailsPageState extends State<InvoiceDetailsPage> {
     dynamic settings,
     bool isArabic,
   ) {
-    final bento = Theme.of(context).extension<BentoThemeExtension>()!;
+    final daftar = Theme.of(context).extension<DaftarThemeExtension>()!;
     final canCollect = _invoice.remainingAmount > 0;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xl),
-      decoration: bento.cardDecoration,
+      decoration: daftar.cardDecoration,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -267,10 +268,12 @@ class _InvoiceDetailsPageState extends State<InvoiceDetailsPage> {
                   } else if (state is PrinterGeneratingInvoice) {
                     buttonColor = AppColors.warning;
                     buttonLabel = AppStrings.generating;
-                  } else if (state is PrinterConnecting || state is PrinterSearching) {
+                  } else if (state is PrinterConnecting ||
+                      state is PrinterSearching) {
                     buttonColor = AppColors.warning;
                     buttonLabel = AppStrings.connecting;
-                  } else if (state is! PrinterConnected && state is! PrinterPrintSuccess) {
+                  } else if (state is! PrinterConnected &&
+                      state is! PrinterPrintSuccess) {
                     buttonColor = AppColors.grey;
                   }
 
@@ -278,7 +281,8 @@ class _InvoiceDetailsPageState extends State<InvoiceDetailsPage> {
                     icon: LucideIcons.printer,
                     label: buttonLabel,
                     color: buttonColor,
-                    onTap: () => context.read<PrinterCubit>().printInvoice(_invoice),
+                    onTap: () =>
+                        context.read<PrinterCubit>().printInvoice(_invoice),
                   );
                 },
               ),
@@ -368,11 +372,11 @@ class _InvoiceDetailsPageState extends State<InvoiceDetailsPage> {
     bool isArabic,
     DateFormat dateFormat,
   ) {
-    final bento = Theme.of(context).extension<BentoThemeExtension>()!;
+    final daftar = Theme.of(context).extension<DaftarThemeExtension>()!;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xl),
-      decoration: bento.cardDecoration,
+      decoration: daftar.cardDecoration,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -7,7 +7,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/theme/bento_theme_extension.dart';
+import '../../../../core/theme/daftar_theme_extension.dart';
 import '../../../products/presentation/widgets/search_input_field.dart';
 import '../cubits/money_collection_cubit.dart';
 import '../../domain/entities/money_collection.dart';
@@ -207,11 +207,11 @@ class _CollectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bento = Theme.of(context).extension<BentoThemeExtension>()!;
+    final daftar = Theme.of(context).extension<DaftarThemeExtension>()!;
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
       padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: bento.cardDecoration,
+      decoration: daftar.cardDecoration,
       child: Column(
         children: [
           Row(

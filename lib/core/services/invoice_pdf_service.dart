@@ -50,7 +50,7 @@ class InvoicePdfService {
         pageFormat: PdfPageFormat.roll80,
         margin: pw.EdgeInsets.zero,
         textDirection: isArabic ? pw.TextDirection.rtl : pw.TextDirection.ltr,
-        
+
         theme: pw.ThemeData.withFont(base: alexFont, bold: alexFontBold),
         build: (pw.Context context) {
           return pw.Column(
@@ -205,7 +205,6 @@ class InvoicePdfService {
     return pdf.save();
   }
 
-
   static pw.Widget _buildUnifiedHeader({
     required String title,
     required String id,
@@ -228,9 +227,8 @@ class InvoicePdfService {
               children: [
                 if (logo != null) ...[
                   pw.Container(width: 70, child: pw.Image(logo)),
-                  pw.SizedBox(height: 4),
+                  pw.SizedBox(height: 6),
                 ],
-
                 pw.Text(
                   settings.brandName,
                   style: boldStyle.copyWith(fontSize: 15),

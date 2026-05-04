@@ -3,7 +3,7 @@ import 'package:gap/gap.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/theme/bento_theme_extension.dart';
+import '../../../../core/theme/daftar_theme_extension.dart';
 import '../../../../core/constants/app_strings.dart';
 
 class InvoiceTotalsSection extends StatelessWidget {
@@ -30,11 +30,11 @@ class InvoiceTotalsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bento = Theme.of(context).extension<BentoThemeExtension>()!;
+    final daftar = Theme.of(context).extension<DaftarThemeExtension>()!;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xl),
-      decoration: bento.cardDecoration,
+      decoration: daftar.cardDecoration,
       child: Column(
         children: [
           _TotalRow(
@@ -71,7 +71,8 @@ class InvoiceTotalsSection extends StatelessWidget {
           if (remainingAmount != null && remainingAmount! > 0) ...[
             const Gap(AppSpacing.md),
             if (paidAmount == null || paidAmount! == 0) const Divider(),
-            if (paidAmount == null || paidAmount! == 0) const Gap(AppSpacing.md),
+            if (paidAmount == null || paidAmount! == 0)
+              const Gap(AppSpacing.md),
             _TotalRow(
               label: AppStrings.remaining,
               value: remainingAmount!,
@@ -111,7 +112,9 @@ class _TotalRow extends StatelessWidget {
             label,
             style: isBold
                 ? AppTypography.h2.copyWith(fontSize: 16, color: color)
-                : AppTypography.bodyMd.copyWith(color: color ?? AppColors.greyDark),
+                : AppTypography.bodyMd.copyWith(
+                    color: color ?? AppColors.greyDark,
+                  ),
           ),
         ),
         const Gap(AppSpacing.md),

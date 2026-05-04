@@ -6,7 +6,7 @@ import 'package:lottie/lottie.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/theme/bento_theme_extension.dart';
+import '../../../../core/theme/daftar_theme_extension.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../domain/entities/excel_product.dart';
 import '../cubits/products_cubit.dart';
@@ -34,10 +34,10 @@ class _ExcelValidationPageState extends State<ExcelValidationPage> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ProductsCubit, ProductsState>(
-      buildWhen: (previous, current) => 
-        current is ExcelValidationLoading || 
-        current is ExcelValidationLoaded || 
-        current is ProductsError,
+      buildWhen: (previous, current) =>
+          current is ExcelValidationLoading ||
+          current is ExcelValidationLoaded ||
+          current is ProductsError,
       builder: (context, state) {
         bool isLoading = state is ExcelValidationLoading;
         List<ExcelProduct> products = [];
@@ -52,18 +52,24 @@ class _ExcelValidationPageState extends State<ExcelValidationPage> {
               if (!isLoading && products.isNotEmpty)
                 Builder(
                   builder: (context) {
-                    final hasDuplicates = products.any((p) => p.status == ExcelProductStatus.duplicate);
+                    final hasDuplicates = products.any(
+                      (p) => p.status == ExcelProductStatus.duplicate,
+                    );
                     return TextButton(
                       onPressed: hasDuplicates
                           ? null
                           : () {
-                              context.read<ProductsCubit>().importValidatedProducts();
+                              context
+                                  .read<ProductsCubit>()
+                                  .importValidatedProducts();
                               Navigator.pop(context);
                             },
                       child: Text(
                         AppStrings.import.toUpperCase(),
                         style: AppTypography.label.copyWith(
-                          color: hasDuplicates ? AppColors.grey : AppColors.white,
+                          color: hasDuplicates
+                              ? AppColors.grey
+                              : AppColors.white,
                         ),
                       ),
                     );
@@ -78,7 +84,12 @@ class _ExcelValidationPageState extends State<ExcelValidationPage> {
     );
   }
 
-  Widget _buildBody(BuildContext context, ProductsState state, List<ExcelProduct> products, bool isLoading) {
+  Widget _buildBody(
+    BuildContext context,
+    ProductsState state,
+    List<ExcelProduct> products,
+    bool isLoading,
+  ) {
     if (isLoading) {
       return Center(
         child: Column(
@@ -106,7 +117,11 @@ class _ExcelValidationPageState extends State<ExcelValidationPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(LucideIcons.circleAlert, size: 64, color: AppColors.danger),
+              const Icon(
+                LucideIcons.circleAlert,
+                size: 64,
+                color: AppColors.danger,
+              ),
               const Gap(AppSpacing.lg),
               Text(
                 state.message,
@@ -125,9 +140,7 @@ class _ExcelValidationPageState extends State<ExcelValidationPage> {
     }
 
     if (products.isEmpty) {
-      return Center(
-        child: Text(AppStrings.noProducts),
-      );
+      return Center(child: Text(AppStrings.noProducts));
     }
 
     return CustomScrollView(
@@ -139,11 +152,17 @@ class _ExcelValidationPageState extends State<ExcelValidationPage> {
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-              border: Border.all(color: AppColors.secondary.withValues(alpha: 0.3)),
+              border: Border.all(
+                color: AppColors.secondary.withValues(alpha: 0.3),
+              ),
             ),
             child: Row(
               children: [
-                const Icon(LucideIcons.info, color: AppColors.secondary, size: 20),
+                const Icon(
+                  LucideIcons.info,
+                  color: AppColors.secondary,
+                  size: 20,
+                ),
                 const Gap(AppSpacing.sm),
                 Expanded(
                   child: Column(
@@ -151,12 +170,18 @@ class _ExcelValidationPageState extends State<ExcelValidationPage> {
                     children: [
                       Text(
                         '${products.length} products found. Review before importing.',
-                        style: AppTypography.bodySm.copyWith(color: AppColors.text, fontWeight: FontWeight.bold),
+                        style: AppTypography.bodySm.copyWith(
+                          color: AppColors.text,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      if (products.any((p) => p.status == ExcelProductStatus.duplicate)) ...[
+                      if (products.any(
+                        (p) => p.status == ExcelProductStatus.duplicate,
+                      )) ...[
                         const Gap(AppSpacing.xs),
                         InkWell(
-                          onTap: () => context.read<ProductsCubit>().removeDuplicates(),
+                          onTap: () =>
+                              context.read<ProductsCubit>().removeDuplicates(),
                           child: Text(
                             'Click here to remove duplicated records',
                             style: AppTypography.bodySm.copyWith(
@@ -177,17 +202,15 @@ class _ExcelValidationPageState extends State<ExcelValidationPage> {
         SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
           sliver: SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                final product = products[index];
-                return _ExcelProductCard(
-                  product: product,
-                  onEdit: () => _editProduct(context, index, product),
-                  onRemove: () => context.read<ProductsCubit>().removeExcelProduct(index),
-                );
-              },
-              childCount: products.length,
-            ),
+            delegate: SliverChildBuilderDelegate((context, index) {
+              final product = products[index];
+              return _ExcelProductCard(
+                product: product,
+                onEdit: () => _editProduct(context, index, product),
+                onRemove: () =>
+                    context.read<ProductsCubit>().removeExcelProduct(index),
+              );
+            }, childCount: products.length),
           ),
         ),
       ],
@@ -197,12 +220,16 @@ class _ExcelValidationPageState extends State<ExcelValidationPage> {
   void _editProduct(BuildContext context, int index, ExcelProduct product) {
     final nameController = TextEditingController(text: product.name);
     final codeController = TextEditingController(text: product.code);
-    final priceController = TextEditingController(text: product.price.toString());
+    final priceController = TextEditingController(
+      text: product.price.toString(),
+    );
 
     showDialog(
       context: context,
       builder: (diagContext) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusLg)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        ),
         title: Text(AppStrings.editProduct, style: AppTypography.h2),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -230,7 +257,10 @@ class _ExcelValidationPageState extends State<ExcelValidationPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(diagContext),
-            child: Text(AppStrings.cancel, style: AppTypography.bodyMd.copyWith(color: AppColors.grey)),
+            child: Text(
+              AppStrings.cancel,
+              style: AppTypography.bodyMd.copyWith(color: AppColors.grey),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -242,7 +272,13 @@ class _ExcelValidationPageState extends State<ExcelValidationPage> {
               context.read<ProductsCubit>().updateExcelProduct(index, updated);
               Navigator.pop(diagContext);
             },
-            child: Text(AppStrings.save, style: AppTypography.bodyMd.copyWith(color: AppColors.secondary, fontWeight: FontWeight.bold)),
+            child: Text(
+              AppStrings.save,
+              style: AppTypography.bodyMd.copyWith(
+                color: AppColors.secondary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -263,13 +299,13 @@ class _ExcelProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bento = Theme.of(context).extension<BentoThemeExtension>()!;
+    final daftar = Theme.of(context).extension<DaftarThemeExtension>()!;
     final statusColor = _getStatusColor(product.status);
 
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
       padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: bento.cardDecoration.copyWith(
+      decoration: daftar.cardDecoration.copyWith(
         border: Border.all(color: statusColor.withValues(alpha: 0.3)),
       ),
       child: Column(
@@ -282,14 +318,22 @@ class _ExcelProductCard extends StatelessWidget {
               Row(
                 children: [
                   IconButton(
-                    icon: const Icon(LucideIcons.pencil, size: 18, color: AppColors.grey),
+                    icon: const Icon(
+                      LucideIcons.pencil,
+                      size: 18,
+                      color: AppColors.grey,
+                    ),
                     onPressed: onEdit,
                     constraints: const BoxConstraints(),
                     padding: EdgeInsets.zero,
                   ),
                   const Gap(AppSpacing.md),
                   IconButton(
-                    icon: const Icon(LucideIcons.trash2, size: 18, color: AppColors.danger),
+                    icon: const Icon(
+                      LucideIcons.trash2,
+                      size: 18,
+                      color: AppColors.danger,
+                    ),
                     onPressed: onRemove,
                     constraints: const BoxConstraints(),
                     padding: EdgeInsets.zero,
@@ -299,17 +343,19 @@ class _ExcelProductCard extends StatelessWidget {
             ],
           ),
           const Gap(AppSpacing.md),
-          Text(
-            product.name,
-            style: AppTypography.h2.copyWith(fontSize: 16),
-          ),
-          if ((product.status == ExcelProductStatus.changed || product.status == ExcelProductStatus.duplicate) && 
-              product.oldName != null && product.oldName != product.name)
+          Text(product.name, style: AppTypography.h2.copyWith(fontSize: 16)),
+          if ((product.status == ExcelProductStatus.changed ||
+                  product.status == ExcelProductStatus.duplicate) &&
+              product.oldName != null &&
+              product.oldName != product.name)
             Padding(
               padding: const EdgeInsets.only(top: 2.0),
               child: Text(
                 'From: ${product.oldName}',
-                style: AppTypography.bodySm.copyWith(color: AppColors.grey, decoration: TextDecoration.lineThrough),
+                style: AppTypography.bodySm.copyWith(
+                  color: AppColors.grey,
+                  decoration: TextDecoration.lineThrough,
+                ),
               ),
             ),
           const Gap(AppSpacing.sm),
@@ -317,15 +363,23 @@ class _ExcelProductCard extends StatelessWidget {
             children: [
               Text(
                 'SR ${product.price.toStringAsFixed(2)}',
-                style: AppTypography.h1.copyWith(fontSize: 17, color: AppColors.secondary),
+                style: AppTypography.h1.copyWith(
+                  fontSize: 17,
+                  color: AppColors.secondary,
+                ),
               ),
-              if ((product.status == ExcelProductStatus.changed || product.status == ExcelProductStatus.duplicate) && 
-                  product.oldPrice != null && product.oldPrice != product.price)
+              if ((product.status == ExcelProductStatus.changed ||
+                      product.status == ExcelProductStatus.duplicate) &&
+                  product.oldPrice != null &&
+                  product.oldPrice != product.price)
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0),
                   child: Text(
                     '(${product.oldPrice?.toStringAsFixed(2)})',
-                    style: AppTypography.bodySm.copyWith(color: AppColors.grey, decoration: TextDecoration.lineThrough),
+                    style: AppTypography.bodySm.copyWith(
+                      color: AppColors.grey,
+                      decoration: TextDecoration.lineThrough,
+                    ),
                   ),
                 ),
               const Spacer(),
@@ -338,8 +392,12 @@ class _ExcelProductCard extends StatelessWidget {
                 child: Text(
                   product.code,
                   style: AppTypography.bodySm.copyWith(
-                    color: product.status == ExcelProductStatus.duplicate ? AppColors.danger : AppColors.greyDark,
-                    fontWeight: product.status == ExcelProductStatus.duplicate ? FontWeight.bold : FontWeight.normal,
+                    color: product.status == ExcelProductStatus.duplicate
+                        ? AppColors.danger
+                        : AppColors.greyDark,
+                    fontWeight: product.status == ExcelProductStatus.duplicate
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                   ),
                 ),
               ),
@@ -403,7 +461,11 @@ class _StatusBadge extends StatelessWidget {
           const Gap(AppSpacing.xs),
           Text(
             label,
-            style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: color,
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ),

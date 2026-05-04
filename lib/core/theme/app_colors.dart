@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Bento Palette
+  // Daftar Palette
   static const Color primary = Color(0xFFBAE6FD); // Friendly Light Blue
   static const Color secondary = Color(0xFF0EA5E9);
   static const Color success = Color(0xFF16A34A);

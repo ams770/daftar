@@ -1,4 +1,4 @@
-package com.bennu.inventory
+package com.bennu.daftar
 
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
@@ -35,8 +35,8 @@ class ThermalPrinterPlugin(private val activity: Activity) :
 
     companion object {
         private const val TAG = "ThermalPrinterPlugin"
-        private const val METHOD_CHANNEL = "com.bennu.inventory/printer"
-        private const val EVENT_CHANNEL = "com.bennu.inventory/printer_state"
+        private const val METHOD_CHANNEL = "com.bennu.daftar/printer"
+        private const val EVENT_CHANNEL = "com.bennu.daftar/printer_state"
 
         // 4 inch paper = 104mm = 832 dots (8 dots/mm) -> Adjusted to 800px for safety padding
         private const val PRINT_WIDTH_DOTS = 800 

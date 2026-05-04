@@ -250,7 +250,7 @@ class _BrandProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = context.locale.languageCode == 'ar';
+    // final isArabic = context.locale.languageCode == 'ar';
 
     return GestureDetector(
       onTap: () => _showBrandEditModal(context),
@@ -277,7 +277,7 @@ class _BrandProfileCard extends StatelessWidget {
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: AppColors.white.withValues(alpha: 0.2),
+                color: AppColors.white,
                 shape: BoxShape.circle,
                 border: Border.all(color: AppColors.white.withValues(alpha: 0.4), width: 2),
               ),
@@ -292,7 +292,7 @@ class _BrandProfileCard extends StatelessWidget {
                               shape: BoxShape.circle,
                               image: DecorationImage(
                                 image: FileImage(File(snapshot.data!)),
-                                fit: BoxFit.cover,
+                                fit: BoxFit.contain,
                               ),
                             ),
                           );

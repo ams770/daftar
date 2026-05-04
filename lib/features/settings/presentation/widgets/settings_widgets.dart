@@ -5,7 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/theme/bento_theme_extension.dart';
+import '../../../../core/theme/daftar_theme_extension.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/models/app_settings.dart';
 
@@ -23,10 +23,7 @@ class LogoPreview extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
         border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
         image: path != null
-            ? DecorationImage(
-                image: FileImage(File(path!)),
-                fit: BoxFit.cover,
-              )
+            ? DecorationImage(image: FileImage(File(path!)), fit: BoxFit.cover)
             : null,
       ),
       child: path == null
@@ -90,7 +87,7 @@ class SettingsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bento = Theme.of(context).extension<BentoThemeExtension>()!;
+    final daftar = Theme.of(context).extension<DaftarThemeExtension>()!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,7 +110,7 @@ class SettingsSection extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
           child: Container(
             padding: const EdgeInsets.all(AppSpacing.xl),
-            decoration: bento.cardDecoration,
+            decoration: daftar.cardDecoration,
             child: child,
           ),
         ),

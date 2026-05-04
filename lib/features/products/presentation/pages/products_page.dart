@@ -7,7 +7,7 @@ import '../../../../core/di/injection.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/theme/bento_theme_extension.dart';
+import '../../../../core/theme/daftar_theme_extension.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/widgets/loading_dialog.dart';
 import '../../../../core/services/invoice_pdf_service.dart';
@@ -366,7 +366,7 @@ class _ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bento = Theme.of(context).extension<BentoThemeExtension>()!;
+    final daftar = Theme.of(context).extension<DaftarThemeExtension>()!;
 
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -374,7 +374,7 @@ class _ProductCard extends StatelessWidget {
         horizontal: AppSpacing.md,
         vertical: AppSpacing.sm,
       ),
-      decoration: bento.cardDecoration,
+      decoration: daftar.cardDecoration,
       child: Row(
         children: [
           Expanded(

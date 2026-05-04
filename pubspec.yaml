@@ -42,6 +42,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_native_splash: ^2.4.4
+  flutter_launcher_icons: ^0.14.4
 flutter:
 
   uses-material-design: true
@@ -80,3 +82,21 @@ flutter:
           weight: 600
         - asset: assets/fonts/Inter/Inter-Bold.ttf
           weight: 700
+
+
+# dart run flutter_native_splash:create
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/images/logo.png
+  android_12:
+    image: assets/images/logo.png
+    color: "#ffffff"
+    
+# dart run flutter_launcher_icons
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path_android: "assets/images/android-luancher-icon.png"
+  image_path_ios: "assets/images/ios-luancher-icon.png"
+
+

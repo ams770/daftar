@@ -7,6 +7,7 @@ import '../../../../core/enums/invoice_enums.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/theme/daftar_theme_extension.dart';
 import '../../../settings/presentation/cubits/settings_cubit.dart';
 import '../cubits/invoice_cubit.dart';
 import '../cubits/add_invoice_cubit.dart';
@@ -60,6 +61,7 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
 
         final settings = settingsState.settings;
         final isArabic = settings.language == 'AR';
+        final daftar = Theme.of(context).extension<DaftarThemeExtension>()!;
 
         return BlocConsumer<AddInvoiceCubit, AddInvoiceState>(
           listener: (context, state) {
@@ -71,20 +73,23 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
                 ),
               );
               context.read<InvoiceCubit>().loadInvoices(refresh: true);
-              
+
               // Get the invoice to navigate to its details
-              context.read<InvoiceCubit>().getInvoiceById(state.invoiceId).then((invoice) {
-                if (invoice != null && context.mounted) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => InvoiceDetailsPage(invoice: invoice),
-                    ),
-                  );
-                } else if (context.mounted) {
-                  Navigator.popUntil(context, (route) => route.isFirst);
-                }
-              });
+              context.read<InvoiceCubit>().getInvoiceById(state.invoiceId).then(
+                (invoice) {
+                  if (invoice != null && context.mounted) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            InvoiceDetailsPage(invoice: invoice),
+                      ),
+                    );
+                  } else if (context.mounted) {
+                    Navigator.popUntil(context, (route) => route.isFirst);
+                  }
+                },
+              );
             }
           },
           builder: (context, state) {
@@ -137,6 +142,64 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         SectionTitle(
+                          title: AppStrings.items,
+                          icon: LucideIcons.box,
+                        ),
+                        const Gap(AppSpacing.sm),
+                        InvoiceItemsTable(
+                          items: items,
+                          currency: settings.currency,
+                          isArabic: isArabic,
+                        ),
+                        const Gap(AppSpacing.xl),
+                        // Payment Options Grouped Box
+                        Container(
+                          padding: const EdgeInsets.all(AppSpacing.xl),
+                          decoration: daftar.cardDecoration,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              SectionTitle(
+                                title: AppStrings.paymentOptions,
+                                icon: LucideIcons.creditCard,
+                              ),
+                              const Gap(AppSpacing.md),
+                              InvoiceTypeSelection(
+                                isArabic: isArabic,
+                                selectedType: _type,
+                                onSelect: (val) {
+                                  setState(() {
+                                    _type = val;
+                                    if (_type == InvoiceType.paid)
+                                      _paidController.clear();
+                                  });
+                                },
+                              ),
+                              if (_type == InvoiceType.credit) ...[
+                                const Gap(AppSpacing.lg),
+                                PaidAmountField(
+                                  isArabic: isArabic,
+                                  currency: settings.currency,
+                                  total: total,
+                                  controller: _paidController,
+                                  onChanged: () => setState(() {}),
+                                ),
+                              ],
+                              if (_type == InvoiceType.paid ||
+                                  _paidController.text.isNotEmpty) ...[
+                                const Gap(AppSpacing.lg),
+                                PaymentMethodSelection(
+                                  isArabic: isArabic,
+                                  selectedMethod: _method,
+                                  onSelect: (val) =>
+                                      setState(() => _method = val),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                        const Gap(AppSpacing.xl),
+                        SectionTitle(
                           title: AppStrings.clientDetails,
                           icon: LucideIcons.user,
                         ),
@@ -156,53 +219,6 @@ class _InvoiceSummaryPageState extends State<InvoiceSummaryPage> {
                               .read<AddInvoiceCubit>()
                               .updateClientName(v),
                         ),
-                        const Gap(AppSpacing.xl),
-                        SectionTitle(
-                          title: AppStrings.items,
-                          icon: LucideIcons.box,
-                        ),
-                        const Gap(AppSpacing.sm),
-                        InvoiceItemsTable(
-                          items: items,
-                          currency: settings.currency,
-                          isArabic: isArabic,
-                        ),
-                        const Gap(AppSpacing.xl),
-                        SectionTitle(
-                          title: AppStrings.paymentOptions,
-                          icon: LucideIcons.creditCard,
-                        ),
-                        const Gap(AppSpacing.md),
-                        InvoiceTypeSelection(
-                          isArabic: isArabic,
-                          selectedType: _type,
-                          onSelect: (val) {
-                            setState(() {
-                              _type = val;
-                              if (_type == InvoiceType.paid)
-                                _paidController.clear();
-                            });
-                          },
-                        ),
-                        if (_type == InvoiceType.credit) ...[
-                          const Gap(AppSpacing.lg),
-                          PaidAmountField(
-                            isArabic: isArabic,
-                            currency: settings.currency,
-                            total: total,
-                            controller: _paidController,
-                            onChanged: () => setState(() {}),
-                          ),
-                        ],
-                        if (_type == InvoiceType.paid ||
-                            _paidController.text.isNotEmpty) ...[
-                          const Gap(AppSpacing.lg),
-                          PaymentMethodSelection(
-                            isArabic: isArabic,
-                            selectedMethod: _method,
-                            onSelect: (val) => setState(() => _method = val),
-                          ),
-                        ],
                         const Gap(AppSpacing.xl),
                         SectionTitle(
                           title: AppStrings.summary,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'app_shell.dart';
 import 'core/di/injection.dart' as di;
 import 'core/theme/app_theme.dart';
@@ -12,9 +13,11 @@ import 'features/invoices/presentation/cubits/money_collection_cubit.dart';
 import 'features/printer/presentation/cubits/printer_cubit.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await EasyLocalization.ensureInitialized();
   await di.init();
+  FlutterNativeSplash.remove();
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('ar')],
@@ -39,7 +42,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => di.sl<PrinterCubit>()),
       ],
       child: MaterialApp(
-        title: 'Products Printer',
+        title: 'app_name'.tr(),
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,
         localizationsDelegates: context.localizationDelegates,

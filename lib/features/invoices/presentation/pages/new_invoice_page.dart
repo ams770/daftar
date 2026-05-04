@@ -6,7 +6,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/theme/bento_theme_extension.dart';
+import '../../../../core/theme/daftar_theme_extension.dart';
 import '../../../products/domain/entities/product.dart';
 import '../../../products/presentation/cubits/products_cubit.dart';
 import '../../../products/presentation/cubits/products_state.dart';
@@ -68,9 +68,7 @@ class _NewInvoiceViewState extends State<NewInvoiceView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppStrings.selectProducts),
-      ),
+      appBar: AppBar(title: Text(AppStrings.selectProducts)),
       body: Column(
         children: [
           NewInvoiceSearchHeader(
@@ -87,12 +85,17 @@ class _NewInvoiceViewState extends State<NewInvoiceView> {
                 if (state is ProductsLoaded) {
                   return BlocBuilder<AddInvoiceCubit, AddInvoiceState>(
                     builder: (context, invState) {
-                      final cart = (invState is AddInvoiceCreating) ? invState.cartItems : <int, CartItem>{};
+                      final cart = (invState is AddInvoiceCreating)
+                          ? invState.cartItems
+                          : <int, CartItem>{};
 
                       return ListView.separated(
                         controller: _scrollController,
-                        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                        itemCount: state.products.length + (state.hasMore ? 1 : 0),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                        ),
+                        itemCount:
+                            state.products.length + (state.hasMore ? 1 : 0),
                         separatorBuilder: (_, __) => const Gap(AppSpacing.sm),
                         itemBuilder: (context, index) {
                           if (index == state.products.length) {
@@ -109,8 +112,12 @@ class _NewInvoiceViewState extends State<NewInvoiceView> {
                           return ProductSelectionCard(
                             product: product,
                             qty: qty,
-                            onAdd: () => context.read<AddInvoiceCubit>().updateProductQty(product, 1),
-                            onRemove: () => context.read<AddInvoiceCubit>().updateProductQty(product, -1),
+                            onAdd: () => context
+                                .read<AddInvoiceCubit>()
+                                .updateProductQty(product, 1),
+                            onRemove: () => context
+                                .read<AddInvoiceCubit>()
+                                .updateProductQty(product, -1),
                           );
                         },
                       );
@@ -128,9 +135,7 @@ class _NewInvoiceViewState extends State<NewInvoiceView> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (_) => const ScannerInvoicePage(),
-            ),
+            MaterialPageRoute(builder: (_) => const ScannerInvoicePage()),
           );
         },
         icon: const Icon(LucideIcons.scanLine),
@@ -157,4 +162,3 @@ class _NewInvoiceViewState extends State<NewInvoiceView> {
     }
   }
 }
-

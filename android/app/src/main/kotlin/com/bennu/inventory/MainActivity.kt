@@ -1,4 +1,4 @@
-package com.bennu.inventory
+package com.bennu.daftar
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine

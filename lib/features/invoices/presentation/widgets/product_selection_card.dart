@@ -4,7 +4,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/theme/bento_theme_extension.dart';
+import '../../../../core/theme/daftar_theme_extension.dart';
 import '../../../products/domain/entities/product.dart';
 
 class ProductSelectionCard extends StatelessWidget {
@@ -23,22 +23,30 @@ class ProductSelectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bento = Theme.of(context).extension<BentoThemeExtension>()!;
+    final daftar = Theme.of(context).extension<DaftarThemeExtension>()!;
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: bento.cardDecoration,
+      decoration: daftar.cardDecoration,
       child: Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(product.name, style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.w600)),
+                Text(
+                  product.name,
+                  style: AppTypography.bodyLg.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 const Gap(AppSpacing.xs),
                 Text(
                   product.price.toStringAsFixed(2),
-                  style: AppTypography.bodySm.copyWith(color: AppColors.secondary, fontWeight: FontWeight.bold),
+                  style: AppTypography.bodySm.copyWith(
+                    color: AppColors.secondary,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -48,13 +56,19 @@ class ProductSelectionCard extends StatelessWidget {
               if (qty > 0) ...[
                 IconButton(
                   onPressed: onRemove,
-                  icon: const Icon(LucideIcons.circleMinus, color: AppColors.danger),
+                  icon: const Icon(
+                    LucideIcons.circleMinus,
+                    color: AppColors.danger,
+                  ),
                 ),
                 Text('$qty', style: AppTypography.h2.copyWith(fontSize: 16)),
               ],
               IconButton(
                 onPressed: onAdd,
-                icon: const Icon(LucideIcons.circlePlus, color: AppColors.success),
+                icon: const Icon(
+                  LucideIcons.circlePlus,
+                  color: AppColors.success,
+                ),
               ),
             ],
           ),

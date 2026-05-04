@@ -7,7 +7,7 @@ import '../../../../core/enums/invoice_enums.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/theme/bento_theme_extension.dart';
+import '../../../../core/theme/daftar_theme_extension.dart';
 import '../../../../core/constants/app_strings.dart';
 
 class InvoiceDetailHeader extends StatelessWidget {
@@ -34,13 +34,13 @@ class InvoiceDetailHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bento = Theme.of(context).extension<BentoThemeExtension>()!;
+    final daftar = Theme.of(context).extension<DaftarThemeExtension>()!;
     final isFullyPaid = remainingAmount <= 0;
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpacing.xl),
-      decoration: bento.cardDecoration.copyWith(
+      decoration: daftar.cardDecoration.copyWith(
         gradient: LinearGradient(
           colors: [
             AppColors.secondary,
@@ -68,9 +68,7 @@ class InvoiceDetailHeader extends StatelessWidget {
                   const Gap(4),
                   Text(
                     '#${invoiceId?.toString().padLeft(4, '0') ?? 'N/A'}',
-                    style: AppTypography.h1.copyWith(
-                      color: AppColors.white,
-                    ),
+                    style: AppTypography.h1.copyWith(color: AppColors.white),
                   ),
                 ],
               ),
@@ -80,7 +78,11 @@ class InvoiceDetailHeader extends StatelessWidget {
                   color: AppColors.white.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(LucideIcons.receipt, color: AppColors.white, size: 32),
+                child: const Icon(
+                  LucideIcons.receipt,
+                  color: AppColors.white,
+                  size: 32,
+                ),
               ),
             ],
           ),
@@ -88,7 +90,11 @@ class InvoiceDetailHeader extends StatelessWidget {
             const Gap(AppSpacing.lg),
             Row(
               children: [
-                Icon(LucideIcons.user, size: 14, color: AppColors.white.withValues(alpha: 0.7)),
+                Icon(
+                  LucideIcons.user,
+                  size: 14,
+                  color: AppColors.white.withValues(alpha: 0.7),
+                ),
                 const Gap(AppSpacing.xs),
                 Text(
                   clientName!,
@@ -103,7 +109,11 @@ class InvoiceDetailHeader extends StatelessWidget {
           const Gap(AppSpacing.xl),
           Row(
             children: [
-              Icon(LucideIcons.calendar, size: 14, color: AppColors.white.withValues(alpha: 0.7)),
+              Icon(
+                LucideIcons.calendar,
+                size: 14,
+                color: AppColors.white.withValues(alpha: 0.7),
+              ),
               const Gap(AppSpacing.xs),
               Text(
                 dateFormat.format(createdAt),
@@ -118,7 +128,11 @@ class InvoiceDetailHeader extends StatelessWidget {
           const Gap(AppSpacing.md),
           Row(
             children: [
-              Icon(LucideIcons.wallet, size: 14, color: AppColors.white.withValues(alpha: 0.7)),
+              Icon(
+                LucideIcons.wallet,
+                size: 14,
+                color: AppColors.white.withValues(alpha: 0.7),
+              ),
               const Gap(AppSpacing.xs),
               Text(
                 paymentMethod.label(isArabic),
@@ -137,7 +151,9 @@ class InvoiceDetailHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: (isFullyPaid ? AppColors.success : AppColors.danger).withValues(alpha: 0.3),
+        color: (isFullyPaid ? AppColors.success : AppColors.danger).withValues(
+          alpha: 0.3,
+        ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.white.withValues(alpha: 0.2)),
       ),

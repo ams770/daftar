@@ -8,7 +8,7 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/theme/bento_theme_extension.dart';
+import '../../../../core/theme/daftar_theme_extension.dart';
 import '../../../../core/services/invoice_pdf_service.dart';
 import '../../../printer/presentation/cubits/printer_cubit.dart';
 import '../../../printer/presentation/cubits/printer_state.dart';
@@ -18,7 +18,6 @@ import '../../domain/entities/money_collection.dart';
 import '../cubits/money_collection_cubit.dart';
 import '../cubits/invoice_cubit.dart';
 import 'invoice_details_page.dart';
-
 
 class MoneyCollectionDetailsPage extends StatelessWidget {
   final MoneyCollection collection;
@@ -37,7 +36,7 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
 
         final settings = settingsState.settings;
         // final isArabic = settings.language == 'AR';
-        final bento = Theme.of(context).extension<BentoThemeExtension>()!;
+        final daftar = Theme.of(context).extension<DaftarThemeExtension>()!;
 
         return Scaffold(
           appBar: AppBar(title: Text(AppStrings.collections)),
@@ -73,9 +72,9 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
                 children: [
                   _buildActionGrid(context, settings),
                   const Gap(AppSpacing.lg),
-                  _buildMainCard(context, bento),
+                  _buildMainCard(context, daftar),
                   const Gap(AppSpacing.lg),
-                  _buildInvoiceRefCard(context, bento),
+                  _buildInvoiceRefCard(context, daftar),
                 ],
               ),
             ),
@@ -86,10 +85,10 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
   }
 
   Widget _buildActionGrid(BuildContext context, dynamic settings) {
-    final bento = Theme.of(context).extension<BentoThemeExtension>()!;
+    final daftar = Theme.of(context).extension<DaftarThemeExtension>()!;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xl),
-      decoration: bento.cardDecoration,
+      decoration: daftar.cardDecoration,
       child: Column(
         children: [
           Row(
@@ -101,53 +100,57 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
           ),
           const Gap(AppSpacing.xl),
           GridView.count(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        crossAxisCount: 3,
-        mainAxisSpacing: AppSpacing.md,
-        crossAxisSpacing: AppSpacing.md,
-        childAspectRatio: 1.5,
-        children: [
-          BlocBuilder<PrinterCubit, PrinterState>(
-            builder: (context, state) {
-              Color buttonColor = AppColors.secondary;
-              String buttonLabel = AppStrings.print;
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 3,
+            mainAxisSpacing: AppSpacing.md,
+            crossAxisSpacing: AppSpacing.md,
+            childAspectRatio: 1.5,
+            children: [
+              BlocBuilder<PrinterCubit, PrinterState>(
+                builder: (context, state) {
+                  Color buttonColor = AppColors.secondary;
+                  String buttonLabel = AppStrings.print;
 
-              if (state is PrinterPrinting) {
-                buttonColor = AppColors.warning;
-                buttonLabel = 'printing'.tr();
-              } else if (state is PrinterGeneratingInvoice) {
-                buttonColor = AppColors.warning;
-                buttonLabel = AppStrings.generating;
-              } else if (state is PrinterConnecting || state is PrinterSearching) {
-                buttonColor = AppColors.warning;
-                buttonLabel = AppStrings.connecting;
-              } else if (state is! PrinterConnected && state is! PrinterPrintSuccess) {
-                buttonColor = AppColors.grey;
-              }
+                  if (state is PrinterPrinting) {
+                    buttonColor = AppColors.warning;
+                    buttonLabel = 'printing'.tr();
+                  } else if (state is PrinterGeneratingInvoice) {
+                    buttonColor = AppColors.warning;
+                    buttonLabel = AppStrings.generating;
+                  } else if (state is PrinterConnecting ||
+                      state is PrinterSearching) {
+                    buttonColor = AppColors.warning;
+                    buttonLabel = AppStrings.connecting;
+                  } else if (state is! PrinterConnected &&
+                      state is! PrinterPrintSuccess) {
+                    buttonColor = AppColors.grey;
+                  }
 
-              return _buildActionButton(
-                icon: LucideIcons.printer,
-                label: buttonLabel,
-                color: buttonColor,
-                onTap: () => context.read<PrinterCubit>().printCollection(collection),
-              );
-            },
+                  return _buildActionButton(
+                    icon: LucideIcons.printer,
+                    label: buttonLabel,
+                    color: buttonColor,
+                    onTap: () => context.read<PrinterCubit>().printCollection(
+                      collection,
+                    ),
+                  );
+                },
+              ),
+              _buildActionButton(
+                icon: LucideIcons.share2,
+                label: AppStrings.share,
+                color: AppColors.success,
+                onTap: () => _shareAsPdf(context, settings),
+              ),
+              _buildActionButton(
+                icon: LucideIcons.trash2,
+                label: AppStrings.delete,
+                color: AppColors.danger,
+                onTap: () => _showDeleteConfirmation(context),
+              ),
+            ],
           ),
-          _buildActionButton(
-            icon: LucideIcons.share2,
-            label: AppStrings.share,
-            color: AppColors.success,
-            onTap: () => _shareAsPdf(context, settings),
-          ),
-          _buildActionButton(
-            icon: LucideIcons.trash2,
-            label: AppStrings.delete,
-            color: AppColors.danger,
-            onTap: () => _showDeleteConfirmation(context),
-          ),
-        ],
-      ),
         ],
       ),
     );
@@ -182,10 +185,10 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildMainCard(BuildContext context, BentoThemeExtension bento) {
+  Widget _buildMainCard(BuildContext context, DaftarThemeExtension daftar) {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xl),
-      decoration: bento.cardDecoration,
+      decoration: daftar.cardDecoration,
       child: Column(
         children: [
           Text(
@@ -222,13 +225,16 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildInvoiceRefCard(BuildContext context, BentoThemeExtension bento) {
+  Widget _buildInvoiceRefCard(
+    BuildContext context,
+    DaftarThemeExtension daftar,
+  ) {
     return InkWell(
       onTap: () => _navigateToInvoice(context),
       borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.xl),
-        decoration: bento.cardDecoration,
+        decoration: daftar.cardDecoration,
         child: Row(
           children: [
             const Icon(LucideIcons.fileText, color: AppColors.secondary),
@@ -238,7 +244,7 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                   AppStrings.invoice,
+                    AppStrings.invoice,
                     style: AppTypography.label.copyWith(color: AppColors.grey),
                   ),
                   Text(
