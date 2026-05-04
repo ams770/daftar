@@ -8,6 +8,7 @@ import '../../../features/invoices/domain/entities/invoice.dart';
 import '../../../features/invoices/domain/entities/money_collection.dart';
 import 'package:flutter/services.dart';
 import '../../utils/logo_helper.dart';
+import 'package:image/image.dart' as img;
 
 class InvoicePdfService {
   static Future<Uint8List> generateInvoicePdf({
@@ -41,7 +42,8 @@ class InvoicePdfService {
       final logoFile = File(fullPath);
       if (await logoFile.exists()) {
         final logoBytes = await logoFile.readAsBytes();
-        logoImage = pw.MemoryImage(logoBytes);
+        final processedBytes = _processLogoToBlackAndWhite(logoBytes);
+        logoImage = pw.MemoryImage(processedBytes);
       }
     }
 
@@ -117,7 +119,8 @@ class InvoicePdfService {
       final logoFile = File(fullPath);
       if (await logoFile.exists()) {
         final logoBytes = await logoFile.readAsBytes();
-        logoImage = pw.MemoryImage(logoBytes);
+        final processedBytes = _processLogoToBlackAndWhite(logoBytes);
+        logoImage = pw.MemoryImage(processedBytes);
       }
     }
 
@@ -295,21 +298,36 @@ class InvoicePdfService {
       ];
     }).toList();
 
+    var headersList = headers;
+    var dataList = data.toList();
+    var alignments = {
+      0: pw.Alignment.centerLeft,
+      1: pw.Alignment.centerRight,
+      2: pw.Alignment.centerRight,
+      3: pw.Alignment.centerRight,
+    };
+
+    if (isArabic) {
+      headersList = headers.reversed.toList();
+      dataList = data.map((row) => row.reversed.toList()).toList();
+      alignments = {
+        0: pw.Alignment.centerLeft,
+        1: pw.Alignment.centerLeft,
+        2: pw.Alignment.centerLeft,
+        3: pw.Alignment.centerRight,
+      };
+    }
+
     return pw.TableHelper.fromTextArray(
-      headers: headers,
-      data: data,
+      headers: headersList,
+      data: dataList,
       border: null,
       headerStyle: boldStyle.copyWith(color: PdfColors.white, fontSize: 7),
       headerDecoration: const pw.BoxDecoration(color: PdfColors.grey700),
       cellStyle: baseStyle.copyWith(fontSize: 8),
       cellPadding: const pw.EdgeInsets.all(2),
       cellHeight: 20,
-      cellAlignments: {
-        0: pw.Alignment.centerLeft,
-        1: pw.Alignment.centerRight,
-        2: pw.Alignment.centerRight,
-        3: pw.Alignment.centerRight,
-      },
+      cellAlignments: alignments,
     );
   }
 
@@ -321,7 +339,7 @@ class InvoicePdfService {
     pw.TextStyle baseStyle,
   ) {
     return pw.Container(
-      alignment: pw.Alignment.centerRight,
+      alignment: isArabic ? pw.Alignment.centerLeft : pw.Alignment.centerRight,
       padding: const pw.EdgeInsets.symmetric(vertical: 4),
       child: pw.SizedBox(
         width: 150,
@@ -368,6 +386,7 @@ class InvoicePdfService {
               '${isArabic ? 'طريقة الدفع' : 'Payment'}: ${invoice.paymentMethod.label(isArabic)}',
               style: baseStyle.copyWith(fontSize: 10, color: PdfColors.grey700),
             ),
+            pw.SizedBox(height: 20),
           ],
         ),
       ),
@@ -412,5 +431,23 @@ class InvoicePdfService {
         ],
       ),
     );
+  }
+
+  static Uint8List _processLogoToBlackAndWhite(Uint8List bytes) {
+    try {
+      final image = img.decodeImage(bytes);
+      if (image == null) return bytes;
+
+      // 1. Convert to grayscale
+      final grayscale = img.grayscale(image);
+
+      // 2. Increase contrast to make whites whiter and blacks blacker
+      final contrast = img.contrast(grayscale, contrast: 150);
+
+      // 3. Return as PNG bytes
+      return Uint8List.fromList(img.encodePng(contrast));
+    } catch (e) {
+      return bytes;
+    }
   }
 }

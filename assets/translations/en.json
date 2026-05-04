@@ -138,7 +138,7 @@
   "generating": "Generating...",
   "connecting": "Connecting...",
   "print_all": "Print All",
-  "share": "Share",
+  "continue_to_summary": "Continue to Summary",
   "instructions": "Instructions",
   "import_excel_desc": "Your Excel file (.xlsx) must have these columns in order:",
   "column_name": "1. Name",

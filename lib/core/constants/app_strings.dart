@@ -5,6 +5,7 @@ class AppStrings {
   static String get brandDetails => 'brand_details'.tr();
   static String get taxation => 'taxation'.tr();
   static String get vatRate => 'vat_rate'.tr();
+  static String get continueToSummary => 'continue_to_summary'.tr();
   static String get currency => 'currency'.tr();
   static String get defaultCurrency => 'default_currency'.tr();
   static String get editVat => 'edit_vat'.tr();

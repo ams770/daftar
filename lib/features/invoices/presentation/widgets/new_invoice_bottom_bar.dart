@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../cubits/invoice_cubit.dart';
@@ -19,7 +20,10 @@ class NewInvoiceBottomBar extends StatelessWidget {
         final cart = state.cartItems;
         if (cart.isEmpty) return const SizedBox();
 
-        final totalItems = cart.values.fold(0, (sum, q) => (sum + q.quantity).toInt());
+        final totalItems = cart.values.fold(
+          0,
+          (sum, q) => (sum + q.quantity).toInt(),
+        );
 
         return Container(
           padding: const EdgeInsets.all(AppSpacing.lg),
@@ -44,15 +48,21 @@ class NewInvoiceBottomBar extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('CONTINUE TO SUMMARY'),
+                  Text(AppStrings.continueToSummary),
                   const Gap(AppSpacing.md),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Text('$totalItems items', style: const TextStyle(fontSize: 12)),
+                    child: Text(
+                      '$totalItems items',
+                      style: const TextStyle(fontSize: 12),
+                    ),
                   ),
                 ],
               ),

@@ -266,7 +266,7 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: PrinterWidth.values.map((w) {
+        children: PrinterWidth.values.take(2).map((w) {
           final isSelected = w == currentWidth;
           return GestureDetector(
             onTap: () => context.read<PrinterCubit>().connect(
@@ -409,8 +409,8 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
               const Gap(AppSpacing.xl),
               Row(
                 children: [
-                  Expanded(child: _buildWidthOption(context, device, PrinterWidth.inch2, AppStrings.printer2Inch)),
-                  const Gap(AppSpacing.md),
+                  // Expanded(child: _buildWidthOption(context, device, PrinterWidth.inch2, AppStrings.printer2Inch)),
+                  // const Gap(AppSpacing.md),
                   Expanded(child: _buildWidthOption(context, device, PrinterWidth.inch3, AppStrings.printer3Inch)),
                   const Gap(AppSpacing.md),
                   Expanded(child: _buildWidthOption(context, device, PrinterWidth.inch4, AppStrings.printer4Inch)),
