@@ -14,6 +14,7 @@ import '../cubits/add_invoice_cubit.dart';
 import '../../../../core/di/injection.dart' as di;
 import 'invoice_summary_page.dart';
 import '../widgets/product_selection_card.dart';
+import '../../../../core/services/sound_service.dart';
 
 class ScannerInvoicePage extends StatefulWidget {
   const ScannerInvoicePage({super.key});
@@ -71,6 +72,7 @@ class _ScannerInvoicePageState extends State<ScannerInvoicePage> {
     );
 
     if (success) {
+      SoundService.playScanSound();
       HapticFeedback.mediumImpact();
     } else {
       if (mounted) {

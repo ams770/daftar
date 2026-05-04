@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/services/sound_service.dart';
 
 class ScannerBottomSheet extends StatelessWidget {
   const ScannerBottomSheet({super.key});
@@ -22,6 +23,7 @@ class ScannerBottomSheet extends StatelessWidget {
               if (barcodes.isNotEmpty) {
                 final String? code = barcodes.first.rawValue;
                 if (code != null) {
+                  SoundService.playScanSound();
                   Navigator.pop(context, code);
                 }
               }

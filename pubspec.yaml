@@ -51,6 +51,7 @@ flutter:
     - assets/translations/
     - assets/lottie/
     - assets/svg/
+    - assets/sounds/
 
   fonts:
     - family: Alex

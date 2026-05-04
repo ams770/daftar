@@ -9,6 +9,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/daftar_theme_extension.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/services/sound_service.dart';
 import '../../../../core/widgets/loading_dialog.dart';
 import '../../../../core/services/pdf/invoice_pdf_service.dart';
 import '../../../settings/presentation/cubits/settings_cubit.dart';
@@ -511,6 +512,7 @@ class _ScannerBottomSheet extends StatelessWidget {
               if (barcodes.isNotEmpty) {
                 final String? code = barcodes.first.rawValue;
                 if (code != null) {
+                  SoundService.playScanSound();
                   Navigator.pop(context, code);
                 }
               }

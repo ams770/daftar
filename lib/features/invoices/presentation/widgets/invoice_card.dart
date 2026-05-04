@@ -141,7 +141,7 @@ class InvoiceCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
-                            '${invoice.items.length} items',
+                            '${invoice.items.length} ${AppStrings.items}',
                             style: AppTypography.label.copyWith(
                               fontSize: 10,
                               color: AppColors.greyDark,
