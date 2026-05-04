@@ -7,6 +7,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/bento_theme_extension.dart';
+import '../../../../core/utils/logo_helper.dart';
 
 class BrandHeader extends StatelessWidget {
   final AppSettings settings;
@@ -41,7 +42,15 @@ class BrandHeader extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                child: Image.file(File(settings.logoPath!), fit: BoxFit.contain),
+                child: FutureBuilder<String>(
+                  future: LogoHelper.getFullPath(settings.logoPath!),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData && File(snapshot.data!).existsSync()) {
+                      return Image.file(File(snapshot.data!), fit: BoxFit.contain);
+                    }
+                    return const Icon(LucideIcons.store, color: AppColors.secondary, size: 30);
+                  },
+                ),
               ),
             ),
             const Gap(AppSpacing.md),

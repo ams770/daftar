@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:gap/gap.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -12,7 +12,7 @@ import '../../../../core/theme/bento_theme_extension.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/models/app_settings.dart';
 import '../../../settings/presentation/cubits/settings_cubit.dart';
-import '../../../settings/presentation/widgets/settings_widgets.dart';
+import '../../../../core/utils/logo_helper.dart';
 
 class OnboardingPage extends StatefulWidget {
   final AppSettings initialSettings;
@@ -30,26 +30,52 @@ class _OnboardingPageState extends State<OnboardingPage> {
   late TextEditingController _phoneController;
   late TextEditingController _addressController;
   late TextEditingController _vatController;
+  late TextEditingController _currencyController;
+  
+  final FocusNode _nameFocus = FocusNode();
+  final FocusNode _phoneFocus = FocusNode();
+  final FocusNode _addressFocus = FocusNode();
+  final FocusNode _vatFocus = FocusNode();
+  final FocusNode _currencyFocus = FocusNode();
+
   String? _logoPath;
+  String? _logoFileName;
   String _selectedLang = 'EN';
+  String _selectedPrintLang = 'EN';
+  
+  bool _isFieldFocused = false;
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(
-      text: widget.initialSettings.brandName,
-    );
-    _phoneController = TextEditingController(
-      text: widget.initialSettings.phone,
-    );
-    _addressController = TextEditingController(
-      text: widget.initialSettings.address,
-    );
-    _vatController = TextEditingController(
-      text: widget.initialSettings.vatPercent.toString(),
-    );
-    _logoPath = widget.initialSettings.logoPath;
+    _nameController = TextEditingController(text: widget.initialSettings.brandName);
+    _phoneController = TextEditingController(text: widget.initialSettings.phone);
+    _addressController = TextEditingController(text: widget.initialSettings.address);
+    _vatController = TextEditingController(text: widget.initialSettings.vatPercent.toString());
+    _currencyController = TextEditingController(text: widget.initialSettings.currency);
+    
+    _logoFileName = widget.initialSettings.logoPath;
+    if (_logoFileName != null) {
+      LogoHelper.getFullPath(_logoFileName!).then((path) {
+        if (mounted) setState(() => _logoPath = path);
+      });
+    }
+    
     _selectedLang = widget.initialSettings.language;
+    _selectedPrintLang = widget.initialSettings.printingLanguage;
+
+    _nameFocus.addListener(_onFocusChange);
+    _phoneFocus.addListener(_onFocusChange);
+    _addressFocus.addListener(_onFocusChange);
+    _vatFocus.addListener(_onFocusChange);
+    _currencyFocus.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    final focused = _nameFocus.hasFocus || _phoneFocus.hasFocus || _addressFocus.hasFocus || _vatFocus.hasFocus || _currencyFocus.hasFocus;
+    if (focused != _isFieldFocused) {
+      setState(() => _isFieldFocused = focused);
+    }
   }
 
   @override
@@ -59,14 +85,34 @@ class _OnboardingPageState extends State<OnboardingPage> {
     _phoneController.dispose();
     _addressController.dispose();
     _vatController.dispose();
+    _nameFocus.dispose();
+    _phoneFocus.dispose();
+    _addressFocus.dispose();
+    _vatFocus.dispose();
+    _currencyFocus.dispose();
     super.dispose();
+  }
+
+  bool get _isPage1Valid {
+    return _nameController.text.isNotEmpty && 
+           _phoneController.text.isNotEmpty && 
+           _addressController.text.isNotEmpty && 
+           _logoFileName != null;
+  }
+
+  bool get _isPage2Valid => _vatController.text.isNotEmpty && _currencyController.text.isNotEmpty;
+
+  bool get _isCurrentPageValid {
+    if (_currentPage == 0) return _isPage1Valid;
+    if (_currentPage == 1) return _isPage2Valid;
+    return true;
   }
 
   void _nextPage() {
     if (_currentPage < 2) {
       _pageController.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeOutQuart,
       );
     } else {
       _finish();
@@ -76,8 +122,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
   void _previousPage() {
     if (_currentPage > 0) {
       _pageController.previousPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeOutQuart,
       );
     }
   }
@@ -88,273 +134,370 @@ class _OnboardingPageState extends State<OnboardingPage> {
       phone: _phoneController.text,
       address: _addressController.text,
       vatPercent: int.tryParse(_vatController.text) ?? 15,
+      currency: _currencyController.text,
       language: _selectedLang,
-      logoPath: _logoPath,
+      printingLanguage: _selectedPrintLang,
+      logoPath: _logoFileName,
       isOnboarded: true,
     );
     context.read<SettingsCubit>().saveSettings(updatedSettings);
   }
 
   Future<void> _pickLogo() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      setState(() => _logoPath = image.path);
+    final String? fileName = await LogoHelper.pickAndSaveLogo();
+    if (fileName != null) {
+      final fullPath = await LogoHelper.getFullPath(fileName);
+      setState(() {
+        _logoFileName = fileName;
+        _logoPath = fullPath;
+      });
+      if (_isPage1Valid && _currentPage == 0) {
+        _nextPage();
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final bento = Theme.of(context).extension<BentoThemeExtension>()!;
-    final isArabic = context.locale.languageCode == 'ar';
-
+    
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            Expanded(
-              child: PageView(
-                controller: _pageController,
-                onPageChanged: (index) => setState(() => _currentPage = index),
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  _buildBrandStep(bento),
-                  _buildTaxStep(bento),
-                  _buildLangStep(bento),
-                ],
-              ),
+      body: Column(
+        children: [
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (index) {
+                FocusScope.of(context).unfocus();
+                setState(() => _currentPage = index);
+              },
+              physics: const NeverScrollableScrollPhysics(),
+              children: [
+                _buildStep(
+                  bento: bento,
+                  svg: 'assets/svg/onboarding-1.svg',
+                  title: AppStrings.onboardingWelcome,
+                  desc: AppStrings.onboardingBrandDesc,
+                  content: _buildBrandForm(bento),
+                ),
+                _buildStep(
+                  bento: bento,
+                  svg: 'assets/svg/onboarding-2.svg',
+                  title: AppStrings.taxation,
+                  desc: AppStrings.onboardingTaxDesc,
+                  content: _buildTaxForm(bento),
+                ),
+                _buildStep(
+                  bento: bento,
+                  svg: 'assets/svg/onboarding-3.svg',
+                  title: AppStrings.language,
+                  desc: AppStrings.onboardingLangDesc,
+                  content: _buildLangForm(bento),
+                ),
+              ],
             ),
-            _buildBottomBar(isArabic),
-          ],
-        ),
+          ),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            height: _isFieldFocused ? 0 : null,
+            child: _isFieldFocused ? const SizedBox.shrink() : _buildBottomBar(),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildStepHeader({
-    required IconData icon,
+  Widget _buildStep({
+    required BentoThemeExtension bento,
+    required String svg,
     required String title,
-    required String description,
+    required String desc,
+    required Widget content,
   }) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(AppSpacing.xl),
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.secondary.withValues(alpha: 0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Icon(icon, size: 48, color: AppColors.secondary),
-        ),
-        const Gap(AppSpacing.xl),
-        Text(title, style: AppTypography.h1, textAlign: TextAlign.center),
-        const Gap(AppSpacing.md),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-          child: Text(
-            description,
-            style: AppTypography.bodyMd.copyWith(color: AppColors.greyDark),
-            textAlign: TextAlign.center,
+    return CustomScrollView(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(AppSpacing.xl, 60, AppSpacing.xl, AppSpacing.xl),
+            child: Column(
+              children: [
+                SvgPicture.asset(svg, height: 200),
+                const Gap(AppSpacing.xl),
+                Text(title, style: AppTypography.h1, textAlign: TextAlign.center),
+                const Gap(AppSpacing.sm),
+                Text(
+                  desc,
+                  style: AppTypography.bodyMd.copyWith(color: AppColors.greyDark),
+                  textAlign: TextAlign.center,
+                ),
+                const Gap(AppSpacing.xxl),
+                content,
+                const Gap(100),
+              ],
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildBrandStep(BentoThemeExtension bento) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(AppSpacing.xl),
-      child: Column(
-        children: [
-          _buildStepHeader(
-            icon: LucideIcons.building2,
-            title: AppStrings.onboardingWelcome,
-            description: AppStrings.onboardingBrandDesc,
-          ),
-          const Gap(AppSpacing.xxl),
-          GestureDetector(
-            onTap: _pickLogo,
-            child: Stack(
-              children: [
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-                    border: Border.all(color: AppColors.primary, width: 2),
-                    boxShadow: bento.cardDecoration.boxShadow,
-                    image: _logoPath != null
-                        ? DecorationImage(
-                            image: FileImage(File(_logoPath!)),
-                            fit: BoxFit.cover,
-                          )
-                        : null,
-                  ),
-                  child: _logoPath == null
-                      ? const Icon(
-                          LucideIcons.imagePlus,
-                          color: AppColors.secondary,
-                          size: 40,
-                        )
-                      : null,
-                ),
-                Positioned(
-                  right: -4,
-                  bottom: -4,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: const BoxDecoration(
-                      color: AppColors.secondary,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      LucideIcons.pencil,
-                      color: Colors.white,
-                      size: 16,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Gap(AppSpacing.xxl),
-          TextFormField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              labelText: AppStrings.brandName,
-              prefixIcon: const Icon(LucideIcons.building),
-            ),
-          ),
-          const Gap(AppSpacing.lg),
-          TextFormField(
-            controller: _phoneController,
-            decoration: InputDecoration(
-              labelText: AppStrings.phoneNumber,
-              prefixIcon: const Icon(LucideIcons.phone),
-            ),
-            keyboardType: TextInputType.phone,
-          ),
-          const Gap(AppSpacing.lg),
-          TextFormField(
-            controller: _addressController,
-            decoration: InputDecoration(
-              labelText: AppStrings.address,
-              prefixIcon: const Icon(LucideIcons.mapPin),
-            ),
-          ),
-        ],
-      ),
+  Widget _buildBrandForm(BentoThemeExtension bento) {
+    return Column(
+      children: [
+        _buildLogoPicker(bento),
+        const Gap(AppSpacing.xxl),
+        _buildTextField(
+          controller: _nameController,
+          focusNode: _nameFocus,
+          label: AppStrings.brandName,
+          icon: LucideIcons.building,
+          action: TextInputAction.next,
+          onSubmitted: (_) => FocusScope.of(context).requestFocus(_phoneFocus),
+          onChanged: (_) => setState(() {}),
+        ),
+        const Gap(AppSpacing.lg),
+        _buildTextField(
+          controller: _phoneController,
+          focusNode: _phoneFocus,
+          label: AppStrings.phoneNumber,
+          icon: LucideIcons.phone,
+          action: TextInputAction.next,
+          keyboardType: TextInputType.phone,
+          onSubmitted: (_) => FocusScope.of(context).requestFocus(_addressFocus),
+          onChanged: (_) => setState(() {}),
+        ),
+        const Gap(AppSpacing.lg),
+        _buildTextField(
+          controller: _addressController,
+          focusNode: _addressFocus,
+          label: AppStrings.address,
+          icon: LucideIcons.mapPin,
+          action: TextInputAction.done,
+          onSubmitted: (_) {
+            FocusScope.of(context).unfocus();
+            if (_isPage1Valid) _nextPage();
+          },
+          onChanged: (_) => setState(() {}),
+        ),
+      ],
     );
   }
 
-  Widget _buildTaxStep(BentoThemeExtension bento) {
-    return Padding(
-      padding: const EdgeInsets.all(AppSpacing.xl),
-      child: Column(
+  Widget _buildLogoPicker(BentoThemeExtension bento) {
+    return GestureDetector(
+      onTap: _pickLogo,
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          _buildStepHeader(
-            icon: LucideIcons.percent,
-            title: AppStrings.taxation,
-            description: AppStrings.onboardingTaxDesc,
-          ),
-          const Spacer(),
           Container(
-            padding: const EdgeInsets.all(AppSpacing.xxl),
-            decoration: bento.cardDecoration,
-            child: Column(
-              children: [
-                Text(
-                  AppStrings.vatPercentage,
-                  style: AppTypography.bodyLg.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Gap(AppSpacing.lg),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 100,
-                      child: TextFormField(
-                        controller: _vatController,
-                        textAlign: TextAlign.center,
-                        style: AppTypography.h1.copyWith(
-                          color: AppColors.secondary,
-                        ),
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                      ),
-                    ),
-                    const Gap(AppSpacing.md),
-                    Text(
-                      "%",
-                      style: AppTypography.h1.copyWith(color: AppColors.grey),
-                    ),
-                  ],
+            width: 110,
+            height: 110,
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+              border: Border.all(
+                color: _logoFileName != null ? AppColors.primary : AppColors.greyLight,
+                width: 2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.text.withValues(alpha: 0.05),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
                 ),
               ],
+              image: _logoPath != null && File(_logoPath!).existsSync()
+                  ? DecorationImage(image: FileImage(File(_logoPath!)), fit: BoxFit.cover)
+                  : null,
             ),
+            child: _logoPath == null
+                ? const Icon(LucideIcons.camera, color: AppColors.grey, size: 32)
+                : null,
           ),
-          const Spacer(),
+          if (_logoFileName != null)
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
+                child: const Icon(LucideIcons.check, color: Colors.white, size: 16),
+              ),
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildLangStep(BentoThemeExtension bento) {
-    return Padding(
+  Widget _buildTaxForm(BentoThemeExtension bento) {
+    return Container(
       padding: const EdgeInsets.all(AppSpacing.xl),
+      decoration: bento.cardDecoration,
       child: Column(
         children: [
-          _buildStepHeader(
-            icon: LucideIcons.languages,
-            title: AppStrings.language,
-            description: AppStrings.onboardingLangDesc,
-          ),
-          const Spacer(),
-          LanguageOption(
-            label: AppStrings.english,
-            isSelected: _selectedLang == 'EN',
-            onTap: () {
-              setState(() => _selectedLang = 'EN');
-              context.setLocale(const Locale('en'));
-            },
-          ),
+          Text(AppStrings.vatPercentage, style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.bold)),
           const Gap(AppSpacing.lg),
-          LanguageOption(
-            label: AppStrings.arabic,
-            isSelected: _selectedLang == 'AR',
-            onTap: () {
-              setState(() => _selectedLang = 'AR');
-              context.setLocale(const Locale('ar'));
+          _buildTextField(
+            controller: _vatController,
+            focusNode: _vatFocus,
+            label: "%",
+            icon: LucideIcons.percent,
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            action: TextInputAction.next,
+            onChanged: (_) => setState(() {}),
+            onSubmitted: (_) => FocusScope.of(context).requestFocus(_currencyFocus),
+          ),
+          const Gap(AppSpacing.xl),
+          Text(AppStrings.currency, style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.bold)),
+          const Gap(AppSpacing.lg),
+          _buildTextField(
+            controller: _currencyController,
+            focusNode: _currencyFocus,
+            label: AppStrings.currencyCode,
+            icon: LucideIcons.coins,
+            textAlign: TextAlign.center,
+            action: TextInputAction.done,
+            onChanged: (_) => setState(() {}),
+            onSubmitted: (_) {
+              FocusScope.of(context).unfocus();
+              if (_isPage2Valid) _nextPage();
             },
           ),
-          const Spacer(),
         ],
       ),
     );
   }
 
-  Widget _buildBottomBar(bool isArabic) {
+  Widget _buildLangForm(BentoThemeExtension bento) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSelectionTitle(AppStrings.appLanguage, AppStrings.appLanguageDesc),
+        const Gap(AppSpacing.md),
+        Row(
+          children: [
+            Expanded(
+              child: _buildSelectionCard(
+                label: AppStrings.english,
+                isSelected: _selectedLang == 'EN',
+                onTap: () {
+                  setState(() => _selectedLang = 'EN');
+                  context.setLocale(const Locale('en'));
+                },
+              ),
+            ),
+            const Gap(AppSpacing.md),
+            Expanded(
+              child: _buildSelectionCard(
+                label: AppStrings.arabic,
+                isSelected: _selectedLang == 'AR',
+                onTap: () {
+                  setState(() => _selectedLang = 'AR');
+                  context.setLocale(const Locale('ar'));
+                },
+              ),
+            ),
+          ],
+        ),
+        const Gap(AppSpacing.xl),
+        _buildSelectionTitle(AppStrings.printingLanguage, AppStrings.printingLanguageDesc),
+        const Gap(AppSpacing.md),
+        Row(
+          children: [
+            Expanded(
+              child: _buildSelectionCard(
+                label: AppStrings.english,
+                isSelected: _selectedPrintLang == 'EN',
+                onTap: () => setState(() => _selectedPrintLang = 'EN'),
+              ),
+            ),
+            const Gap(AppSpacing.md),
+            Expanded(
+              child: _buildSelectionCard(
+                label: AppStrings.arabic,
+                isSelected: _selectedPrintLang == 'AR',
+                onTap: () => setState(() => _selectedPrintLang = 'AR'),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSelectionTitle(String title, String desc) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: AppTypography.h3),
+        Text(desc, style: AppTypography.bodySm.copyWith(color: AppColors.greyDark)),
+      ],
+    );
+  }
+
+  Widget _buildSelectionCard({required String label, required bool isSelected, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary.withValues(alpha: 0.1) : AppColors.white,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          border: Border.all(color: isSelected ? AppColors.primary : AppColors.greyLight, width: 2),
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: AppTypography.bodyLg.copyWith(
+              color: isSelected ? AppColors.primary : AppColors.text,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required FocusNode focusNode,
+    required String label,
+    required IconData icon,
+    TextInputType? keyboardType,
+    TextInputAction? action,
+    TextAlign textAlign = TextAlign.start,
+    void Function(String)? onSubmitted,
+    void Function(String)? onChanged,
+  }) {
+    return TextFormField(
+      controller: controller,
+      focusNode: focusNode,
+      keyboardType: keyboardType,
+      textInputAction: action,
+      textAlign: textAlign,
+      onFieldSubmitted: onSubmitted,
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, size: 20),
+        filled: true,
+        fillColor: AppColors.white,
+      ),
+    );
+  }
+
+  Widget _buildBottomBar() {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
         color: AppColors.white,
         boxShadow: [
           BoxShadow(
-            color: AppColors.text.withValues(alpha: 0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),
@@ -365,37 +508,26 @@ class _OnboardingPageState extends State<OnboardingPage> {
         child: Row(
           children: [
             if (_currentPage > 0)
-              TextButton(
+              IconButton(
                 onPressed: _previousPage,
-                child: Text(AppStrings.onboardingBack),
-              ),
-            const Spacer(),
-            Row(
-              children: List.generate(
-                3,
-                (index) => Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  width: _currentPage == index ? 24 : 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: _currentPage == index
-                        ? AppColors.secondary
-                        : AppColors.greyLight,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
+                icon: const Icon(LucideIcons.arrowLeft),
+                style: IconButton.styleFrom(
+                  backgroundColor: AppColors.background,
+                  padding: const EdgeInsets.all(AppSpacing.md),
                 ),
               ),
-            ),
-            const Spacer(),
-            ElevatedButton(
-              onPressed: _nextPage,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
-              ),
-              child: Text(
-                _currentPage == 2
-                    ? AppStrings.onboardingFinish
-                    : AppStrings.onboardingNext,
+            const Gap(AppSpacing.md),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: _isCurrentPageValid ? _nextPage : null,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+                  backgroundColor: _isCurrentPageValid ? AppColors.primary : AppColors.greyLight,
+                ),
+                child: Text(
+                  _currentPage == 2 ? AppStrings.onboardingFinish : AppStrings.onboardingNext,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ],

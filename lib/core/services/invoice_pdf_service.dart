@@ -6,8 +6,8 @@ import 'package:intl/intl.dart';
 import '../models/app_settings.dart';
 import '../../features/invoices/domain/entities/invoice.dart';
 import '../../features/invoices/domain/entities/money_collection.dart';
-import '../../features/products/domain/entities/product.dart';
 import 'package:flutter/services.dart';
+import '../utils/logo_helper.dart';
 
 class InvoicePdfService {
   static Future<Uint8List> generateInvoicePdf({
@@ -37,7 +37,8 @@ class InvoicePdfService {
 
     pw.MemoryImage? logoImage;
     if (settings.logoPath != null && settings.logoPath!.isNotEmpty) {
-      final logoFile = File(settings.logoPath!);
+      final fullPath = await LogoHelper.getFullPath(settings.logoPath!);
+      final logoFile = File(fullPath);
       if (await logoFile.exists()) {
         final logoBytes = await logoFile.readAsBytes();
         logoImage = pw.MemoryImage(logoBytes);
@@ -112,7 +113,8 @@ class InvoicePdfService {
 
     pw.MemoryImage? logoImage;
     if (settings.logoPath != null && settings.logoPath!.isNotEmpty) {
-      final logoFile = File(settings.logoPath!);
+      final fullPath = await LogoHelper.getFullPath(settings.logoPath!);
+      final logoFile = File(fullPath);
       if (await logoFile.exists()) {
         final logoBytes = await logoFile.readAsBytes();
         logoImage = pw.MemoryImage(logoBytes);
@@ -203,103 +205,6 @@ class InvoicePdfService {
     return pdf.save();
   }
 
-  static Future<Uint8List> generateProductsPdf({
-    required List<Product> products,
-    required AppSettings settings,
-  }) async {
-    final pdf = pw.Document();
-    final isArabic = settings.printingLanguage == 'ar' || settings.printingLanguage == 'AR';
-    final dateFormat = DateFormat('yyyy-MM-dd HH:mm');
-
-    // Load fonts
-    final fontData = await rootBundle.load('assets/fonts/Alex/Alex-Regular.ttf');
-    final fontBoldData = await rootBundle.load('assets/fonts/Alex/Alex-Bold.ttf');
-    final alexFont = pw.Font.ttf(fontData);
-    final alexFontBold = pw.Font.ttf(fontBoldData);
-
-    final baseStyle = pw.TextStyle(font: alexFont, fontSize: 8);
-    final boldStyle = pw.TextStyle(font: alexFontBold, fontWeight: pw.FontWeight.bold, fontSize: 8);
-
-    pw.MemoryImage? logoImage;
-    if (settings.logoPath != null && settings.logoPath!.isNotEmpty) {
-      final logoFile = File(settings.logoPath!);
-      if (await logoFile.exists()) {
-        final logoBytes = await logoFile.readAsBytes();
-        logoImage = pw.MemoryImage(logoBytes);
-      }
-    }
-
-    pdf.addPage(
-      pw.Page(
-        pageFormat: PdfPageFormat.roll80,
-        margin: pw.EdgeInsets.zero,
-        textDirection: isArabic ? pw.TextDirection.rtl : pw.TextDirection.ltr,
-        theme: pw.ThemeData.withFont(base: alexFont, bold: alexFontBold),
-        build: (pw.Context context) {
-          return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.stretch,
-            children: [
-              _buildUnifiedHeader(
-                title: isArabic ? 'قائمة المنتجات' : 'PRODUCT LIST',
-                id: 'INV-${DateTime.now().millisecond}',
-                date: dateFormat.format(DateTime.now()),
-                settings: settings,
-                isArabic: isArabic,
-                logo: logoImage,
-                boldStyle: boldStyle,
-                baseStyle: baseStyle,
-              ),
-              pw.SizedBox(height: 4),
-              _buildProductsTable(products, settings, isArabic, boldStyle, baseStyle),
-              pw.SizedBox(height: 30),
-            ],
-          );
-        },
-      ),
-    );
-
-    return pdf.save();
-  }
-
-  static pw.Widget _buildProductsTable(
-    List<Product> products,
-    AppSettings settings,
-    bool isArabic,
-    pw.TextStyle boldStyle,
-    pw.TextStyle baseStyle,
-  ) {
-    final headers = [
-      isArabic ? 'المنتج' : 'Product',
-      isArabic ? 'الكود' : 'Code',
-      isArabic ? 'السعر' : 'Price',
-    ];
-
-    final data = products.map((p) {
-      return [
-        p.name,
-        p.code,
-        '${p.price.toStringAsFixed(2)} ${settings.currency}',
-      ];
-    }).toList();
-
-    return pw.TableHelper.fromTextArray(
-      headers: headers,
-      data: data,
-      border: const pw.TableBorder(
-        bottom: pw.BorderSide(color: PdfColors.grey300, width: 0.5),
-        horizontalInside: pw.BorderSide(color: PdfColors.grey300, width: 0.5),
-      ),
-      headerStyle: boldStyle.copyWith(color: PdfColors.white, fontSize: 8),
-      headerDecoration: const pw.BoxDecoration(color: PdfColors.blue700),
-      cellStyle: baseStyle.copyWith(fontSize: 9),
-      cellPadding: const pw.EdgeInsets.all(4),
-      cellAlignments: {
-        0: pw.Alignment.centerLeft,
-        1: pw.Alignment.center,
-        2: pw.Alignment.centerRight,
-      },
-    );
-  }
 
   static pw.Widget _buildUnifiedHeader({
     required String title,

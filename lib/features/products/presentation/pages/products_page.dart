@@ -11,8 +11,6 @@ import '../../../../core/theme/bento_theme_extension.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/widgets/loading_dialog.dart';
 import '../../../../core/services/invoice_pdf_service.dart';
-import '../../../../core/services/pdf_to_image_service.dart';
-import '../../../printer/presentation/cubits/printer_cubit.dart';
 import '../../../settings/presentation/cubits/settings_cubit.dart';
 import '../../domain/entities/excel_product.dart';
 import '../../domain/entities/product.dart';
@@ -123,26 +121,17 @@ class _ProductsViewContentState extends State<_ProductsViewContent> {
                           child: _ActionButton(
                             onPressed: () => _showImportInstructions(context),
                             icon: LucideIcons.fileSpreadsheet,
-                            label: AppStrings.import,
+                            label: AppStrings.importExcel,
                             color: AppColors.white,
                           ),
                         ),
-                        const Gap(AppSpacing.xs),
+                        const Gap(AppSpacing.md),
                         Expanded(
                           child: _ActionButton(
                             onPressed: () =>
                                 context.read<ProductsCubit>().exportToExcel(),
                             icon: LucideIcons.fileDown,
-                            label: AppStrings.export,
-                            color: AppColors.white,
-                          ),
-                        ),
-                        const Gap(AppSpacing.xs),
-                        Expanded(
-                          child: _ActionButton(
-                            onPressed: () => _printAllProducts(context),
-                            icon: LucideIcons.printer,
-                            label: AppStrings.print,
+                            label: AppStrings.exportExcel,
                             color: AppColors.white,
                           ),
                         ),
@@ -291,44 +280,6 @@ class _ProductsViewContentState extends State<_ProductsViewContent> {
 
     if (result != null && context.mounted) {
       context.read<ProductsCubit>().scanBarcode(result);
-    }
-  }
-
-  Future<void> _printAllProducts(BuildContext context) async {
-    final productsState = context.read<ProductsCubit>().state;
-    if (productsState is! ProductsLoaded || productsState.products.isEmpty) {
-      return;
-    }
-    if(context.read<SettingsCubit>().state is! SettingsLoaded){
-      return;
-    }
-    final settings = (context.read<SettingsCubit>().state as SettingsLoaded).settings ;
-    
-    LoadingDialog.show(context, message: AppStrings.generating);
-
-    try {
-      final pdfData = await InvoicePdfService.generateProductsPdf(
-        products: productsState.products,
-        settings: settings,
-      );
-
-      final image = await PdfToImageService.convertFirstPageToImage(pdfData);
-      
-      if (!mounted) return;
-      
-      LoadingDialog.hide(context);
-
-      await context.read<PrinterCubit>().printProducts(image);
-    } catch (e) {
-      if (mounted) {
-        LoadingDialog.hide(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error printing: $e'),
-            backgroundColor: AppColors.danger,
-          ),
-        );
-      }
     }
   }
 

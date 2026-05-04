@@ -13,6 +13,7 @@ import '../../../printer/presentation/pages/printer_settings_page.dart';
 import '../cubits/settings_cubit.dart';
 import '../widgets/settings_widgets.dart';
 import '../widgets/settings_modals.dart';
+import '../../../../core/utils/logo_helper.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -279,16 +280,26 @@ class _BrandProfileCard extends StatelessWidget {
                 color: AppColors.white.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
                 border: Border.all(color: AppColors.white.withValues(alpha: 0.4), width: 2),
-                image: settings.logoPath != null
-                    ? DecorationImage(
-                        image: FileImage(File(settings.logoPath!)),
-                        fit: BoxFit.cover,
-                      )
-                    : null,
               ),
               child: settings.logoPath == null
                   ? const Icon(LucideIcons.store, color: AppColors.white, size: 30)
-                  : null,
+                  : FutureBuilder<String>(
+                      future: LogoHelper.getFullPath(settings.logoPath!),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData && File(snapshot.data!).existsSync()) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                image: FileImage(File(snapshot.data!)),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          );
+                        }
+                        return const Icon(LucideIcons.store, color: AppColors.white, size: 30);
+                      },
+                    ),
             ),
             const Gap(AppSpacing.lg),
             Expanded(

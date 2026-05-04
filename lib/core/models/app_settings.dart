@@ -7,7 +7,7 @@ class AppSettings extends Equatable {
   final int vatPercent;
   final String language; // 'AR' or 'EN'
   final String printingLanguage; // 'AR' or 'EN'
-  final String? logoPath;
+  final String? logoPath; // Stores only the filename (e.g., 'brand_logo.jpg')
   final String currency;
   final bool isOnboarded;
 

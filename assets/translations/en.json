@@ -110,6 +110,9 @@
   "amount_to_collect": "Amount to Collect",
   "money_collected_success": "Money collected successfully!",
   "printing_language": "Printing Language",
+  "app_language": "App Language",
+  "app_language_desc": "Choose the language for the application interface.",
+  "printing_language_desc": "Choose the language used for printing invoices and receipts.",
   "printer_settings": "Printer Settings",
   "printer_setup": "Printer Setup",
   "bluetooth_disabled": "Bluetooth is disabled",
@@ -131,5 +134,6 @@
   "print_success": "Print job sent!",
   "generating": "Generating...",
   "connecting": "Connecting...",
-  "print_all": "Print All"
+  "print_all": "Print All",
+  "share": "Share"
 }

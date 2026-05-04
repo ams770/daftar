@@ -111,8 +111,10 @@ class AppStrings {
   static String get amountToCollect => 'amount_to_collect'.tr();
   static String get moneyCollectedSuccess => 'money_collected_success'.tr();
   static String get printingLanguage => 'printing_language'.tr();
+  static String get appLanguage => 'app_language'.tr();
+  static String get appLanguageDesc => 'app_language_desc'.tr();
+  static String get printingLanguageDesc => 'printing_language_desc'.tr();
   static String get extractingData => 'extracting_data'.tr();
   static String get generating => 'generating'.tr();
   static String get connecting => 'connecting'.tr();
-  static String get printAll => 'print_all'.tr();
 }

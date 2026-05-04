@@ -12,6 +12,7 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/models/app_settings.dart';
 import '../cubits/settings_cubit.dart';
+import '../../../../core/utils/logo_helper.dart';
 
 class BrandEditModal extends StatefulWidget {
   final AppSettings settings;
@@ -25,7 +26,8 @@ class _BrandEditModalState extends State<BrandEditModal> {
   late TextEditingController _nameController;
   late TextEditingController _phoneController;
   late TextEditingController _addressController;
-  String? _logoPath;
+  String? _logoPath; // Full path for display
+  String? _logoFileName; // Filename for storage
 
   @override
   void initState() {
@@ -33,17 +35,22 @@ class _BrandEditModalState extends State<BrandEditModal> {
     _nameController = TextEditingController(text: widget.settings.brandName);
     _phoneController = TextEditingController(text: widget.settings.phone);
     _addressController = TextEditingController(text: widget.settings.address);
-    _logoPath = widget.settings.logoPath;
+    _logoFileName = widget.settings.logoPath;
+    if (_logoFileName != null) {
+      LogoHelper.getFullPath(_logoFileName!).then((path) {
+        if (mounted) setState(() => _logoPath = path);
+      });
+    }
   }
 
   Future<void> _pickLogo() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      final appDir = await getApplicationDocumentsDirectory();
-      final fileName = 'brand_logo${p.extension(image.path)}';
-      final savedImage = await File(image.path).copy('${appDir.path}/$fileName');
-      setState(() => _logoPath = savedImage.path);
+    final String? fileName = await LogoHelper.pickAndSaveLogo();
+    if (fileName != null) {
+      final fullPath = await LogoHelper.getFullPath(fileName);
+      setState(() {
+        _logoFileName = fileName;
+        _logoPath = fullPath;
+      });
     }
   }
 
@@ -91,7 +98,7 @@ class _BrandEditModalState extends State<BrandEditModal> {
                       border: Border.all(
                         color: AppColors.primary.withValues(alpha: 0.3),
                       ),
-                      image: _logoPath != null
+                      image: _logoPath != null && File(_logoPath!).existsSync()
                           ? DecorationImage(
                               image: FileImage(File(_logoPath!)),
                               fit: BoxFit.cover,
@@ -159,7 +166,7 @@ class _BrandEditModalState extends State<BrandEditModal> {
                 brandName: _nameController.text,
                 phone: _phoneController.text,
                 address: _addressController.text,
-                logoPath: _logoPath,
+                logoPath: _logoFileName,
               );
               context.read<SettingsCubit>().saveSettings(updated);
               Navigator.pop(context);

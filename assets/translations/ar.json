@@ -110,6 +110,9 @@
   "amount_to_collect": "المبلغ المراد تحصيله",
   "money_collected_success": "تم تحصيل المبلغ بنجاح!",
   "printing_language": "لغة الطباعة",
+  "app_language": "لغة التطبيق",
+  "app_language_desc": "اختر اللغة المفضلة لواجهة التطبيق.",
+  "printing_language_desc": "اختر اللغة المستخدمة في طباعة الفواتير والإيصالات.",
   "printer_settings": "إعدادات الطابعة",
   "printer_setup": "إعداد الطابعة",
   "bluetooth_disabled": "البلوتوث متوقف",
@@ -131,5 +134,6 @@
   "print_success": "تم إرسال أمر الطباعة!",
   "generating": "جاري التجهيز...",
   "connecting": "جاري الاتصال...",
-  "print_all": "طباعة الكل"
+  "print_all": "طباعة الكل",
+  "share": "مشاركة"
 }

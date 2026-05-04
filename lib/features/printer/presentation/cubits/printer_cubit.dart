@@ -274,45 +274,6 @@ class PrinterCubit extends Cubit<PrinterState> {
     }
   }
 
-  Future<void> printProducts(Uint8List imageBytes) async {
-    if (state is PrinterConnected) {
-      final alive = await _service.pingPrinter();
-      if (!alive) await Future.delayed(Duration.zero);
-    }
-
-    if (state is! PrinterConnected) {
-      final actualState = await _service.getConnectionState();
-      if (actualState != PrinterConnectionState.connected) {
-        emit(PrinterDisconnected(devices: _devices));
-        emit(PrinterError('Printer turned off', devices: _devices));
-        return;
-      }
-    }
-
-    final name = _connectedName;
-    final addr = _connectedAddr;
-
-    try {
-      emit(PrinterPrinting(deviceName: name, address: addr, width: _currentWidth, devices: _devices));
-      _stopWatchdog();
-      await _service.printImage(imageBytes, milliseconds: 20000);
-      _startWatchdog();
-
-      emit(PrinterPrintSuccess(deviceName: name, address: addr, width: _currentWidth, devices: _devices));
-      await Future.delayed(const Duration(seconds: 2));
-      if (!isClosed) {
-        emit(PrinterConnected(deviceName: name, address: addr, width: _currentWidth, devices: _devices));
-      }
-    } catch (e) {
-      final realState = await _service.getConnectionState();
-      final isStillConnected = realState == PrinterConnectionState.connected;
-      emit(PrinterError(isStillConnected ? 'Failed to print products: $e' : 'Printer turned off', devices: _devices));
-      await Future.delayed(const Duration(seconds: 2));
-      if (!isClosed && isStillConnected) {
-        emit(PrinterConnected(deviceName: name, address: addr, width: _currentWidth, devices: _devices));
-      }
-    }
-  }
 
   @override
   Future<void> close() {
