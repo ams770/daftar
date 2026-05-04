@@ -69,6 +69,15 @@ class InvoicePdfService {
                 boldStyle: boldStyle,
                 baseStyle: baseStyle,
               ),
+              if (invoice.clientName != null)
+                pw.Padding(
+                  padding: const pw.EdgeInsets.only(bottom: 4),
+                  child: pw.Text(
+                    '${isArabic ? 'العميل' : 'Client'}: ${invoice.clientName}',
+                    style: boldStyle.copyWith(fontSize: 10),
+                  ),
+                ),
+
               _buildItemsTable(
                 invoice,
                 settings,
@@ -78,7 +87,7 @@ class InvoicePdfService {
               ),
               _buildTotals(invoice, settings, isArabic, boldStyle, baseStyle),
               // _buildFooter(settings, isArabic, baseStyle),
-              pw.SizedBox(height: 20),
+              pw.SizedBox(height: 15),
             ],
           );
         },
@@ -144,6 +153,21 @@ class InvoicePdfService {
                 boldStyle: boldStyle,
                 baseStyle: baseStyle,
               ),
+              pw.Padding(
+                padding: const pw.EdgeInsets.symmetric(vertical: 4),
+                child: pw.Text(
+                  '${isArabic ? 'رقم الفاتورة' : 'Invoice Number'}: #${collection.invoiceId}',
+                  style: boldStyle.copyWith(fontSize: 10),
+                ),
+              ),
+              if (collection.clientName != null)
+                pw.Padding(
+                  padding: const pw.EdgeInsets.only(bottom: 4),
+                  child: pw.Text(
+                    '${isArabic ? 'العميل' : 'Client'}        : ${collection.clientName}',
+                    style: boldStyle.copyWith(fontSize: 10),
+                  ),
+                ),
               pw.Container(
                 padding: const pw.EdgeInsets.all(8),
                 decoration: const pw.BoxDecoration(
@@ -182,23 +206,9 @@ class InvoicePdfService {
                   ],
                 ),
               ),
-              pw.Padding(
-                padding: const pw.EdgeInsets.symmetric(vertical: 4),
-                child: pw.Text(
-                  '${isArabic ? 'رقم الفاتورة' : 'Invoice Number'}: #${collection.invoiceId}',
-                  style: boldStyle.copyWith(fontSize: 10),
-                ),
-              ),
-              if (collection.clientName != null)
-                pw.Padding(
-                  padding: const pw.EdgeInsets.only(bottom: 4),
-                  child: pw.Text(
-                    '${isArabic ? 'العميل' : 'Client'}: ${collection.clientName}',
-                    style: boldStyle.copyWith(fontSize: 10),
-                  ),
-                ),
+
               // _buildFooter(settings, isArabic, baseStyle),
-              pw.SizedBox(height: 30),
+              pw.SizedBox(height: 20),
             ],
           );
         },
@@ -323,7 +333,7 @@ class InvoicePdfService {
       data: dataList,
       border: null,
       headerStyle: boldStyle.copyWith(color: PdfColors.white, fontSize: 7),
-      headerDecoration: const pw.BoxDecoration(color: PdfColors.grey700),
+      headerDecoration: const pw.BoxDecoration(color: PdfColors.black),
       cellStyle: baseStyle.copyWith(fontSize: 8),
       cellPadding: const pw.EdgeInsets.all(2),
       cellHeight: 20,
@@ -383,11 +393,19 @@ class InvoicePdfService {
               ),
             ],
             pw.SizedBox(height: 8),
-            pw.Text(
-              '${isArabic ? 'طريقة الدفع' : 'Payment'}: ${invoice.paymentMethod.label(isArabic)}',
-              style: baseStyle.copyWith(fontSize: 10, color: PdfColors.grey700),
+            pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              children: [
+                pw.Text(
+                  isArabic ? 'طريقة الدفع' : 'Payment',
+                  style: baseStyle.copyWith(fontSize: 10),
+                ),
+                pw.Text(
+                  invoice.paymentMethod.label(isArabic),
+                  style: baseStyle.copyWith(fontSize: 10),
+                ),
+              ],
             ),
-            pw.SizedBox(height: 20),
           ],
         ),
       ),

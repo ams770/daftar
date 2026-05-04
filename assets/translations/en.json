@@ -148,5 +148,7 @@
   "column_price": "3. Price",
   "column_price_type": "Number (Product Price)",
   "import_header_skip": "The first row is considered a header and will be skipped.",
-  "pick_excel_file": "Pick Excel File"
+  "pick_excel_file": "Pick Excel File",
+  "add_logo": "Add Logo",
+  "add_logo_hint": "Add company logo here"
 }

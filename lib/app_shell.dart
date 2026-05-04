@@ -34,7 +34,8 @@ class _AppShellState extends State<AppShell> {
         // We always show the main structure to avoid the "blank page" feel
         return Scaffold(
           body: _buildBody(state),
-          bottomNavigationBar: state is SettingsLoaded && state.settings.isOnboarded
+          bottomNavigationBar:
+              state is SettingsLoaded && state.settings.isOnboarded
               ? Container(
                   decoration: BoxDecoration(
                     boxShadow: [

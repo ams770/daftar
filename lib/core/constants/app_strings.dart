@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 
 class AppStrings {
+  static String get addLogo => 'add_logo'.tr();
+  static String get addLogoHint => 'add_logo_hint'.tr();
   static String get settings => 'settings'.tr();
   static String get brandDetails => 'brand_details'.tr();
   static String get taxation => 'taxation'.tr();

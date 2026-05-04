@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => di.sl<SettingsCubit>()..loadSettings()),
-        BlocProvider(create: (_) => di.sl<InvoiceCubit>()..loadInvoices()),
+        BlocProvider(create: (_) => di.sl<InvoiceCubit>()),
         BlocProvider(create: (_) => di.sl<AddInvoiceCubit>()),
         BlocProvider(create: (_) => di.sl<MoneyCollectionCubit>()),
         BlocProvider(create: (_) => di.sl<PrinterCubit>()),

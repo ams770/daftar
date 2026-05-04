@@ -13,6 +13,11 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../core/models/app_settings.dart';
 import '../../../settings/presentation/cubits/settings_cubit.dart';
 import '../../../../core/utils/logo_helper.dart';
+import '../widgets/onboarding_step.dart';
+import '../widgets/onboarding_lang_form.dart';
+import '../widgets/onboarding_brand_form.dart';
+import '../widgets/onboarding_tax_form.dart';
+import '../widgets/onboarding_bottom_bar.dart';
 
 class OnboardingPage extends StatefulWidget {
   final AppSettings initialSettings;
@@ -177,8 +182,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final daftar = Theme.of(context).extension<DaftarThemeExtension>()!;
-
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Column(
@@ -192,26 +195,58 @@ class _OnboardingPageState extends State<OnboardingPage> {
               },
               physics: const NeverScrollableScrollPhysics(),
               children: [
-                _buildStep(
-                  daftar: daftar,
+                OnboardingStep(
                   svg: 'assets/svg/onboarding-1.svg',
                   title: AppStrings.language,
                   desc: AppStrings.onboardingLangDesc,
-                  content: _buildLangForm(daftar),
+                  content: OnboardingLangForm(
+                    selectedLang: _selectedLang,
+                    selectedPrintLang: _selectedPrintLang,
+                    onAppLangChanged: (lang) {
+                      setState(() => _selectedLang = lang);
+                      context.setLocale(
+                        Locale(lang == 'AR' ? 'ar' : 'en'),
+                      );
+                    },
+                    onPrintLangChanged: (lang) {
+                      setState(() => _selectedPrintLang = lang);
+                    },
+                  ),
                 ),
-                _buildStep(
-                  daftar: daftar,
+                OnboardingStep(
                   svg: 'assets/svg/onboarding-2.svg',
                   title: AppStrings.onboardingWelcome,
                   desc: AppStrings.onboardingBrandDesc,
-                  content: _buildBrandForm(daftar),
+                  content: OnboardingBrandForm(
+                    nameController: _nameController,
+                    phoneController: _phoneController,
+                    addressController: _addressController,
+                    nameFocus: _nameFocus,
+                    phoneFocus: _phoneFocus,
+                    addressFocus: _addressFocus,
+                    logoPath: _logoPath,
+                    logoFileName: _logoFileName,
+                    onPickLogo: _pickLogo,
+                    onStateChanged: () => setState(() {}),
+                    onNext: () {
+                      if (_isPage1Valid) _nextPage();
+                    },
+                  ),
                 ),
-                _buildStep(
-                  daftar: daftar,
+                OnboardingStep(
                   svg: 'assets/svg/onboarding-3.svg',
                   title: AppStrings.taxation,
                   desc: AppStrings.onboardingTaxDesc,
-                  content: _buildTaxForm(daftar),
+                  content: OnboardingTaxForm(
+                    vatController: _vatController,
+                    currencyController: _currencyController,
+                    vatFocus: _vatFocus,
+                    currencyFocus: _currencyFocus,
+                    onStateChanged: () => setState(() {}),
+                    onNext: () {
+                      if (_isPage2Valid) _nextPage();
+                    },
+                  ),
                 ),
               ],
             ),
@@ -221,440 +256,16 @@ class _OnboardingPageState extends State<OnboardingPage> {
             height: _isFieldFocused ? 0 : null,
             child: _isFieldFocused
                 ? const SizedBox.shrink()
-                : _buildBottomBar(daftar),
+                : OnboardingBottomBar(
+                    currentPage: _currentPage,
+                    isCurrentPageValid: _isCurrentPageValid,
+                    onPrevious: _previousPage,
+                    onNext: _nextPage,
+                  ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildStep({
-    required DaftarThemeExtension daftar,
-    required String svg,
-    required String title,
-    required String desc,
-    required Widget content,
-  }) {
-    return CustomScrollView(
-      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-      slivers: [
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.xl,
-              60,
-              AppSpacing.xl,
-              AppSpacing.xl,
-            ),
-            child: Column(
-              children: [
-                SvgPicture.asset(svg, height: 200),
-                const Gap(AppSpacing.xl),
-                Text(
-                  title,
-                  style: AppTypography.h1,
-                  textAlign: TextAlign.center,
-                ),
-                const Gap(AppSpacing.sm),
-                Text(
-                  desc,
-                  style: AppTypography.bodyMd.copyWith(
-                    color: AppColors.greyDark,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const Gap(AppSpacing.xxl),
-                content,
-                const Gap(100),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBrandForm(DaftarThemeExtension daftar) {
-    return Column(
-      children: [
-        _buildLogoPicker(daftar),
-        const Gap(AppSpacing.xxl),
-        _buildTextField(
-          controller: _nameController,
-          focusNode: _nameFocus,
-          label: AppStrings.brandName,
-          icon: LucideIcons.building,
-          action: TextInputAction.next,
-          onSubmitted: (_) => FocusScope.of(context).requestFocus(_phoneFocus),
-          onChanged: (_) => setState(() {}),
-        ),
-        const Gap(AppSpacing.lg),
-        _buildTextField(
-          controller: _phoneController,
-          focusNode: _phoneFocus,
-          label: AppStrings.phoneNumber,
-          icon: LucideIcons.phone,
-          action: TextInputAction.next,
-          keyboardType: TextInputType.phone,
-          onSubmitted: (_) =>
-              FocusScope.of(context).requestFocus(_addressFocus),
-          onChanged: (_) => setState(() {}),
-        ),
-        const Gap(AppSpacing.lg),
-        _buildTextField(
-          controller: _addressController,
-          focusNode: _addressFocus,
-          label: AppStrings.address,
-          icon: LucideIcons.mapPin,
-          action: TextInputAction.done,
-          onSubmitted: (_) {
-            FocusScope.of(context).unfocus();
-            if (_isPage1Valid) _nextPage();
-          },
-          onChanged: (_) => setState(() {}),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildLogoPicker(DaftarThemeExtension daftar) {
-    return GestureDetector(
-      onTap: _pickLogo,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            width: 110,
-            height: 110,
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-              border: Border.all(
-                color: _logoFileName != null
-                    ? AppColors.secondary
-                    : AppColors.greyLight,
-                width: 2,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.secondary.withValues(alpha: 0.1),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-              image: _logoPath != null && File(_logoPath!).existsSync()
-                  ? DecorationImage(
-                      image: FileImage(File(_logoPath!)),
-                      fit: BoxFit.cover,
-                    )
-                  : null,
-            ),
-            child: _logoPath == null
-                ? const Icon(
-                    LucideIcons.camera,
-                    color: AppColors.grey,
-                    size: 32,
-                  )
-                : null,
-          ),
-          if (_logoFileName != null)
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: const BoxDecoration(
-                  color: AppColors.secondary,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  LucideIcons.check,
-                  color: Colors.white,
-                  size: 16,
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTaxForm(DaftarThemeExtension daftar) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.xl),
-      decoration: daftar.cardDecoration,
-      child: Column(
-        children: [
-          Text(
-            AppStrings.vatPercentage,
-            style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const Gap(AppSpacing.lg),
-          _buildTextField(
-            controller: _vatController,
-            focusNode: _vatFocus,
-            label: "%",
-            icon: LucideIcons.percent,
-            keyboardType: TextInputType.number,
-            textAlign: TextAlign.center,
-            action: TextInputAction.next,
-            onChanged: (_) => setState(() {}),
-            onSubmitted: (_) =>
-                FocusScope.of(context).requestFocus(_currencyFocus),
-          ),
-          const Gap(AppSpacing.xl),
-          Text(
-            AppStrings.currency,
-            style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const Gap(AppSpacing.lg),
-          _buildTextField(
-            controller: _currencyController,
-            focusNode: _currencyFocus,
-            label: AppStrings.currencyCode,
-            icon: LucideIcons.coins,
-            textAlign: TextAlign.center,
-            action: TextInputAction.done,
-            onChanged: (_) => setState(() {}),
-            onSubmitted: (_) {
-              FocusScope.of(context).unfocus();
-              if (_isPage2Valid) _nextPage();
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLangForm(DaftarThemeExtension daftar) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSelectionTitle(
-          AppStrings.appLanguage,
-          AppStrings.appLanguageDesc,
-        ),
-        const Gap(AppSpacing.md),
-        Row(
-          children: [
-            Expanded(
-              child: _buildSelectionCard(
-                label: AppStrings.english,
-                isSelected: _selectedLang == 'EN',
-                onTap: () {
-                  setState(() => _selectedLang = 'EN');
-                  context.setLocale(const Locale('en'));
-                },
-              ),
-            ),
-            const Gap(AppSpacing.md),
-            Expanded(
-              child: _buildSelectionCard(
-                label: AppStrings.arabic,
-                isSelected: _selectedLang == 'AR',
-                onTap: () {
-                  setState(() => _selectedLang = 'AR');
-                  context.setLocale(const Locale('ar'));
-                },
-              ),
-            ),
-          ],
-        ),
-        const Gap(AppSpacing.xl),
-        _buildSelectionTitle(
-          AppStrings.printingLanguage,
-          AppStrings.printingLanguageDesc,
-        ),
-        const Gap(AppSpacing.md),
-        Row(
-          children: [
-            Expanded(
-              child: _buildSelectionCard(
-                label: AppStrings.english,
-                isSelected: _selectedPrintLang == 'EN',
-                onTap: () => setState(() => _selectedPrintLang = 'EN'),
-              ),
-            ),
-            const Gap(AppSpacing.md),
-            Expanded(
-              child: _buildSelectionCard(
-                label: AppStrings.arabic,
-                isSelected: _selectedPrintLang == 'AR',
-                onTap: () => setState(() => _selectedPrintLang = 'AR'),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSelectionTitle(String title, String desc) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: AppTypography.h3),
-        Text(
-          desc,
-          style: AppTypography.bodySm.copyWith(color: AppColors.greyDark),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSelectionCard({
-    required String label,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.secondary.withValues(alpha: 0.05)
-              : AppColors.white,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-          border: Border.all(
-            color: isSelected ? AppColors.secondary : AppColors.greyLight,
-            width: 2,
-          ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: AppColors.secondary.withValues(alpha: 0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ]
-              : [],
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: AppTypography.bodyLg.copyWith(
-              color: isSelected ? AppColors.secondary : AppColors.text,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required FocusNode focusNode,
-    required String label,
-    required IconData icon,
-    TextInputType? keyboardType,
-    TextInputAction? action,
-    TextAlign textAlign = TextAlign.start,
-    void Function(String)? onSubmitted,
-    void Function(String)? onChanged,
-  }) {
-    return TextFormField(
-      controller: controller,
-      focusNode: focusNode,
-      keyboardType: keyboardType,
-      textInputAction: action,
-      textAlign: textAlign,
-      onFieldSubmitted: onSubmitted,
-      onChanged: onChanged,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, size: 20),
-        filled: true,
-        fillColor: AppColors.white,
-        floatingLabelStyle: const TextStyle(color: AppColors.secondary),
-        prefixIconColor: WidgetStateColor.resolveWith(
-          (states) => states.contains(WidgetState.focused)
-              ? AppColors.secondary
-              : AppColors.grey,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBottomBar(DaftarThemeExtension daftar) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.xl),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Row(
-          children: [
-            if (_currentPage > 0)
-              IconButton(
-                onPressed: _previousPage,
-                icon: const Icon(LucideIcons.arrowLeft),
-                style: IconButton.styleFrom(
-                  backgroundColor: AppColors.surface,
-                  foregroundColor: AppColors.secondary,
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                ),
-              ),
-            const Gap(AppSpacing.md),
-            Expanded(
-              child: Container(
-                height: 56,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                  gradient: _isCurrentPageValid
-                      ? const LinearGradient(
-                          colors: AppColors.secondaryGradient,
-                        )
-                      : null,
-                  color: _isCurrentPageValid ? null : AppColors.greyLight,
-                  boxShadow: _isCurrentPageValid
-                      ? [
-                          BoxShadow(
-                            color: AppColors.secondary.withValues(alpha: 0.3),
-                            blurRadius: 12,
-                            offset: const Offset(0, 6),
-                          ),
-                        ]
-                      : [],
-                ),
-                child: ElevatedButton(
-                  onPressed: _isCurrentPageValid ? _nextPage : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    foregroundColor: Colors.white,
-                    disabledForegroundColor: AppColors.greyDark,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                    ),
-                  ),
-                  child: Text(
-                    _currentPage == 2
-                        ? AppStrings.onboardingFinish
-                        : AppStrings.onboardingNext,
-                    style: AppTypography.bodyLg.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: _isCurrentPageValid
-                          ? Colors.white
-                          : AppColors.greyDark,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
 }
+
