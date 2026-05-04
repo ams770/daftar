@@ -125,16 +125,16 @@ class _ProductsViewContentState extends State<_ProductsViewContent> {
                             color: AppColors.white,
                           ),
                         ),
-                        const Gap(AppSpacing.md),
-                        Expanded(
-                          child: _ActionButton(
-                            onPressed: () =>
-                                context.read<ProductsCubit>().exportToExcel(),
-                            icon: LucideIcons.fileDown,
-                            label: AppStrings.exportExcel,
-                            color: AppColors.white,
-                          ),
-                        ),
+                        // const Gap(AppSpacing.md),
+                        // Expanded(
+                        //   child: _ActionButton(
+                        //     onPressed: () =>
+                        //         context.read<ProductsCubit>().exportToExcel(),
+                        //     icon: LucideIcons.fileDown,
+                        //     label: AppStrings.exportExcel,
+                        //     color: AppColors.white,
+                        //   ),
+                        // ),
                       ],
                     ),
                   ],

@@ -103,8 +103,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
   bool get _isPage2Valid => _vatController.text.isNotEmpty && _currencyController.text.isNotEmpty;
 
   bool get _isCurrentPageValid {
-    if (_currentPage == 0) return _isPage1Valid;
-    if (_currentPage == 1) return _isPage2Valid;
+    if (_currentPage == 0) return true; // Language
+    if (_currentPage == 1) return _isPage1Valid; // Brand
+    if (_currentPage == 2) return _isPage2Valid; // Tax
     return true;
   }
 
@@ -151,7 +152,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
         _logoFileName = fileName;
         _logoPath = fullPath;
       });
-      if (_isPage1Valid && _currentPage == 0) {
+      // Auto advance if valid
+      if (_isPage1Valid && _currentPage == 1) {
         _nextPage();
       }
     }
@@ -177,23 +179,23 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 _buildStep(
                   bento: bento,
                   svg: 'assets/svg/onboarding-1.svg',
+                  title: AppStrings.language,
+                  desc: AppStrings.onboardingLangDesc,
+                  content: _buildLangForm(bento),
+                ),
+                _buildStep(
+                  bento: bento,
+                  svg: 'assets/svg/onboarding-2.svg',
                   title: AppStrings.onboardingWelcome,
                   desc: AppStrings.onboardingBrandDesc,
                   content: _buildBrandForm(bento),
                 ),
                 _buildStep(
                   bento: bento,
-                  svg: 'assets/svg/onboarding-2.svg',
+                  svg: 'assets/svg/onboarding-3.svg',
                   title: AppStrings.taxation,
                   desc: AppStrings.onboardingTaxDesc,
                   content: _buildTaxForm(bento),
-                ),
-                _buildStep(
-                  bento: bento,
-                  svg: 'assets/svg/onboarding-3.svg',
-                  title: AppStrings.language,
-                  desc: AppStrings.onboardingLangDesc,
-                  content: _buildLangForm(bento),
                 ),
               ],
             ),
@@ -201,7 +203,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           AnimatedContainer(
             duration: const Duration(milliseconds: 300),
             height: _isFieldFocused ? 0 : null,
-            child: _isFieldFocused ? const SizedBox.shrink() : _buildBottomBar(),
+            child: _isFieldFocused ? const SizedBox.shrink() : _buildBottomBar(bento),
           ),
         ],
       ),
@@ -298,12 +300,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
               color: AppColors.white,
               borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
               border: Border.all(
-                color: _logoFileName != null ? AppColors.primary : AppColors.greyLight,
+                color: _logoFileName != null ? AppColors.secondary : AppColors.greyLight,
                 width: 2,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.text.withValues(alpha: 0.05),
+                  color: AppColors.secondary.withValues(alpha: 0.1),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -322,7 +324,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               bottom: 0,
               child: Container(
                 padding: const EdgeInsets.all(4),
-                decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
+                decoration: const BoxDecoration(color: AppColors.secondary, shape: BoxShape.circle),
                 child: const Icon(LucideIcons.check, color: Colors.white, size: 16),
               ),
             ),
@@ -445,15 +447,21 @@ class _OnboardingPageState extends State<OnboardingPage> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withValues(alpha: 0.1) : AppColors.white,
+          color: isSelected ? AppColors.secondary.withValues(alpha: 0.05) : AppColors.white,
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-          border: Border.all(color: isSelected ? AppColors.primary : AppColors.greyLight, width: 2),
+          border: Border.all(
+            color: isSelected ? AppColors.secondary : AppColors.greyLight,
+            width: 2,
+          ),
+          boxShadow: isSelected 
+            ? [BoxShadow(color: AppColors.secondary.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, 4))]
+            : [],
         ),
         child: Center(
           child: Text(
             label,
             style: AppTypography.bodyLg.copyWith(
-              color: isSelected ? AppColors.primary : AppColors.text,
+              color: isSelected ? AppColors.secondary : AppColors.text,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
           ),
@@ -486,11 +494,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
         prefixIcon: Icon(icon, size: 20),
         filled: true,
         fillColor: AppColors.white,
+        floatingLabelStyle: const TextStyle(color: AppColors.secondary),
+        prefixIconColor: WidgetStateColor.resolveWith((states) => 
+          states.contains(WidgetState.focused) ? AppColors.secondary : AppColors.grey
+        ),
       ),
     );
   }
 
-  Widget _buildBottomBar() {
+  Widget _buildBottomBar(BentoThemeExtension bento) {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
@@ -512,21 +524,42 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 onPressed: _previousPage,
                 icon: const Icon(LucideIcons.arrowLeft),
                 style: IconButton.styleFrom(
-                  backgroundColor: AppColors.background,
+                  backgroundColor: AppColors.surface,
+                  foregroundColor: AppColors.secondary,
                   padding: const EdgeInsets.all(AppSpacing.md),
                 ),
               ),
             const Gap(AppSpacing.md),
             Expanded(
-              child: ElevatedButton(
-                onPressed: _isCurrentPageValid ? _nextPage : null,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
-                  backgroundColor: _isCurrentPageValid ? AppColors.primary : AppColors.greyLight,
+              child: Container(
+                height: 56,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                  gradient: _isCurrentPageValid 
+                      ? const LinearGradient(colors: AppColors.secondaryGradient)
+                      : null,
+                  color: _isCurrentPageValid ? null : AppColors.greyLight,
+                  boxShadow: _isCurrentPageValid ? [
+                    BoxShadow(
+                      color: AppColors.secondary.withValues(alpha: 0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
+                    ),
+                  ] : [],
                 ),
-                child: Text(
-                  _currentPage == 2 ? AppStrings.onboardingFinish : AppStrings.onboardingNext,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                child: ElevatedButton(
+                  onPressed: _isCurrentPageValid ? _nextPage : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    foregroundColor: Colors.white,
+                    disabledForegroundColor: AppColors.greyDark,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
+                  ),
+                  child: Text(
+                    _currentPage == 2 ? AppStrings.onboardingFinish : AppStrings.onboardingNext,
+                    style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.bold, color: _isCurrentPageValid ? Colors.white : AppColors.greyDark),
+                  ),
                 ),
               ),
             ),
