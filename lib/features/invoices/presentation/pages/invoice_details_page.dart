@@ -8,7 +8,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/services/invoice_pdf_service.dart';
+import '../../../../core/services/pdf/invoice_pdf_service.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/daftar_theme_extension.dart';
 import '../../../printer/presentation/cubits/printer_cubit.dart';

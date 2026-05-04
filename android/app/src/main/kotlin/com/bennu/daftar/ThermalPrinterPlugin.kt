@@ -258,7 +258,7 @@ class ThermalPrinterPlugin(private val activity: Activity) :
                 cmd.append(cmd.getCommonSettingCmd(commonSetting))
 
                 val bitmapSetting = BitmapSetting()
-                bitmapSetting.bmpPrintMode = BmpPrintMode.MODE_SINGLE_FAST
+                bitmapSetting.bmpPrintMode = BmpPrintMode.MODE_SINGLE_COLOR
                 bitmapSetting.bimtapLimitWidth = printWidthDots
 
                 try {

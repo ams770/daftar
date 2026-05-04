@@ -9,12 +9,41 @@ enum PrinterConnectionState {
   error,
 }
 
-enum PrinterWidth { inch4, inch3 }
+enum PrinterWidth { inch4, inch3, inch2 }
 
 extension PrinterWidthX on PrinterWidth {
-  int get pixels => this == PrinterWidth.inch4 ? 832 : 576;
-  String get label => this == PrinterWidth.inch4 ? '4"' : '3"';
-  double get fontScale => this == PrinterWidth.inch4 ? 1.0 : 0.82;
+  int get pixels {
+    switch (this) {
+      case PrinterWidth.inch4:
+        return 832;
+      case PrinterWidth.inch3:
+        return 576;
+      case PrinterWidth.inch2:
+        return 384;
+    }
+  }
+
+  String get label {
+    switch (this) {
+      case PrinterWidth.inch4:
+        return '4"';
+      case PrinterWidth.inch3:
+        return '3"';
+      case PrinterWidth.inch2:
+        return '2"';
+    }
+  }
+
+  double get fontScale {
+    switch (this) {
+      case PrinterWidth.inch4:
+        return 1.0;
+      case PrinterWidth.inch3:
+        return 0.82;
+      case PrinterWidth.inch2:
+        return 0.65;
+    }
+  }
 }
 
 class BluetoothPrinterDevice {

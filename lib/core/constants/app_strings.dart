@@ -60,6 +60,7 @@ class AppStrings {
   static String get summary => 'summary'.tr();
   static String get printInvoice => 'print_invoice'.tr();
   static String get selectPrinterWidth => 'select_printer_width'.tr();
+  static String get twoInch => 'two_inch'.tr();
   static String get threeInch => 'three_inch'.tr();
   static String get fourInch => 'four_inch'.tr();
   static String get product => 'product'.tr();
@@ -131,6 +132,7 @@ class AppStrings {
   static String get scanNow => 'scan_now'.tr();
   static String get selectPaperWidth => 'select_paper_width'.tr();
   static String get selectPaperWidthDesc => 'select_paper_width_desc'.tr();
+  static String get printer2Inch => 'printer_2_inch'.tr();
   static String get printer3Inch => 'printer_3_inch'.tr();
   static String get printer4Inch => 'printer_4_inch'.tr();
   static String get printSuccess => 'print_success'.tr();

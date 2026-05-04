@@ -5,7 +5,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:gap/gap.dart';
 import '../cubits/printer_cubit.dart';
 import '../cubits/printer_state.dart';
-import '../../../../core/services/thermal_printer_service.dart';
+import '../../../../core/services/printer/thermal_printer_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/constants/app_strings.dart';
@@ -264,7 +264,11 @@ class PrinterSettingsPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
               ),
               child: Text(
-                w == PrinterWidth.inch3 ? AppStrings.threeInch : AppStrings.fourInch,
+                w == PrinterWidth.inch2
+                    ? AppStrings.twoInch
+                    : w == PrinterWidth.inch3
+                        ? AppStrings.threeInch
+                        : AppStrings.fourInch,
                 style: TextStyle(
                   color: isSelected ? Colors.white : AppColors.text,
                   fontWeight: FontWeight.bold,
@@ -386,8 +390,10 @@ class PrinterSettingsPage extends StatelessWidget {
               const Gap(AppSpacing.xl),
               Row(
                 children: [
+                  Expanded(child: _buildWidthOption(context, device, PrinterWidth.inch2, AppStrings.printer2Inch)),
+                  const Gap(AppSpacing.md),
                   Expanded(child: _buildWidthOption(context, device, PrinterWidth.inch3, AppStrings.printer3Inch)),
-                  const Gap(AppSpacing.lg),
+                  const Gap(AppSpacing.md),
                   Expanded(child: _buildWidthOption(context, device, PrinterWidth.inch4, AppStrings.printer4Inch)),
                 ],
               ),

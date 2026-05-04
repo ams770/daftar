@@ -3,11 +3,11 @@ import 'dart:typed_data';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:intl/intl.dart';
-import '../models/app_settings.dart';
-import '../../features/invoices/domain/entities/invoice.dart';
-import '../../features/invoices/domain/entities/money_collection.dart';
+import '../../models/app_settings.dart';
+import '../../../features/invoices/domain/entities/invoice.dart';
+import '../../../features/invoices/domain/entities/money_collection.dart';
 import 'package:flutter/services.dart';
-import '../utils/logo_helper.dart';
+import '../../utils/logo_helper.dart';
 
 class InvoicePdfService {
   static Future<Uint8List> generateInvoicePdf({
@@ -250,8 +250,7 @@ class InvoicePdfService {
               pw.Text(
                 title,
                 style: boldStyle.copyWith(
-                  fontSize: 10,
-                  color: PdfColors.blue700,
+                  fontSize: 10
                 ),
               ),
 
@@ -306,7 +305,7 @@ class InvoicePdfService {
       data: data,
       border: null,
       headerStyle: boldStyle.copyWith(color: PdfColors.white, fontSize: 7),
-      headerDecoration: const pw.BoxDecoration(color: PdfColors.blue700),
+      headerDecoration: const pw.BoxDecoration(color: PdfColors.grey700),
       cellStyle: baseStyle.copyWith(fontSize: 8),
       cellPadding: const pw.EdgeInsets.all(2),
       cellHeight: 20,

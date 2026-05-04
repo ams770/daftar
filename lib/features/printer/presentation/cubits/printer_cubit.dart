@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../../core/services/thermal_printer_service.dart';
-import '../../../../core/services/invoice_pdf_service.dart';
-import '../../../../core/services/pdf_to_image_service.dart';
+import '../../../../core/services/printer/thermal_printer_service.dart';
+import '../../../../core/services/pdf/invoice_pdf_service.dart';
+import '../../../../core/services/pdf/pdf_to_image_service.dart';
 import '../../../invoices/domain/entities/invoice.dart';
 import '../../../invoices/domain/entities/money_collection.dart';
 import '../../../../core/services/settings_service.dart';

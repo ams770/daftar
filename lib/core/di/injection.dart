@@ -1,6 +1,6 @@
 import 'package:get_it/get_it.dart';
-import '../services/excel_service.dart';
-import '../services/excel_service_impl.dart';
+import '../services/excel/excel_service.dart';
+import '../services/excel/excel_service_impl.dart';
 import '../../features/products/data/datasources/product_local_datasource.dart';
 import '../../features/products/data/repositories/product_repository_impl.dart';
 import '../../features/products/domain/repositories/product_repository.dart';
@@ -23,9 +23,9 @@ import '../../features/settings/presentation/cubits/settings_cubit.dart';
 import '../database/database_helper.dart';
 import '../services/settings_service.dart';
 import 'dart:io';
-import '../services/thermal_printer_service.dart';
-import '../services/android_thermal_printer_service.dart';
-import '../services/ios_thermal_printer_service.dart';
+import '../services/printer/thermal_printer_service.dart';
+import '../services/printer/android_thermal_printer_service.dart';
+import '../services/printer/ios_thermal_printer_service.dart';
 import '../../features/printer/presentation/cubits/printer_cubit.dart';
 
 final sl = GetIt.instance;

@@ -3,8 +3,8 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:excel/excel.dart';
 import 'package:path_provider/path_provider.dart';
-import '../../features/products/domain/entities/excel_product.dart';
-import '../../features/products/domain/entities/product.dart';
+import '../../../features/products/domain/entities/excel_product.dart';
+import '../../../features/products/domain/entities/product.dart';
 import 'excel_service.dart';
 
 class ExcelServiceImpl implements ExcelService {

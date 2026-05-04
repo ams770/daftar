@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/services/excel_service.dart';
+import '../../../../core/services/excel/excel_service.dart';
 import '../../domain/entities/excel_product.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/usecases/add_product.dart';

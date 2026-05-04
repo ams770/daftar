@@ -1,4 +1,4 @@
-import '../../../../core/services/thermal_printer_service.dart';
+import '../../../../core/services/printer/thermal_printer_service.dart';
 
 abstract class PrinterState {
   final List<BluetoothPrinterDevice> devices;
