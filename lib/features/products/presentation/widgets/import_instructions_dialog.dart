@@ -5,6 +5,8 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 
+import '../../../../core/constants/app_strings.dart';
+
 class ImportInstructionsDialog extends StatelessWidget {
   const ImportInstructionsDialog({super.key});
 
@@ -24,20 +26,20 @@ class ImportInstructionsDialog extends StatelessWidget {
                 const Icon(LucideIcons.info, color: AppColors.secondary, size: 28),
                 const Gap(AppSpacing.md),
                 Text(
-                  'Instructions',
+                  AppStrings.instructions,
                   style: AppTypography.h2.copyWith(fontSize: 22),
                 ),
               ],
             ),
             const Gap(AppSpacing.xl),
             Text(
-              'Your Excel file (.xlsx) must have these columns in order:',
+              AppStrings.importExcelDesc,
               style: AppTypography.bodyMd.copyWith(color: AppColors.greyDark),
             ),
             const Gap(AppSpacing.lg),
-            _buildColumnInfo('1. Name', 'String (Product Name)'),
-            _buildColumnInfo('2. Code', 'String (Barcode/SKU)'),
-            _buildColumnInfo('3. Price', 'Number (Product Price)'),
+            _buildColumnInfo(AppStrings.columnName, AppStrings.columnNameType),
+            _buildColumnInfo(AppStrings.columnCode, AppStrings.columnCodeType),
+            _buildColumnInfo(AppStrings.columnPrice, AppStrings.columnPriceType),
             const Gap(AppSpacing.xl),
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
@@ -52,7 +54,7 @@ class ImportInstructionsDialog extends StatelessWidget {
                   const Gap(AppSpacing.sm),
                   Expanded(
                     child: Text(
-                      'The first row is considered a header and will be skipped.',
+                      AppStrings.importHeaderSkip,
                       style: AppTypography.bodySm.copyWith(
                         color: AppColors.text,
                         fontStyle: FontStyle.italic,
@@ -67,7 +69,7 @@ class ImportInstructionsDialog extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text('Pick Excel File'),
+                child: Text(AppStrings.pickExcelFile),
               ),
             ),
           ],

@@ -182,6 +182,15 @@ class ProductsCubit extends Cubit<ProductsState> {
     }
   }
 
+  Future<void> removeDuplicates() async {
+    if (state is ExcelValidationLoaded) {
+      final products = (state as ExcelValidationLoaded).excelProducts;
+      final filtered = products.where((p) => p.status != ExcelProductStatus.duplicate).toList();
+      final validated = await validateExcelProducts(filtered);
+      emit(ExcelValidationLoaded(validated));
+    }
+  }
+
   Future<void> importValidatedProducts() async {
     if (state is ExcelValidationLoaded) {
       final products = (state as ExcelValidationLoaded).excelProducts;

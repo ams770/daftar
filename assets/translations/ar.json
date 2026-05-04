@@ -135,5 +135,15 @@
   "generating": "جاري التجهيز...",
   "connecting": "جاري الاتصال...",
   "print_all": "طباعة الكل",
-  "share": "مشاركة"
+  "share": "مشاركة",
+  "instructions": "التعليمات",
+  "import_excel_desc": "يجب أن يحتوي ملف Excel (.xlsx) على هذه الأعمدة بالترتيب:",
+  "column_name": "1. الاسم",
+  "column_name_type": "نص (اسم المنتج)",
+  "column_code": "2. الكود",
+  "column_code_type": "نص (الباركود/SKU)",
+  "column_price": "3. السعر",
+  "column_price_type": "رقم (سعر المنتج)",
+  "import_header_skip": "يتم اعتبار الصف الأول كعنوان وسيتم تخطيه.",
+  "pick_excel_file": "اختر ملف Excel"
 }

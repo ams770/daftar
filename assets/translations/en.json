@@ -135,5 +135,15 @@
   "generating": "Generating...",
   "connecting": "Connecting...",
   "print_all": "Print All",
-  "share": "Share"
+  "share": "Share",
+  "instructions": "Instructions",
+  "import_excel_desc": "Your Excel file (.xlsx) must have these columns in order:",
+  "column_name": "1. Name",
+  "column_name_type": "String (Product Name)",
+  "column_code": "2. Code",
+  "column_code_type": "String (Barcode/SKU)",
+  "column_price": "3. Price",
+  "column_price_type": "Number (Product Price)",
+  "import_header_skip": "The first row is considered a header and will be skipped.",
+  "pick_excel_file": "Pick Excel File"
 }

@@ -55,8 +55,12 @@ class ValidateExcelProductsUseCase {
           isValidating: false,
         ));
       } else {
+        // Check if data changed
+        final bool isChanged = raw.name != existingProduct.name || 
+                             (raw.price - existingProduct.price).abs() > 0.01;
+
         validated.add(raw.copyWith(
-          status: ExcelProductStatus.duplicate,
+          status: isChanged ? ExcelProductStatus.changed : ExcelProductStatus.exists,
           oldName: existingProduct.name,
           oldPrice: existingProduct.price,
           isValidating: false,

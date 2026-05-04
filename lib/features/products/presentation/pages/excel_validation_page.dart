@@ -34,6 +34,10 @@ class _ExcelValidationPageState extends State<ExcelValidationPage> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ProductsCubit, ProductsState>(
+      buildWhen: (previous, current) => 
+        current is ExcelValidationLoading || 
+        current is ExcelValidationLoaded || 
+        current is ProductsError,
       builder: (context, state) {
         bool isLoading = state is ExcelValidationLoading;
         List<ExcelProduct> products = [];
@@ -142,9 +146,28 @@ class _ExcelValidationPageState extends State<ExcelValidationPage> {
                 const Icon(LucideIcons.info, color: AppColors.secondary, size: 20),
                 const Gap(AppSpacing.sm),
                 Expanded(
-                  child: Text(
-                    '${products.length} products found. Review before importing.',
-                    style: AppTypography.bodySm.copyWith(color: AppColors.text),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${products.length} products found. Review before importing.',
+                        style: AppTypography.bodySm.copyWith(color: AppColors.text, fontWeight: FontWeight.bold),
+                      ),
+                      if (products.any((p) => p.status == ExcelProductStatus.duplicate)) ...[
+                        const Gap(AppSpacing.xs),
+                        InkWell(
+                          onTap: () => context.read<ProductsCubit>().removeDuplicates(),
+                          child: Text(
+                            'Click here to remove duplicated records',
+                            style: AppTypography.bodySm.copyWith(
+                              color: AppColors.danger,
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ],

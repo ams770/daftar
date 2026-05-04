@@ -85,6 +85,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
                 child: BlocBuilder<InvoiceCubit, InvoiceState>(
                   builder: (context, state) {
                     return Column(
+                      mainAxisAlignment: .center,
                       children: [
                         SearchInputField(
                           hintText: AppStrings.searchByClient,

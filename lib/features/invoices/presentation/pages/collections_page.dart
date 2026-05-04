@@ -66,6 +66,7 @@ class _CollectionsPageState extends State<CollectionsPage> {
                 child: BlocBuilder<MoneyCollectionCubit, MoneyCollectionState>(
                   builder: (context, state) {
                     return Column(
+                      mainAxisAlignment: .center,
                       children: [
                         SearchInputField(
                           hintText: AppStrings.searchByClient,

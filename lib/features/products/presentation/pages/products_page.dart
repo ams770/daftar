@@ -94,11 +94,20 @@ class _ProductsViewContentState extends State<_ProductsViewContent> {
                 onPressed: () => _showAddProductDialog(context),
                 tooltip: AppStrings.addProduct,
               ),
+              IconButton.filled(
+                style: IconButton.styleFrom(
+                  backgroundColor: AppColors.white,
+                  foregroundColor: AppColors.secondary,
+                ),
+                icon: const Icon(LucideIcons.fileSpreadsheet),
+                onPressed: () => _showImportInstructions(context),
+                tooltip: AppStrings.addProduct,
+              ),
               const Gap(AppSpacing.md),
             ],
             title: Text(AppStrings.inventory),
           ),
-          SliverAppBar.medium(
+          SliverAppBar(
             pinned: false,
 
             flexibleSpace: FlexibleSpaceBar(
@@ -106,6 +115,7 @@ class _ProductsViewContentState extends State<_ProductsViewContent> {
                 color: AppColors.secondary,
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                 child: Column(
+                  mainAxisAlignment: .center,
                   children: [
                     SearchInputField(
                       onChanged: (query) {
@@ -113,29 +123,6 @@ class _ProductsViewContentState extends State<_ProductsViewContent> {
                       },
                       hintText: AppStrings.searchProducts,
                       onScannerTap: () => _openScanner(context),
-                    ),
-                    const Gap(AppSpacing.md),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _ActionButton(
-                            onPressed: () => _showImportInstructions(context),
-                            icon: LucideIcons.fileSpreadsheet,
-                            label: AppStrings.importExcel,
-                            color: AppColors.white,
-                          ),
-                        ),
-                        // const Gap(AppSpacing.md),
-                        // Expanded(
-                        //   child: _ActionButton(
-                        //     onPressed: () =>
-                        //         context.read<ProductsCubit>().exportToExcel(),
-                        //     icon: LucideIcons.fileDown,
-                        //     label: AppStrings.exportExcel,
-                        //     color: AppColors.white,
-                        //   ),
-                        // ),
-                      ],
                     ),
                   ],
                 ),

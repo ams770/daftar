@@ -8,6 +8,7 @@ import '../cubits/printer_state.dart';
 import '../../../../core/services/thermal_printer_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/constants/app_strings.dart';
 
 class PrinterSettingsPage extends StatelessWidget {
   const PrinterSettingsPage({super.key});
@@ -16,7 +17,7 @@ class PrinterSettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("printer_settings".tr()),
+        title: Text(AppStrings.printerSettings),
         centerTitle: true,
       ),
       body: BlocConsumer<PrinterCubit, PrinterState>(
@@ -32,7 +33,7 @@ class PrinterSettingsPage extends StatelessWidget {
           } else if (state is PrinterPrintSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text("print_success".tr()),
+                content: Text(AppStrings.printSuccess),
                 backgroundColor: AppColors.success,
                 behavior: SnackBarBehavior.floating,
               ),
@@ -60,7 +61,7 @@ class PrinterSettingsPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "available_devices".tr(),
+                        AppStrings.availableDevices,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           color: AppColors.text,
                           fontSize: 18,
@@ -68,7 +69,7 @@ class PrinterSettingsPage extends StatelessWidget {
                       ),
                       if (state is! PrinterBluetoothOff)
                         IconButton(
-                          icon: const Icon(LucideIcons.refreshCcw, color: AppColors.primary),
+                          icon: const Icon(LucideIcons.refreshCcw, color: AppColors.secondary),
                           onPressed: () => context.read<PrinterCubit>().scanDevices(),
                         ),
                     ],
@@ -102,7 +103,7 @@ class PrinterSettingsPage extends StatelessWidget {
           const Gap(AppSpacing.md),
           Expanded(
             child: Text(
-              "bluetooth_disabled".tr(),
+              AppStrings.bluetoothDisabled,
               style: const TextStyle(
                 color: AppColors.danger,
                 fontWeight: FontWeight.bold,
@@ -171,7 +172,7 @@ class PrinterSettingsPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        isConnected ? "status_connected".tr() : "status_connecting".tr(),
+                        isConnected ? AppStrings.statusConnected : AppStrings.statusConnecting,
                         style: TextStyle(
                           color: isConnected ? AppColors.success : AppColors.warning,
                           fontWeight: FontWeight.bold,
@@ -179,7 +180,7 @@ class PrinterSettingsPage extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        name ?? "unknown_device".tr(),
+                        name ?? AppStrings.unknownDevice,
                         style: const TextStyle(
                           fontWeight: FontWeight.w800,
                           fontSize: 18,
@@ -197,7 +198,7 @@ class PrinterSettingsPage extends StatelessWidget {
                   const SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary),
+                    child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.secondary),
                   ),
               ],
             ),
@@ -209,7 +210,7 @@ class PrinterSettingsPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "paper_width".tr(),
+                    AppStrings.paperWidth,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   _buildWidthToggle(context, state.width ?? PrinterWidth.inch3),
@@ -223,7 +224,7 @@ class PrinterSettingsPage extends StatelessWidget {
                   child: OutlinedButton.icon(
                     onPressed: () => _showForgetDialog(context),
                     icon: const Icon(LucideIcons.trash2, size: 16),
-                    label: Text("forget".tr()),
+                    label: Text(AppStrings.forget),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.danger,
                       side: const BorderSide(color: AppColors.danger),
@@ -259,11 +260,11 @@ class PrinterSettingsPage extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.primary : Colors.transparent,
+                color: isSelected ? AppColors.secondary : Colors.transparent,
                 borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
               ),
               child: Text(
-                w.label,
+                w == PrinterWidth.inch3 ? AppStrings.threeInch : AppStrings.fourInch,
                 style: TextStyle(
                   color: isSelected ? Colors.white : AppColors.text,
                   fontWeight: FontWeight.bold,
@@ -280,12 +281,12 @@ class PrinterSettingsPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text("forget_printer".tr()),
-        content: Text("forget_printer_confirm".tr()),
+        title: Text(AppStrings.forgetPrinter),
+        content: Text(AppStrings.forgetPrinterConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: Text("cancel".tr()),
+            child: Text(AppStrings.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -293,7 +294,7 @@ class PrinterSettingsPage extends StatelessWidget {
               Navigator.pop(dialogContext);
             },
             child: Text(
-              "forget".tr(),
+              AppStrings.forget,
               style: const TextStyle(color: AppColors.danger),
             ),
           ),
@@ -306,7 +307,7 @@ class PrinterSettingsPage extends StatelessWidget {
     if (state is PrinterScanning) {
       return const SliverFillRemaining(
         hasScrollBody: false,
-        child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+        child: Center(child: CircularProgressIndicator(color: AppColors.secondary)),
       );
     }
 
@@ -322,13 +323,13 @@ class PrinterSettingsPage extends StatelessWidget {
               const Icon(LucideIcons.bluetooth, size: 48, color: AppColors.greyLight),
               const Gap(AppSpacing.md),
               Text(
-                "no_devices_found".tr(),
+                AppStrings.noDevicesFound,
                 style: const TextStyle(color: AppColors.grey),
               ),
               const Gap(AppSpacing.lg),
               ElevatedButton(
                 onPressed: () => context.read<PrinterCubit>().scanDevices(),
-                child: Text("scan_now".tr()),
+                child: Text(AppStrings.scanNow),
               ),
             ],
           ),
@@ -346,7 +347,7 @@ class PrinterSettingsPage extends StatelessWidget {
           return Card(
             margin: const EdgeInsets.only(bottom: AppSpacing.md),
             child: ListTile(
-              leading: const Icon(LucideIcons.bluetooth, color: AppColors.primary),
+              leading: const Icon(LucideIcons.bluetooth, color: AppColors.secondary),
               title: Text(device.name, style: const TextStyle(fontWeight: FontWeight.bold)),
               subtitle: Text(device.address),
               trailing: isConnecting
@@ -373,21 +374,21 @@ class PrinterSettingsPage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                "select_paper_width".tr(),
+                AppStrings.selectPaperWidth,
                 style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20),
               ),
               const Gap(AppSpacing.sm),
               Text(
-                "select_paper_width_desc".tr(),
+                AppStrings.selectPaperWidthDesc,
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: AppColors.grey),
               ),
               const Gap(AppSpacing.xl),
               Row(
                 children: [
-                  Expanded(child: _buildWidthOption(context, device, PrinterWidth.inch3, "printer_3_inch".tr())),
+                  Expanded(child: _buildWidthOption(context, device, PrinterWidth.inch3, AppStrings.printer3Inch)),
                   const Gap(AppSpacing.lg),
-                  Expanded(child: _buildWidthOption(context, device, PrinterWidth.inch4, "printer_4_inch".tr())),
+                  Expanded(child: _buildWidthOption(context, device, PrinterWidth.inch4, AppStrings.printer4Inch)),
                 ],
               ),
               const Gap(AppSpacing.xl),
@@ -407,12 +408,12 @@ class PrinterSettingsPage extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
         decoration: BoxDecoration(
-          border: Border.all(color: AppColors.primary, width: 2),
+          border: Border.all(color: AppColors.secondary, width: 2),
           borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         ),
         child: Column(
           children: [
-            const Icon(LucideIcons.ruler, color: AppColors.primary),
+            const Icon(LucideIcons.ruler, color: AppColors.secondary),
             const Gap(AppSpacing.sm),
             Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
           ],
