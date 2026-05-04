@@ -1,14 +1,14 @@
 import Flutter
 import UIKit
 
-public class EasyBluePrinterPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
+public class ThermalPrinterPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
     private var eventSink: FlutterEventSink?
-    private let printQueue = DispatchQueue(label: "com.maktubcompany.easy_blue_printer.print")
+    private let printQueue = DispatchQueue(label: "com.bennu.daftar.printer.print")
 
     public static func register(with registrar: FlutterPluginRegistrar) {
-        let channel = FlutterMethodChannel(name: "easy_blue_printer", binaryMessenger: registrar.messenger())
-        let eventChannel = FlutterEventChannel(name: "easy_blue_printer_status", binaryMessenger: registrar.messenger())
-        let instance = EasyBluePrinterPlugin()
+        let channel = FlutterMethodChannel(name: "com.bennu.daftar/printer", binaryMessenger: registrar.messenger())
+        let eventChannel = FlutterEventChannel(name: "com.bennu.daftar/printer_state", binaryMessenger: registrar.messenger())
+        let instance = ThermalPrinterPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
         eventChannel.setStreamHandler(instance)
         

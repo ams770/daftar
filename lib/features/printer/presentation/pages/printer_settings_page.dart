@@ -10,8 +10,27 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/constants/app_strings.dart';
 
-class PrinterSettingsPage extends StatelessWidget {
+class PrinterSettingsPage extends StatefulWidget {
   const PrinterSettingsPage({super.key});
+
+  @override
+  State<PrinterSettingsPage> createState() => _PrinterSettingsPageState();
+}
+
+class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
+  @override
+  void initState() {
+    super.initState();
+    _checkPermissions();
+  }
+
+  Future<void> _checkPermissions() async {
+    // Small delay to ensure cubit is ready if needed, 
+    // though service is directly accessible.
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await context.read<PrinterCubit>().requestPermissions();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -76,7 +76,7 @@ class InvoicePdfService {
               ),
               _buildTotals(invoice, settings, isArabic, boldStyle, baseStyle),
               // _buildFooter(settings, isArabic, baseStyle),
-              pw.SizedBox(height: 30),
+              pw.SizedBox(height: 20),
             ],
           );
         },
@@ -247,12 +247,7 @@ class InvoicePdfService {
         pw.Center(
           child: pw.Column(
             children: [
-              pw.Text(
-                title,
-                style: boldStyle.copyWith(
-                  fontSize: 10
-                ),
-              ),
+              pw.Text(title, style: boldStyle.copyWith(fontSize: 10)),
 
               pw.SizedBox(height: 1),
               pw.Row(

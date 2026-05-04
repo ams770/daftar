@@ -1,20 +1,18 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
-import 'package:easy_blue_printer/easy_blue_printer.dart';
 import 'thermal_printer_service.dart';
 
 class IosThermalPrinterService implements ThermalPrinterService {
-  final EasyBluePrinter _printer = EasyBluePrinter.instance;
+  static const _channel = MethodChannel('com.bennu.daftar/printer');
+  static const _eventChannel = EventChannel('com.bennu.daftar/printer_state');
 
   final StreamController<PrinterConnectionState> _stateController =
       StreamController<PrinterConnectionState>.broadcast();
   final StreamController<double> _progressController =
       StreamController<double>.broadcast();
 
-  List<BluetoothDevice> _scannedDevices = [];
-
   IosThermalPrinterService() {
-    _printer.connectionStatusStream.listen((status) {
+    _eventChannel.receiveBroadcastStream().listen((status) {
       switch (status) {
         case 'connected':
           _stateController.add(PrinterConnectionState.connected);
@@ -40,6 +38,14 @@ class IosThermalPrinterService implements ThermalPrinterService {
   Stream<double> get progressStream => _progressController.stream;
 
   @override
+  Future<bool> requestPermissions() async {
+    // iOS handles permissions via Info.plist and triggers them on first use.
+    // We can just return true here or call the native method which returns a string.
+    await _channel.invokeMethod('requestBluetoothPermissions');
+    return true;
+  }
+
+  @override
   Future<bool> isBluetoothEnabled() async {
     return true;
   }
@@ -47,10 +53,16 @@ class IosThermalPrinterService implements ThermalPrinterService {
   @override
   Future<List<BluetoothPrinterDevice>> scanDevices() async {
     try {
-      _scannedDevices = await _printer.getPairedDevices();
-      return _scannedDevices
-          .map((d) => BluetoothPrinterDevice(name: d.name, address: d.address))
-          .toList();
+      final List<dynamic> devices = await _channel.invokeMethod('getPairedDevices');
+      return devices.map((d) {
+        // iOS implementation returns "Name (Address)" string
+        final str = d.toString();
+        final match = RegExp(r'(.+)\s\((.+)\)').firstMatch(str);
+        if (match != null) {
+          return BluetoothPrinterDevice(name: match.group(1)!, address: match.group(2)!);
+        }
+        return BluetoothPrinterDevice(name: str, address: str);
+      }).toList();
     } catch (e) {
       return [];
     }
@@ -60,8 +72,7 @@ class IosThermalPrinterService implements ThermalPrinterService {
   Future<void> connect(String address) async {
     _stateController.add(PrinterConnectionState.connecting);
     try {
-      final device = BluetoothDevice(name: 'Printer', address: address);
-      final success = await _printer.connectToDevice(device);
+      final bool success = await _channel.invokeMethod('connectToDevice', {'address': address});
       if (success) {
         _stateController.add(PrinterConnectionState.connected);
       } else {
@@ -76,13 +87,13 @@ class IosThermalPrinterService implements ThermalPrinterService {
 
   @override
   Future<void> disconnect() async {
-    await _printer.disconnectFromDevice();
+    await _channel.invokeMethod('disconnectFromDevice');
     _stateController.add(PrinterConnectionState.disconnected);
   }
 
   @override
   Future<PrinterConnectionState> getConnectionState() async {
-    final connected = await _printer.isConnected();
+    final bool connected = await _channel.invokeMethod('isConnected');
     return connected
         ? PrinterConnectionState.connected
         : PrinterConnectionState.disconnected;
@@ -95,7 +106,12 @@ class IosThermalPrinterService implements ThermalPrinterService {
 
   @override
   Future<void> printImage(Uint8List bytes, {int milliseconds = 10000}) async {
-    await _printer.printImage(bytes: bytes, textAlign: TA.left);
+    await _channel.invokeMethod('printImage', {
+      'data': bytes,
+      'textAlign': 0, // Left
+    });
+    // For iOS we might need commitPrint if the SDK requires it
+    await _channel.invokeMethod('commitPrint');
   }
 
   @override
@@ -105,7 +121,7 @@ class IosThermalPrinterService implements ThermalPrinterService {
 
   @override
   Future<void> configurePaperWidth(PrinterWidth width) async {
-    await _printer.configurePrinter(PaperConfig(widthPixels: width.pixels));
+    await _channel.invokeMethod('configurePrinter', {'paperWidth': width.pixels});
   }
 
   @override

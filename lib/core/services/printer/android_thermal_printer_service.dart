@@ -50,6 +50,17 @@ class AndroidThermalPrinterService implements ThermalPrinterService {
   @override
   Stream<double> get progressStream => _progressController.stream;
 
+  // ── Bluetooth Permissions ─────────────────────────────────────────────────
+  @override
+  Future<bool> requestPermissions() async {
+    try {
+      await _channel.invokeMethod('requestBluetoothPermissions');
+      return true;
+    } on PlatformException {
+      return false;
+    }
+  }
+
   // ── Bluetooth Status ──────────────────────────────────────────────────────
   @override
   Future<bool> isBluetoothEnabled() async {

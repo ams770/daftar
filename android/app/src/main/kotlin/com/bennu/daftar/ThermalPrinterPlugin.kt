@@ -123,6 +123,9 @@ class ThermalPrinterPlugin(private val activity: Activity) :
                 printWidthDots = dots
                 result.success(null)
             }
+            "requestBluetoothPermissions" -> {
+                requestBluetoothPermissions(result)
+            }
             else                 -> result.notImplemented()
         }
     }
@@ -131,6 +134,10 @@ class ThermalPrinterPlugin(private val activity: Activity) :
     // Scan
     // ──────────────────────────────────────────────────────────────
     private fun scanDevices(result: MethodChannel.Result) {
+        if (!hasBluetoothPermissions()) {
+            result.error("PERMISSION_DENIED", "Bluetooth permissions are not granted", null)
+            return
+        }
         val devices = mutableListOf<Map<String, String>>()
         bluetoothAdapter?.bondedDevices?.forEach { device ->
             devices.add(
@@ -423,5 +430,30 @@ class ThermalPrinterPlugin(private val activity: Activity) :
 
     override fun printerReadMsgCallback(printerInterface: PrinterInterface<*>?, bytes: ByteArray?) {
         // Not needed for printing
+    }
+
+    private fun hasBluetoothPermissions(): Boolean {
+        return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) { // Android 12+
+            androidx.core.content.ContextCompat.checkSelfPermission(activity, android.Manifest.permission.BLUETOOTH_CONNECT) == android.content.pm.PackageManager.PERMISSION_GRANTED &&
+                    androidx.core.content.ContextCompat.checkSelfPermission(activity, android.Manifest.permission.BLUETOOTH_SCAN) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        } else {
+            true // Android 11 or below
+        }
+    }
+
+    private fun requestBluetoothPermissions(result: MethodChannel.Result) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            androidx.core.app.ActivityCompat.requestPermissions(
+                activity,
+                arrayOf(
+                    android.Manifest.permission.BLUETOOTH_CONNECT,
+                    android.Manifest.permission.BLUETOOTH_SCAN
+                ),
+                101
+            )
+            result.success("Permission request sent")
+        } else {
+            result.success("Permissions not required for this Android version")
+        }
     }
 }

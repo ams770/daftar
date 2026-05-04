@@ -8,15 +8,31 @@
 
 /* Begin PBXBuildFile section */
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
+		1584B488634DD6482F55BDFC /* ConfigurePrinterUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEF68BD0A726E8FF129B650C /* ConfigurePrinterUseCase.swift */; };
+		1648F212191DB4B4AC3178A3 /* ConnectDeviceUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575F8CA484AEA40C3D1412DD /* ConnectDeviceUseCase.swift */; };
 		2180B3EF9B0AF5E22DD7947E /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9BBFEFE52A0AF7834D6EAB9 /* Pods_RunnerTests.framework */; };
+		31CD539FFF4CDB3D54F5F465 /* BluetoothRepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = C44E57470C06D0C4031822D5 /* BluetoothRepositoryImpl.swift */; };
 		331C808B294A63AB00263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C807B294A618700263BE5 /* RunnerTests.swift */; };
+		396554163D682B25B1BFECFE /* BluetoothRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4DA18004E2EE8BA749DA7EF /* BluetoothRepository.swift */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
+		501C89DDC564CBD8D0D85C46 /* IsConnectedUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1B6D2A4B0559C5661A7E2B /* IsConnectedUseCase.swift */; };
+		687939C5A1B0BF45BD0268B5 /* CommitPrintUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA34B16F59B125709BEC391C /* CommitPrintUseCase.swift */; };
 		6A3F31D2C3A7340E7ABC6DDA /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A188BE6B92FE45E760F79BF5 /* Pods_Runner.framework */; };
+		6B1E9EF178F8631EBADA1ED0 /* BluetoothDeviceEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AA83396AEABF771F1801739 /* BluetoothDeviceEntity.swift */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
+		76FAAB2F10567614B1B83E65 /* ScanDevicesUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F87CCA28687DE57B14889D /* ScanDevicesUseCase.swift */; };
 		7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */; };
+		8397768D2731F5CBF66B438F /* AppModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 832F61F3E5E1FF5DCD9382F8 /* AppModule.swift */; };
+		88A33A1D9022A6139766A67B /* PrintUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94B60981E9DB44FFB53BAF8 /* PrintUseCase.swift */; };
+		9714572022AE9F23357D6E13 /* PrintImageUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8CD7484F9D77C0C0EBB720B /* PrintImageUseCase.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		A1DA18D812FAE7D292B61E3D /* FeedLineUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5314F66F8C1781E1D03D54B /* FeedLineUseCase.swift */; };
+		A9988455CC22F5492B4A7339 /* BluetoothDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C7A658C67BA1C849932D5CC /* BluetoothDataSource.swift */; };
+		C80E2716EFA1D2A7B6F6BBF9 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4978EECA36D24A6B8C77E727 /* Utils.swift */; };
+		E31B195C71B72235EA8B124B /* ThermalPrinterPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D00E48905D86938307D79AE /* ThermalPrinterPlugin.swift */; };
+		E4C80D7D98CCF2BA6F3E0AD5 /* DisconnectDeviceUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8D7140E84AEBBEE1AB6DED /* DisconnectDeviceUseCase.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,19 +59,26 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0B8D7140E84AEBBEE1AB6DED /* DisconnectDeviceUseCase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DisconnectDeviceUseCase.swift; path = Printer/plugin/domain/usecases/DisconnectDeviceUseCase.swift; sourceTree = "<group>"; };
 		123AC8EAD1392FA8F17C95F1 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		1331DD9DA7BEE27DED01E813 /* Pods-RunnerTests.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.profile.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.profile.xcconfig"; sourceTree = "<group>"; };
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		18445443E8FD3C084F0F7C67 /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
+		2AA83396AEABF771F1801739 /* BluetoothDeviceEntity.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BluetoothDeviceEntity.swift; path = Printer/plugin/domain/entities/BluetoothDeviceEntity.swift; sourceTree = "<group>"; };
 		331C807B294A618700263BE5 /* RunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTests.swift; sourceTree = "<group>"; };
 		331C8081294A63A400263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		39EB663A221ED366F41D50A8 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
+		4978EECA36D24A6B8C77E727 /* Utils.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Utils.swift; path = Printer/plugin/utils/Utils.swift; sourceTree = "<group>"; };
+		575F8CA484AEA40C3D1412DD /* ConnectDeviceUseCase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConnectDeviceUseCase.swift; path = Printer/plugin/domain/usecases/ConnectDeviceUseCase.swift; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
+		7C7A658C67BA1C849932D5CC /* BluetoothDataSource.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BluetoothDataSource.swift; path = Printer/plugin/data/datasources/BluetoothDataSource.swift; sourceTree = "<group>"; };
+		7D00E48905D86938307D79AE /* ThermalPrinterPlugin.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ThermalPrinterPlugin.swift; path = Printer/ThermalPrinterPlugin.swift; sourceTree = "<group>"; };
+		832F61F3E5E1FF5DCD9382F8 /* AppModule.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AppModule.swift; path = Printer/plugin/di/AppModule.swift; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
 		97C146EE1CF9000F007C117D /* Runner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Runner.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -64,8 +87,17 @@
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A188BE6B92FE45E760F79BF5 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A8CD7484F9D77C0C0EBB720B /* PrintImageUseCase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PrintImageUseCase.swift; path = Printer/plugin/domain/usecases/PrintImageUseCase.swift; sourceTree = "<group>"; };
+		AA34B16F59B125709BEC391C /* CommitPrintUseCase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CommitPrintUseCase.swift; path = Printer/plugin/domain/usecases/CommitPrintUseCase.swift; sourceTree = "<group>"; };
+		B8F87CCA28687DE57B14889D /* ScanDevicesUseCase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ScanDevicesUseCase.swift; path = Printer/plugin/domain/usecases/ScanDevicesUseCase.swift; sourceTree = "<group>"; };
+		BEF68BD0A726E8FF129B650C /* ConfigurePrinterUseCase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConfigurePrinterUseCase.swift; path = Printer/plugin/domain/usecases/ConfigurePrinterUseCase.swift; sourceTree = "<group>"; };
+		C44E57470C06D0C4031822D5 /* BluetoothRepositoryImpl.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BluetoothRepositoryImpl.swift; path = Printer/plugin/data/repositories/BluetoothRepositoryImpl.swift; sourceTree = "<group>"; };
 		C96735C752B1362FDEA7099A /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
 		C9BBFEFE52A0AF7834D6EAB9 /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE1B6D2A4B0559C5661A7E2B /* IsConnectedUseCase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = IsConnectedUseCase.swift; path = Printer/plugin/domain/usecases/IsConnectedUseCase.swift; sourceTree = "<group>"; };
+		D4DA18004E2EE8BA749DA7EF /* BluetoothRepository.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BluetoothRepository.swift; path = Printer/plugin/domain/repositories/BluetoothRepository.swift; sourceTree = "<group>"; };
+		D5314F66F8C1781E1D03D54B /* FeedLineUseCase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FeedLineUseCase.swift; path = Printer/plugin/domain/usecases/FeedLineUseCase.swift; sourceTree = "<group>"; };
+		D94B60981E9DB44FFB53BAF8 /* PrintUseCase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PrintUseCase.swift; path = Printer/plugin/domain/usecases/PrintUseCase.swift; sourceTree = "<group>"; };
 		F65C5F4F3E2AE4C10C04259C /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -89,12 +121,99 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		26C86C20B7123185E76E2338 /* data */ = {
+			isa = PBXGroup;
+			children = (
+				55174FB05DE8A4341779EEB7 /* datasources */,
+				FFD113FC6E8B951CF14D042D /* repositories */,
+			);
+			name = data;
+			sourceTree = "<group>";
+		};
 		331C8082294A63A400263BE5 /* RunnerTests */ = {
 			isa = PBXGroup;
 			children = (
 				331C807B294A618700263BE5 /* RunnerTests.swift */,
 			);
 			path = RunnerTests;
+			sourceTree = "<group>";
+		};
+		384E024527CB9532C860D561 /* plugin */ = {
+			isa = PBXGroup;
+			children = (
+				616954456CE232C32519F62D /* di */,
+				85BB309F231010ECB5AA7251 /* utils */,
+				26C86C20B7123185E76E2338 /* data */,
+				584A1B5667FCDC51BB2CAF23 /* domain */,
+			);
+			name = plugin;
+			sourceTree = "<group>";
+		};
+		4EEA39D881222DA5716F2636 /* repositories */ = {
+			isa = PBXGroup;
+			children = (
+				D4DA18004E2EE8BA749DA7EF /* BluetoothRepository.swift */,
+			);
+			name = repositories;
+			sourceTree = "<group>";
+		};
+		55174FB05DE8A4341779EEB7 /* datasources */ = {
+			isa = PBXGroup;
+			children = (
+				7C7A658C67BA1C849932D5CC /* BluetoothDataSource.swift */,
+			);
+			name = datasources;
+			sourceTree = "<group>";
+		};
+		584A1B5667FCDC51BB2CAF23 /* domain */ = {
+			isa = PBXGroup;
+			children = (
+				4EEA39D881222DA5716F2636 /* repositories */,
+				831469E0658FF5C7FF0F27F2 /* usecases */,
+				E69EAAE929DC227704506587 /* entities */,
+			);
+			name = domain;
+			sourceTree = "<group>";
+		};
+		616954456CE232C32519F62D /* di */ = {
+			isa = PBXGroup;
+			children = (
+				832F61F3E5E1FF5DCD9382F8 /* AppModule.swift */,
+			);
+			name = di;
+			sourceTree = "<group>";
+		};
+		831469E0658FF5C7FF0F27F2 /* usecases */ = {
+			isa = PBXGroup;
+			children = (
+				AA34B16F59B125709BEC391C /* CommitPrintUseCase.swift */,
+				D94B60981E9DB44FFB53BAF8 /* PrintUseCase.swift */,
+				CE1B6D2A4B0559C5661A7E2B /* IsConnectedUseCase.swift */,
+				BEF68BD0A726E8FF129B650C /* ConfigurePrinterUseCase.swift */,
+				B8F87CCA28687DE57B14889D /* ScanDevicesUseCase.swift */,
+				A8CD7484F9D77C0C0EBB720B /* PrintImageUseCase.swift */,
+				D5314F66F8C1781E1D03D54B /* FeedLineUseCase.swift */,
+				575F8CA484AEA40C3D1412DD /* ConnectDeviceUseCase.swift */,
+				0B8D7140E84AEBBEE1AB6DED /* DisconnectDeviceUseCase.swift */,
+			);
+			name = usecases;
+			sourceTree = "<group>";
+		};
+		843E2492E69923A026678685 /* Printer */ = {
+			isa = PBXGroup;
+			children = (
+				384E024527CB9532C860D561 /* plugin */,
+				7D00E48905D86938307D79AE /* ThermalPrinterPlugin.swift */,
+			);
+			name = Printer;
+			sourceTree = "<group>";
+		};
+		85BB309F231010ECB5AA7251 /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				4978EECA36D24A6B8C77E727 /* Utils.swift */,
+			);
+			name = utils;
 			sourceTree = "<group>";
 		};
 		9740EEB11CF90186004384FC /* Flutter */ = {
@@ -141,6 +260,7 @@
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
+				843E2492E69923A026678685 /* Printer */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -166,6 +286,22 @@
 				C9BBFEFE52A0AF7834D6EAB9 /* Pods_RunnerTests.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E69EAAE929DC227704506587 /* entities */ = {
+			isa = PBXGroup;
+			children = (
+				2AA83396AEABF771F1801739 /* BluetoothDeviceEntity.swift */,
+			);
+			name = entities;
+			sourceTree = "<group>";
+		};
+		FFD113FC6E8B951CF14D042D /* repositories */ = {
+			isa = PBXGroup;
+			children = (
+				C44E57470C06D0C4031822D5 /* BluetoothRepositoryImpl.swift */,
+			);
+			name = repositories;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -401,6 +537,22 @@
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */,
+				8397768D2731F5CBF66B438F /* AppModule.swift in Sources */,
+				C80E2716EFA1D2A7B6F6BBF9 /* Utils.swift in Sources */,
+				A9988455CC22F5492B4A7339 /* BluetoothDataSource.swift in Sources */,
+				31CD539FFF4CDB3D54F5F465 /* BluetoothRepositoryImpl.swift in Sources */,
+				396554163D682B25B1BFECFE /* BluetoothRepository.swift in Sources */,
+				687939C5A1B0BF45BD0268B5 /* CommitPrintUseCase.swift in Sources */,
+				88A33A1D9022A6139766A67B /* PrintUseCase.swift in Sources */,
+				501C89DDC564CBD8D0D85C46 /* IsConnectedUseCase.swift in Sources */,
+				1584B488634DD6482F55BDFC /* ConfigurePrinterUseCase.swift in Sources */,
+				76FAAB2F10567614B1B83E65 /* ScanDevicesUseCase.swift in Sources */,
+				9714572022AE9F23357D6E13 /* PrintImageUseCase.swift in Sources */,
+				A1DA18D812FAE7D292B61E3D /* FeedLineUseCase.swift in Sources */,
+				1648F212191DB4B4AC3178A3 /* ConnectDeviceUseCase.swift in Sources */,
+				E4C80D7D98CCF2BA6F3E0AD5 /* DisconnectDeviceUseCase.swift in Sources */,
+				6B1E9EF178F8631EBADA1ED0 /* BluetoothDeviceEntity.swift in Sources */,
+				E31B195C71B72235EA8B124B /* ThermalPrinterPlugin.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

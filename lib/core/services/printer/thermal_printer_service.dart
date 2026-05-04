@@ -64,6 +64,7 @@ abstract class ThermalPrinterService {
   Stream<PrinterConnectionState> get connectionStateStream;
   Stream<double> get progressStream;
 
+  Future<bool> requestPermissions();
   Future<bool> isBluetoothEnabled();
   Future<List<BluetoothPrinterDevice>> scanDevices();
   Future<void> connect(String address);

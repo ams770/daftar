@@ -137,6 +137,10 @@ class PrinterCubit extends Cubit<PrinterState> {
     });
   }
 
+  Future<void> requestPermissions() async {
+    await _service.requestPermissions();
+  }
+
   Future<void> scanDevices() async {
     final isBTEnabled = await _service.isBluetoothEnabled();
     if (!isBTEnabled) {

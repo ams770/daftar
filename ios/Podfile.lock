@@ -30,8 +30,6 @@ PODS:
   - DKPhotoGallery/Resource (0.0.19):
     - SDWebImage
     - SwiftyGif
-  - easy_blue_printer (1.0.0):
-    - Flutter
   - file_picker (0.0.1):
     - DKImagePickerController/PhotoGallery
     - Flutter
@@ -64,7 +62,6 @@ PODS:
   - SwiftyGif (5.4.5)
 
 DEPENDENCIES:
-  - easy_blue_printer (from `.symlinks/plugins/easy_blue_printer/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Flutter (from `Flutter`)
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
@@ -85,8 +82,6 @@ SPEC REPOS:
     - SwiftyGif
 
 EXTERNAL SOURCES:
-  easy_blue_printer:
-    :path: ".symlinks/plugins/easy_blue_printer/ios"
   file_picker:
     :path: ".symlinks/plugins/file_picker/ios"
   Flutter:
@@ -113,7 +108,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
-  easy_blue_printer: 71193bdafae78dd9b1ce07ab951bca66b5a7d5d8
   file_picker: a0560bc09d61de87f12d246fc47d2119e6ef37be
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_native_splash: 6cad9122ea0fad137d23137dd14b937f3e90b145
