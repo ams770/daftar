@@ -93,6 +93,8 @@
 		<key>NSBluetoothPeripheralUsageDescription</key>
 		<string>This app needs bluetooth access to connect and print to thermal printers.</string>
 		<key>UIStatusBarHidden</key>
+		<true/>
+		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false/>
 	</dict>
 </plist>
