@@ -24,7 +24,7 @@ class OnboardingLogoPicker extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Stack(
-        alignment: Alignment.center,
+        alignment: AlignmentDirectional.center,
         clipBehavior: Clip.none,
         children: [
           Container(
@@ -55,7 +55,7 @@ class OnboardingLogoPicker extends StatelessWidget {
             ),
             child: logoPath == null
                 ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: .center,
                     children: [
                       const Icon(
                         LucideIcons.camera,

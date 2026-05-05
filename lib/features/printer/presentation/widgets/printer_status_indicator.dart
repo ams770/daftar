@@ -14,8 +14,12 @@ class PrinterStatusIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<PrinterCubit, PrinterState>(
       builder: (context, state) {
-        final isConnected = state is PrinterConnected || state is PrinterPrinting || state is PrinterPrintSuccess;
-        final isConnecting = state is PrinterConnecting || state is PrinterSearching;
+        final isConnected =
+            state is PrinterConnected ||
+            state is PrinterPrinting ||
+            state is PrinterPrintSuccess;
+        final isConnecting =
+            state is PrinterConnecting || state is PrinterSearching;
         final isError = state is PrinterError || state is PrinterBluetoothOff;
 
         Color color = AppColors.grey;
@@ -26,10 +30,15 @@ class PrinterStatusIndicator extends StatelessWidget {
         return GestureDetector(
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const PrinterSettingsPage()),
+            MaterialPageRoute(
+              builder: (context) => const PrinterSettingsPage(),
+            ),
           ),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.xs,
+            ),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppSpacing.radiusFull),

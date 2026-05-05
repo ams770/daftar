@@ -38,7 +38,7 @@ class _ScannerInvoicePageState extends State<ScannerInvoicePage> {
 
   void _onDetect(BarcodeCapture capture) async {
     if (_isProcessing) return;
-    
+
     final code = capture.barcodes.first.rawValue;
     if (code == null || code.isEmpty) return;
 
@@ -67,7 +67,7 @@ class _ScannerInvoicePageState extends State<ScannerInvoicePage> {
     });
 
     final success = await context.read<AddInvoiceCubit>().addProductByCode(
-      code, 
+      code,
       di.sl<ProductRepository>(),
     );
 
@@ -94,14 +94,13 @@ class _ScannerInvoicePageState extends State<ScannerInvoicePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppStrings.quickScan),
-      ),
+      appBar: AppBar(title: Text(AppStrings.quickScan)),
       body: Column(
         children: [
           // Scanner View at the top
           Container(
-            height: MediaQuery.of(context).size.height * 0.35,
+            height: MediaQuery.sizeOf(context).height * 0.35,
+            constraints: const BoxConstraints(maxHeight: 250, maxWidth: 500),
             margin: const EdgeInsets.all(AppSpacing.lg),
             decoration: BoxDecoration(
               color: Colors.black,
@@ -113,71 +112,89 @@ class _ScannerInvoicePageState extends State<ScannerInvoicePage> {
                 MobileScanner(
                   controller: _controller,
                   onDetect: _onDetect,
-                ),
-                // Overlay
+                ),              
                 Center(
                   child: Container(
                     width: 200,
                     height: 150,
                     decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.white.withValues(alpha: 0.5), width: 2),
+                      border: Border.all(
+                        color: AppColors.white.withValues(alpha: 0.5),
+                        width: 2,
+                      ),
                       borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
                     ),
                   ),
                 ),
                 if (_isProcessing)
-                  const Center(child: CircularProgressIndicator(color: AppColors.white)),
+                  const Center(
+                    child: CircularProgressIndicator(color: AppColors.white),
+                  ),
               ],
             ),
           ),
-          
+
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
             child: Row(
               children: [
-                const Icon(LucideIcons.shoppingCart, size: 20, color: AppColors.grey),
+                const Icon(
+                  LucideIcons.shoppingCart,
+                  size: 20,
+                  color: AppColors.grey,
+                ),
                 const Gap(AppSpacing.sm),
                 Text(
                   AppStrings.items,
-                  style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.bold),
+                  style: AppTypography.bodyLg.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
           ),
           const Gap(AppSpacing.md),
-          
+
           // List of scanned products
           Expanded(
             child: BlocBuilder<AddInvoiceCubit, AddInvoiceState>(
               builder: (context, state) {
                 if (state is! AddInvoiceCreating) return const SizedBox();
-                
+
                 final cart = state.cartItems;
                 final cartItemsList = cart.values.toList();
-                
+
                 if (cartItemsList.isEmpty) {
                   return Center(
                     child: Text(
                       AppStrings.centerBarcode,
-                      style: AppTypography.bodyMd.copyWith(color: AppColors.grey),
+                      style: AppTypography.bodyMd.copyWith(
+                        color: AppColors.grey,
+                      ),
                     ),
                   );
                 }
 
                 return ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                  ),
                   itemCount: cartItemsList.length,
                   separatorBuilder: (_, __) => const Gap(AppSpacing.sm),
                   itemBuilder: (context, index) {
                     final item = cartItemsList[index];
                     final product = item.product;
                     final qty = item.quantity;
-                    
+
                     return ProductSelectionCard(
                       product: product,
                       qty: qty,
-                      onAdd: () => context.read<AddInvoiceCubit>().updateProductQty(product, 1),
-                      onRemove: () => context.read<AddInvoiceCubit>().updateProductQty(product, -1),
+                      onAdd: () => context
+                          .read<AddInvoiceCubit>()
+                          .updateProductQty(product, 1),
+                      onRemove: () => context
+                          .read<AddInvoiceCubit>()
+                          .updateProductQty(product, -1),
                     );
                   },
                 );
@@ -188,8 +205,9 @@ class _ScannerInvoicePageState extends State<ScannerInvoicePage> {
       ),
       bottomNavigationBar: BlocBuilder<AddInvoiceCubit, AddInvoiceState>(
         builder: (context, state) {
-          final hasItems = (state is AddInvoiceCreating) && state.cartItems.isNotEmpty;
-          
+          final hasItems =
+              (state is AddInvoiceCreating) && state.cartItems.isNotEmpty;
+
           return Container(
             padding: const EdgeInsets.all(AppSpacing.lg),
             decoration: BoxDecoration(
@@ -204,17 +222,21 @@ class _ScannerInvoicePageState extends State<ScannerInvoicePage> {
             ),
             child: SafeArea(
               child: ElevatedButton(
-                onPressed: hasItems ? () {
-                  _controller.stop();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const InvoiceSummaryPage()),
-                  ).then((_) {
-                    if (mounted) {
-                      _controller.start();
-                    }
-                  });
-                } : null,
+                onPressed: hasItems
+                    ? () {
+                        _controller.stop();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const InvoiceSummaryPage(),
+                          ),
+                        ).then((_) {
+                          if (mounted) {
+                            _controller.start();
+                          }
+                        });
+                      }
+                    : null,
                 child: Text(AppStrings.confirm.toUpperCase()),
               ),
             ),

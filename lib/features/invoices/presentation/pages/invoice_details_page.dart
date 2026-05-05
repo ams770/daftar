@@ -252,6 +252,7 @@ class _InvoiceDetailsPageState extends State<InvoiceDetailsPage> {
           GridView.count(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
+
             crossAxisCount: 2,
             mainAxisSpacing: AppSpacing.md,
             crossAxisSpacing: AppSpacing.md,

@@ -157,20 +157,25 @@ class _InvoicesPageState extends State<InvoicesPage> {
 
                 return SliverPadding(
                   padding: const EdgeInsets.all(AppSpacing.md),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        if (index >= state.invoices.length) {
-                          return const Padding(
-                            padding: EdgeInsets.all(AppSpacing.md),
-                            child: Center(child: CircularProgressIndicator()),
-                          );
-                        }
-                        return InvoiceCard(invoice: state.invoices[index]);
-                      },
-                      childCount:
-                          state.invoices.length + (state.hasMore ? 1 : 0),
-                    ),
+                  sliver: SliverGrid.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 500,
+                          mainAxisExtent: 150,
+                          crossAxisSpacing: AppSpacing.md,
+                          mainAxisSpacing: AppSpacing.md,
+                          childAspectRatio: 2.5,
+                        ),
+                    itemBuilder: (context, index) {
+                      if (index >= state.invoices.length) {
+                        return const Padding(
+                          padding: EdgeInsets.all(AppSpacing.md),
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      }
+                      return InvoiceCard(invoice: state.invoices[index]);
+                    },
+                    itemCount: state.invoices.length + (state.hasMore ? 1 : 0),
                   ),
                 );
               }

@@ -89,14 +89,20 @@ class _NewInvoiceViewState extends State<NewInvoiceView> {
                           ? invState.cartItems
                           : <int, CartItem>{};
 
-                      return ListView.separated(
+                      return GridView.builder(
                         controller: _scrollController,
+                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                          mainAxisSpacing: AppSpacing.sm,
+                          crossAxisSpacing: AppSpacing.sm,
+                          maxCrossAxisExtent: 500,
+                          mainAxisExtent: 100,
+                        ),
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.lg,
                         ),
                         itemCount:
                             state.products.length + (state.hasMore ? 1 : 0),
-                        separatorBuilder: (_, __) => const Gap(AppSpacing.sm),
+                        // separatorBuilder: (_, __) => const Gap(AppSpacing.sm),
                         itemBuilder: (context, index) {
                           if (index == state.products.length) {
                             return const Center(

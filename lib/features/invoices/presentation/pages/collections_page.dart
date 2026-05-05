@@ -109,39 +109,43 @@ class _CollectionsPageState extends State<CollectionsPage> {
 
               return SliverPadding(
                 padding: const EdgeInsets.all(AppSpacing.md),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      if (index >= state.collections.length) {
-                        return const Padding(
-                          padding: EdgeInsets.all(AppSpacing.md),
-                          child: Center(child: CircularProgressIndicator()),
-                        );
-                      }
-                      return InkWell(
-                        onTap: () async {
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MoneyCollectionDetailsPage(
-                                collection: state.collections[index],
-                              ),
-                            ),
-                          );
-                          if (context.mounted) {
-                            context
-                                .read<MoneyCollectionCubit>()
-                                .loadCollections(refresh: true);
-                          }
-                        },
-                        child: _CollectionCard(
-                          collection: state.collections[index],
-                        ),
-                      );
-                    },
-                    childCount:
-                        state.collections.length + (state.hasMore ? 1 : 0),
+                sliver: SliverGrid.builder(
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 500,
+                    mainAxisExtent: 150,
+                    crossAxisSpacing: AppSpacing.md,
+                    mainAxisSpacing: AppSpacing.md,
+                    childAspectRatio: 2.5,
                   ),
+                  itemBuilder: (context, index) {
+                    if (index >= state.collections.length) {
+                      return const Padding(
+                        padding: EdgeInsets.all(AppSpacing.md),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+                    return InkWell(
+                      onTap: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MoneyCollectionDetailsPage(
+                              collection: state.collections[index],
+                            ),
+                          ),
+                        );
+                        if (context.mounted) {
+                          context.read<MoneyCollectionCubit>().loadCollections(
+                            refresh: true,
+                          );
+                        }
+                      },
+                      child: _CollectionCard(
+                        collection: state.collections[index],
+                      ),
+                    );
+                  },
+                  itemCount: state.collections.length + (state.hasMore ? 1 : 0),
                 ),
               );
             },

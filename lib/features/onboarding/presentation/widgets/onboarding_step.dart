@@ -50,7 +50,10 @@ class OnboardingStep extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 const Gap(AppSpacing.xxl),
-                content,
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 500),
+                  child: content,
+                ),
                 const Gap(100),
               ],
             ),
