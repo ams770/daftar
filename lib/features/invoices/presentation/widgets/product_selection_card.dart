@@ -29,10 +29,12 @@ class ProductSelectionCard extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: daftar.cardDecoration,
       child: Row(
+        crossAxisAlignment: .center,
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: .center,
               children: [
                 Text(
                   product.name,

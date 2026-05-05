@@ -161,7 +161,7 @@ class _InvoicesPageState extends State<InvoicesPage> {
                     gridDelegate:
                         const SliverGridDelegateWithMaxCrossAxisExtent(
                           maxCrossAxisExtent: 500,
-                          mainAxisExtent: 150,
+                          mainAxisExtent: 130,
                           crossAxisSpacing: AppSpacing.md,
                           mainAxisSpacing: AppSpacing.md,
                           childAspectRatio: 2.5,

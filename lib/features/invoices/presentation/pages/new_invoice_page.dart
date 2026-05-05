@@ -95,7 +95,7 @@ class _NewInvoiceViewState extends State<NewInvoiceView> {
                           mainAxisSpacing: AppSpacing.sm,
                           crossAxisSpacing: AppSpacing.sm,
                           maxCrossAxisExtent: 500,
-                          mainAxisExtent: 100,
+                          mainAxisExtent: 90,
                         ),
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.lg,

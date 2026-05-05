@@ -109,14 +109,13 @@ class _ScannerInvoicePageState extends State<ScannerInvoicePage> {
             clipBehavior: Clip.antiAlias,
             child: Stack(
               children: [
-                MobileScanner(
-                  controller: _controller,
-                  onDetect: _onDetect,
-                ),              
+                MobileScanner(controller: _controller, onDetect: _onDetect),
+
+                // Overlay
                 Center(
                   child: Container(
-                    width: 200,
-                    height: 150,
+                    // width: 250,
+                    margin: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: AppColors.white.withValues(alpha: 0.5),

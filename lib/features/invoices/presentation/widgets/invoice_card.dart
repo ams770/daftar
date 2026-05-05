@@ -19,10 +19,10 @@ class InvoiceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final daftar = Theme.of(context).extension<DaftarThemeExtension>()!;
-    final dateFormat = DateFormat('MMM dd, yyyy • HH:mm');
+    // final dateFormat = DateFormat('MMM dd, yyyy • HH:mm');
 
     return Container(
-      margin: const EdgeInsets.only(bottom: AppSpacing.lg),
+      // margin: const EdgeInsets.only(bottom: AppSpacing.lg),
       decoration: daftar.cardDecoration.copyWith(
         boxShadow: [
           BoxShadow(
@@ -77,10 +77,11 @@ class InvoiceCard extends StatelessWidget {
                     const Gap(AppSpacing.lg),
                     Expanded(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: .start,
+                        mainAxisAlignment: .center,
                         children: [
                           Text(
-                            'Invoice #${invoice.id.toString().padLeft(4, '0')}',
+                            '${AppStrings.invoice} #${invoice.id.toString().padLeft(4, '0')}',
                             style: AppTypography.h2.copyWith(
                               fontSize: 17,
                               letterSpacing: -0.5,
@@ -121,7 +122,8 @@ class InvoiceCard extends StatelessWidget {
                       ),
                     ),
                     Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      crossAxisAlignment: .end,
+                      mainAxisAlignment: .center,
                       children: [
                         Text(
                           '${invoice.total.toStringAsFixed(2)} ${invoice.currency}',

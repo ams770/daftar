@@ -213,7 +213,6 @@ class _CollectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final daftar = Theme.of(context).extension<DaftarThemeExtension>()!;
     return Container(
-      margin: const EdgeInsets.only(bottom: AppSpacing.md),
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: daftar.cardDecoration,
       child: Column(
