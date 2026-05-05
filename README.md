@@ -1,4 +1,4 @@
-# Products Printer
+# Daftar
 
 A professional, local-only product management and invoicing system for mobile devices. Built with Flutter, this application allows small businesses to manage inventory, generate invoices, and print receipts directly to Bluetooth thermal printers.
 
