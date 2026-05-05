@@ -60,7 +60,7 @@ class NewInvoiceBottomBar extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
-                      '$totalItems items',
+                      '$totalItems ${AppStrings.items}',
                       style: const TextStyle(fontSize: 12),
                     ),
                   ),

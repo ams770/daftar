@@ -126,7 +126,6 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
                       state is! PrinterPrintSuccess) {
                     buttonColor = AppColors.grey;
                   }
-
                   return _buildActionButton(
                     icon: LucideIcons.printer,
                     label: buttonLabel,
@@ -140,7 +139,7 @@ class MoneyCollectionDetailsPage extends StatelessWidget {
               _buildActionButton(
                 icon: LucideIcons.share2,
                 label: AppStrings.share,
-                color: AppColors.success,
+                color: AppColors.secondary,
                 onTap: () => _shareAsPdf(context, settings),
               ),
               _buildActionButton(
