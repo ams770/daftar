@@ -1,20 +1,22 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:gap/gap.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
+
+import '../../../../core/constants/app_strings.dart';
+import '../../../../core/di/injection.dart' as di;
+import '../../../../core/services/sound_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/constants/app_strings.dart';
 import '../../../products/domain/repositories/product_repository.dart';
 import '../cubits/add_invoice_cubit.dart';
-import '../../../../core/di/injection.dart' as di;
-import 'invoice_summary_page.dart';
 import '../widgets/product_selection_card.dart';
-import '../../../../core/services/sound_service.dart';
+import 'invoice_summary_page.dart';
 
 class ScannerInvoicePage extends StatefulWidget {
   const ScannerInvoicePage({super.key});

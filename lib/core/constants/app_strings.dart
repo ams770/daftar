@@ -149,4 +149,5 @@ class AppStrings {
   static String get columnPriceType => 'column_price_type'.tr();
   static String get importHeaderSkip => 'import_header_skip'.tr();
   static String get pickExcelFile => 'pick_excel_file'.tr();
+  static String get skip => 'skip'.tr();
 }

@@ -1,17 +1,19 @@
 import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../../core/services/excel/excel_service.dart';
 import '../../domain/entities/excel_product.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/usecases/add_product.dart';
+import '../../domain/usecases/delete_product.dart';
+import '../../domain/usecases/export_products_to_excel_use_case.dart';
 import '../../domain/usecases/get_product_by_code.dart';
 import '../../domain/usecases/get_products_paginated.dart';
+import '../../domain/usecases/import_excel_products_use_case.dart';
 import '../../domain/usecases/update_product.dart';
 import '../../domain/usecases/validate_excel_products_use_case.dart';
-import '../../domain/usecases/import_excel_products_use_case.dart';
-import '../../domain/usecases/export_products_to_excel_use_case.dart';
-import '../../domain/usecases/delete_product.dart';
 import 'products_state.dart';
 
 class ProductsCubit extends Cubit<ProductsState> {
@@ -62,21 +64,24 @@ class ProductsCubit extends Cubit<ProductsState> {
     }
 
     try {
-      final products = await getProductsPaginated(_pageSize, _currentOffset, query: _query);
+      final products = await getProductsPaginated(
+        _pageSize,
+        _currentOffset,
+        query: _query,
+      );
       final hasMore = products.length == _pageSize;
 
       if (state is ProductsLoaded && !refresh) {
         final currentState = state as ProductsLoaded;
-        emit(ProductsLoaded(
-          products: currentState.products + products,
-          hasMore: hasMore,
-          isLoadingMore: false,
-        ));
+        emit(
+          ProductsLoaded(
+            products: currentState.products + products,
+            hasMore: hasMore,
+            isLoadingMore: false,
+          ),
+        );
       } else {
-        emit(ProductsLoaded(
-          products: products,
-          hasMore: hasMore,
-        ));
+        emit(ProductsLoaded(products: products, hasMore: hasMore));
       }
 
       _currentOffset += products.length;
@@ -143,10 +148,10 @@ class ProductsCubit extends Cubit<ProductsState> {
   Future<void> validateExcel(String path) async {
     try {
       emit(ExcelValidationLoading());
-      
+
       final file = File(path);
       final rawProducts = await excelService.readProductsFromExcel(file);
-      
+
       if (rawProducts.isEmpty) {
         emit(const ProductsError('The Excel file is empty or invalid.'));
         return;
@@ -164,9 +169,11 @@ class ProductsCubit extends Cubit<ProductsState> {
 
   Future<void> updateExcelProduct(int index, ExcelProduct updated) async {
     if (state is ExcelValidationLoaded) {
-      final products = List<ExcelProduct>.from((state as ExcelValidationLoaded).excelProducts);
+      final products = List<ExcelProduct>.from(
+        (state as ExcelValidationLoaded).excelProducts,
+      );
       products[index] = updated;
-      
+
       final validated = await validateExcelProducts(products);
       emit(ExcelValidationLoaded(validated));
     }
@@ -174,9 +181,11 @@ class ProductsCubit extends Cubit<ProductsState> {
 
   Future<void> removeExcelProduct(int index) async {
     if (state is ExcelValidationLoaded) {
-      final products = List<ExcelProduct>.from((state as ExcelValidationLoaded).excelProducts);
+      final products = List<ExcelProduct>.from(
+        (state as ExcelValidationLoaded).excelProducts,
+      );
       products.removeAt(index);
-      
+
       final validated = await validateExcelProducts(products);
       emit(ExcelValidationLoaded(validated));
     }
@@ -185,7 +194,9 @@ class ProductsCubit extends Cubit<ProductsState> {
   Future<void> removeDuplicates() async {
     if (state is ExcelValidationLoaded) {
       final products = (state as ExcelValidationLoaded).excelProducts;
-      final filtered = products.where((p) => p.status != ExcelProductStatus.duplicate).toList();
+      final filtered = products
+          .where((p) => p.status != ExcelProductStatus.duplicate)
+          .toList();
       final validated = await validateExcelProducts(filtered);
       emit(ExcelValidationLoaded(validated));
     }

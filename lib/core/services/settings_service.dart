@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
-import '../models/app_settings.dart';
+
 import '../database/database_helper.dart';
+import '../models/app_settings.dart';
 
 abstract class SettingsService {
   Future<AppSettings> getSettings();

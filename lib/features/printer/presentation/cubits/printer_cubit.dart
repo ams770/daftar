@@ -1,13 +1,14 @@
 import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../../core/services/printer/thermal_printer_service.dart';
+
 import '../../../../core/services/pdf/invoice_pdf_service.dart';
 import '../../../../core/services/pdf/pdf_to_image_service.dart';
+import '../../../../core/services/printer/thermal_printer_service.dart';
+import '../../../../core/services/settings_service.dart';
 import '../../../invoices/domain/entities/invoice.dart';
 import '../../../invoices/domain/entities/money_collection.dart';
-import '../../../../core/services/settings_service.dart';
-import 'package:flutter/services.dart';
 import './printer_state.dart';
 
 class PrinterCubit extends Cubit<PrinterState> {
@@ -22,7 +23,8 @@ class PrinterCubit extends Cubit<PrinterState> {
 
   String? _connectedName;
   String? _connectedAddr;
-  PrinterWidth _currentWidth = PrinterWidth.inch3; // Default to 3 inch for this app
+  PrinterWidth _currentWidth =
+      PrinterWidth.inch3; // Default to 3 inch for this app
   PrinterWidth get currentWidth => _currentWidth;
   List<BluetoothPrinterDevice> _cachedDevices = [];
 
@@ -49,7 +51,8 @@ class PrinterCubit extends Cubit<PrinterState> {
     _watchdogTimer = null;
   }
 
-  List<BluetoothPrinterDevice> get _devices => List.unmodifiable(_cachedDevices);
+  List<BluetoothPrinterDevice> get _devices =>
+      List.unmodifiable(_cachedDevices);
   bool get isConnected => state is PrinterConnected;
 
   Future<void> _loadAndAutoConnect() async {
@@ -69,7 +72,13 @@ class PrinterCubit extends Cubit<PrinterState> {
       _connectedAddr = savedAddr;
       _connectedName = savedName;
 
-      emit(PrinterSearching(address: savedAddr, name: savedName, devices: _devices));
+      emit(
+        PrinterSearching(
+          address: savedAddr,
+          name: savedName,
+          devices: _devices,
+        ),
+      );
 
       try {
         await _service.connect(savedAddr);
@@ -80,7 +89,11 @@ class PrinterCubit extends Cubit<PrinterState> {
     }
   }
 
-  Future<void> _savePrinter(String address, String? name, PrinterWidth width) async {
+  Future<void> _savePrinter(
+    String address,
+    String? name,
+    PrinterWidth width,
+  ) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_keyPrinterAddress, address);
     await prefs.setString(_keyPrinterWidth, width.name);
@@ -104,12 +117,14 @@ class PrinterCubit extends Cubit<PrinterState> {
       switch (nativeState) {
         case PrinterConnectionState.connected:
           if (_connectedAddr != null) {
-            emit(PrinterConnected(
-              deviceName: _connectedName,
-              address: _connectedAddr,
-              width: _currentWidth,
-              devices: _devices,
-            ));
+            emit(
+              PrinterConnected(
+                deviceName: _connectedName,
+                address: _connectedAddr,
+                width: _currentWidth,
+                devices: _devices,
+              ),
+            );
             _savePrinter(_connectedAddr!, _connectedName, _currentWidth);
             _service.configurePaperWidth(_currentWidth);
             _startWatchdog();
@@ -119,7 +134,13 @@ class PrinterCubit extends Cubit<PrinterState> {
           break;
         case PrinterConnectionState.connecting:
           _stopWatchdog();
-          emit(PrinterConnecting(_connectedAddr ?? '...', deviceName: _connectedName, devices: _devices));
+          emit(
+            PrinterConnecting(
+              _connectedAddr ?? '...',
+              deviceName: _connectedName,
+              devices: _devices,
+            ),
+          );
           break;
         case PrinterConnectionState.disconnected:
           _stopWatchdog();
@@ -158,7 +179,10 @@ class PrinterCubit extends Cubit<PrinterState> {
     }
   }
 
-  Future<void> connect(BluetoothPrinterDevice device, PrinterWidth width) async {
+  Future<void> connect(
+    BluetoothPrinterDevice device,
+    PrinterWidth width,
+  ) async {
     _connectedName = device.name;
     _connectedAddr = device.address;
     _currentWidth = width;
@@ -206,25 +230,62 @@ class PrinterCubit extends Cubit<PrinterState> {
         settings: settings,
       );
 
-      final pngBytes = await PdfToImageService.convertFirstPageToImage(pdfBytes);
+      final pngBytes = await PdfToImageService.convertFirstPageToImage(
+        pdfBytes,
+      );
 
-      emit(PrinterPrinting(deviceName: name, address: addr, width: _currentWidth, devices: _devices));
+      emit(
+        PrinterPrinting(
+          deviceName: name,
+          address: addr,
+          width: _currentWidth,
+          devices: _devices,
+        ),
+      );
       _stopWatchdog();
       await _service.printImage(pngBytes, milliseconds: 20000);
       _startWatchdog();
 
-      emit(PrinterPrintSuccess(deviceName: name, address: addr, width: _currentWidth, devices: _devices));
+      emit(
+        PrinterPrintSuccess(
+          deviceName: name,
+          address: addr,
+          width: _currentWidth,
+          devices: _devices,
+        ),
+      );
       await Future.delayed(const Duration(seconds: 2));
       if (!isClosed) {
-        emit(PrinterConnected(deviceName: name, address: addr, width: _currentWidth, devices: _devices));
+        emit(
+          PrinterConnected(
+            deviceName: name,
+            address: addr,
+            width: _currentWidth,
+            devices: _devices,
+          ),
+        );
       }
     } catch (e) {
       final realState = await _service.getConnectionState();
       final isStillConnected = realState == PrinterConnectionState.connected;
-      emit(PrinterError(isStillConnected ? 'Failed to print invoice: $e' : 'Printer turned off', devices: _devices));
+      emit(
+        PrinterError(
+          isStillConnected
+              ? 'Failed to print invoice: $e'
+              : 'Printer turned off',
+          devices: _devices,
+        ),
+      );
       await Future.delayed(const Duration(seconds: 2));
       if (!isClosed && isStillConnected) {
-        emit(PrinterConnected(deviceName: name, address: addr, width: _currentWidth, devices: _devices));
+        emit(
+          PrinterConnected(
+            deviceName: name,
+            address: addr,
+            width: _currentWidth,
+            devices: _devices,
+          ),
+        );
       }
     }
   }
@@ -255,29 +316,65 @@ class PrinterCubit extends Cubit<PrinterState> {
         settings: settings,
       );
 
-      final pngBytes = await PdfToImageService.convertFirstPageToImage(pdfBytes);
+      final pngBytes = await PdfToImageService.convertFirstPageToImage(
+        pdfBytes,
+      );
 
-      emit(PrinterPrinting(deviceName: name, address: addr, width: _currentWidth, devices: _devices));
+      emit(
+        PrinterPrinting(
+          deviceName: name,
+          address: addr,
+          width: _currentWidth,
+          devices: _devices,
+        ),
+      );
       _stopWatchdog();
       await _service.printImage(pngBytes);
       _startWatchdog();
 
-      emit(PrinterPrintSuccess(deviceName: name, address: addr, width: _currentWidth, devices: _devices));
+      emit(
+        PrinterPrintSuccess(
+          deviceName: name,
+          address: addr,
+          width: _currentWidth,
+          devices: _devices,
+        ),
+      );
       await Future.delayed(const Duration(seconds: 2));
       if (!isClosed) {
-        emit(PrinterConnected(deviceName: name, address: addr, width: _currentWidth, devices: _devices));
+        emit(
+          PrinterConnected(
+            deviceName: name,
+            address: addr,
+            width: _currentWidth,
+            devices: _devices,
+          ),
+        );
       }
     } catch (e) {
       final realState = await _service.getConnectionState();
       final isStillConnected = realState == PrinterConnectionState.connected;
-      emit(PrinterError(isStillConnected ? 'Failed to print receipt: $e' : 'Printer turned off', devices: _devices));
+      emit(
+        PrinterError(
+          isStillConnected
+              ? 'Failed to print receipt: $e'
+              : 'Printer turned off',
+          devices: _devices,
+        ),
+      );
       await Future.delayed(const Duration(seconds: 2));
       if (!isClosed && isStillConnected) {
-        emit(PrinterConnected(deviceName: name, address: addr, width: _currentWidth, devices: _devices));
+        emit(
+          PrinterConnected(
+            deviceName: name,
+            address: addr,
+            width: _currentWidth,
+            devices: _devices,
+          ),
+        );
       }
     }
   }
-
 
   @override
   Future<void> close() {

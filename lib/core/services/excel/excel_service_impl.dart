@@ -1,8 +1,9 @@
 import 'dart:io';
-import 'dart:typed_data';
-import 'package:flutter/foundation.dart';
+
 import 'package:excel/excel.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
+
 import '../../../features/products/domain/entities/excel_product.dart';
 import '../../../features/products/domain/entities/product.dart';
 import 'excel_service.dart';
@@ -31,11 +32,7 @@ class ExcelServiceImpl implements ExcelService {
         final price = double.tryParse(row[2]?.value?.toString() ?? '0') ?? 0.0;
 
         if (name.isNotEmpty && code.isNotEmpty) {
-          products.add(ExcelProduct(
-            name: name,
-            code: code,
-            price: price,
-          ));
+          products.add(ExcelProduct(name: name, code: code, price: price));
         }
       }
     }
@@ -45,11 +42,12 @@ class ExcelServiceImpl implements ExcelService {
   @override
   Future<String> exportProductsToExcel(List<Product> products) async {
     final directory = await getTemporaryDirectory();
-    final filePath = '${directory.path}/products_export_${DateTime.now().millisecondsSinceEpoch}.xlsx';
+    final filePath =
+        '${directory.path}/products_export_${DateTime.now().millisecondsSinceEpoch}.xlsx';
 
     // Use compute for the heavy lifting of generating and saving the excel file
     final fileBytes = await compute(_generateExcel, products);
-    
+
     if (fileBytes != null) {
       File(filePath)
         ..createSync(recursive: true)
@@ -62,7 +60,7 @@ class ExcelServiceImpl implements ExcelService {
   static Uint8List? _generateExcel(List<Product> products) {
     final excel = Excel.createExcel();
     final sheet = excel['Products'];
-    
+
     // Add Header
     sheet.appendRow([
       TextCellValue('Name'),

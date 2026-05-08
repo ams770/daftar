@@ -1,27 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:gap/gap.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
+
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../core/services/sound_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/daftar_theme_extension.dart';
-import '../../../../core/constants/app_strings.dart';
-import '../../../../core/services/sound_service.dart';
 import '../../../../core/widgets/loading_dialog.dart';
-import '../../../../core/services/pdf/invoice_pdf_service.dart';
-import '../../../settings/presentation/cubits/settings_cubit.dart';
-import '../../domain/entities/excel_product.dart';
 import '../../domain/entities/product.dart';
+import '../cubits/products_cubit.dart';
+import '../cubits/products_state.dart';
+import '../widgets/import_instructions_dialog.dart';
 import '../widgets/product_dialog.dart';
 import '../widgets/product_shimmer.dart';
 import '../widgets/search_input_field.dart';
-import '../widgets/import_instructions_dialog.dart';
 import 'excel_validation_page.dart';
-import '../cubits/products_cubit.dart';
-import '../cubits/products_state.dart';
 
 class ProductsPage extends StatelessWidget {
   const ProductsPage({super.key});

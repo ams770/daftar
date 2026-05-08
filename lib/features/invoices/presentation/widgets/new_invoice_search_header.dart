@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/constants/app_strings.dart';
 
 class NewInvoiceSearchHeader extends StatelessWidget {
   final TextEditingController controller;
@@ -31,7 +31,10 @@ class NewInvoiceSearchHeader extends StatelessWidget {
             onPressed: onScanTap,
             color: AppColors.secondary,
           ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 0,
+            horizontal: 16,
+          ),
         ),
         onChanged: onChanged,
       ),

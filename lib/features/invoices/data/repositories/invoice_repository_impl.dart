@@ -1,5 +1,5 @@
-import '../../domain/entities/money_collection.dart';
 import '../../domain/entities/invoice.dart';
+import '../../domain/entities/money_collection.dart';
 import '../../domain/repositories/invoice_repository.dart';
 import '../datasources/invoice_local_datasource.dart';
 

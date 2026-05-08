@@ -1,5 +1,5 @@
-import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
@@ -31,13 +31,23 @@ class DatabaseHelper {
       await _createInvoiceTables(db);
     }
     if (oldVersion < 3) {
-      await db.execute('ALTER TABLE invoices ADD COLUMN type TEXT NOT NULL DEFAULT "cash"');
-      await db.execute('ALTER TABLE invoices ADD COLUMN paymentMethod TEXT NOT NULL DEFAULT "cash"');
-      await db.execute('ALTER TABLE invoices ADD COLUMN paidAmount REAL NOT NULL DEFAULT 0.0');
-      await db.execute('ALTER TABLE invoices ADD COLUMN remainingAmount REAL NOT NULL DEFAULT 0.0');
+      await db.execute(
+        'ALTER TABLE invoices ADD COLUMN type TEXT NOT NULL DEFAULT "cash"',
+      );
+      await db.execute(
+        'ALTER TABLE invoices ADD COLUMN paymentMethod TEXT NOT NULL DEFAULT "cash"',
+      );
+      await db.execute(
+        'ALTER TABLE invoices ADD COLUMN paidAmount REAL NOT NULL DEFAULT 0.0',
+      );
+      await db.execute(
+        'ALTER TABLE invoices ADD COLUMN remainingAmount REAL NOT NULL DEFAULT 0.0',
+      );
     }
     if (oldVersion < 4) {
-      await db.execute('ALTER TABLE app_settings ADD COLUMN isOnboarded INTEGER DEFAULT 0');
+      await db.execute(
+        'ALTER TABLE app_settings ADD COLUMN isOnboarded INTEGER DEFAULT 0',
+      );
     }
     if (oldVersion < 5) {
       await db.execute('ALTER TABLE invoices ADD COLUMN clientName TEXT');
@@ -46,7 +56,9 @@ class DatabaseHelper {
       await _createMoneyCollectionsTable(db);
     }
     if (oldVersion < 7) {
-      await db.execute('ALTER TABLE app_settings ADD COLUMN printingLanguage TEXT NOT NULL DEFAULT "EN"');
+      await db.execute(
+        'ALTER TABLE app_settings ADD COLUMN printingLanguage TEXT NOT NULL DEFAULT "EN"',
+      );
     }
   }
 
@@ -107,7 +119,7 @@ CREATE TABLE app_settings (
       'language': 'EN',
       'printingLanguage': 'EN',
       'currency': 'USD',
-      'isOnboarded': 0
+      'isOnboarded': 0,
     });
   }
 
@@ -147,16 +159,8 @@ CREATE TABLE invoice_items (
   Future<int> deleteInvoice(int id) async {
     final db = await database;
     // Also delete invoice items
-    await db.delete(
-      'invoice_items',
-      where: 'invoiceId = ?',
-      whereArgs: [id],
-    );
-    return await db.delete(
-      'invoices',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    await db.delete('invoice_items', where: 'invoiceId = ?', whereArgs: [id]);
+    return await db.delete('invoices', where: 'id = ?', whereArgs: [id]);
   }
 
   Future close() async {

@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+
 import '../entities/excel_product.dart';
 import '../entities/product.dart';
 import '../repositories/product_repository.dart';
@@ -16,10 +17,8 @@ class ImportExcelProductsUseCase {
   }
 
   static List<Product> _transformToProducts(List<ExcelProduct> excelProducts) {
-    return excelProducts.map((e) => Product(
-      name: e.name,
-      code: e.code,
-      price: e.price,
-    )).toList();
+    return excelProducts
+        .map((e) => Product(name: e.name, code: e.code, price: e.price))
+        .toList();
   }
 }

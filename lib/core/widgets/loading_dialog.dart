@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:gap/gap.dart';
+import 'package:lottie/lottie.dart';
 import 'package:products_printer/core/theme/app_colors.dart';
 import 'package:products_printer/core/theme/app_spacing.dart';
 import 'package:products_printer/core/theme/app_typography.dart';
 
 class LoadingDialog extends StatelessWidget {
   final String message;
-  
-  const LoadingDialog({
-    super.key,
-    required this.message,
-  });
+
+  const LoadingDialog({super.key, required this.message});
 
   static void show(BuildContext context, {required String message}) {
     showDialog(
@@ -56,9 +53,7 @@ class LoadingDialog extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: AppTypography.h3.copyWith(
-                color: AppColors.secondary,
-              ),
+              style: AppTypography.h3.copyWith(color: AppColors.secondary),
             ),
           ],
         ),

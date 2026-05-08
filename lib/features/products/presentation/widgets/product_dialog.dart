@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:gap/gap.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/constants/app_strings.dart';
 import '../../domain/entities/product.dart';
 
 class ProductDialog extends StatelessWidget {
@@ -54,8 +55,12 @@ class _ProductDialogContentState extends State<_ProductDialogContent> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.product?.name ?? '');
-    _codeController = TextEditingController(text: widget.product?.code ?? widget.initialCode ?? '');
-    _priceController = TextEditingController(text: widget.product?.price.toString() ?? '');
+    _codeController = TextEditingController(
+      text: widget.product?.code ?? widget.initialCode ?? '',
+    );
+    _priceController = TextEditingController(
+      text: widget.product?.price.toString() ?? '',
+    );
   }
 
   @override
@@ -72,11 +77,15 @@ class _ProductDialogContentState extends State<_ProductDialogContent> {
     final bool fromScan = widget.initialCode != null;
 
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Container(
         decoration: const BoxDecoration(
           color: AppColors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusXl)),
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(AppSpacing.radiusXl),
+          ),
         ),
         padding: const EdgeInsets.all(AppSpacing.xl),
         child: Form(
@@ -97,7 +106,11 @@ class _ProductDialogContentState extends State<_ProductDialogContent> {
               ),
               const Gap(AppSpacing.xl),
               Text(
-                isUpdate ? AppStrings.editProduct : (fromScan ? AppStrings.addNewProduct : AppStrings.addProduct),
+                isUpdate
+                    ? AppStrings.editProduct
+                    : (fromScan
+                          ? AppStrings.addNewProduct
+                          : AppStrings.addProduct),
                 style: AppTypography.h1,
                 textAlign: TextAlign.center,
               ),
@@ -105,7 +118,10 @@ class _ProductDialogContentState extends State<_ProductDialogContent> {
                 const Gap(AppSpacing.sm),
                 Text(
                   '${AppStrings.barcodeNotFound} "${widget.initialCode}"',
-                  style: AppTypography.bodyMd.copyWith(color: AppColors.warning, fontWeight: FontWeight.w500),
+                  style: AppTypography.bodyMd.copyWith(
+                    color: AppColors.warning,
+                    fontWeight: FontWeight.w500,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -120,7 +136,8 @@ class _ProductDialogContentState extends State<_ProductDialogContent> {
                   counterText: '',
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return AppStrings.required;
+                  if (value == null || value.isEmpty)
+                    return AppStrings.required;
                   if (value.length > 100) return 'Too long (max 100 chars)';
                   return null;
                 },
@@ -133,20 +150,25 @@ class _ProductDialogContentState extends State<_ProductDialogContent> {
                   labelText: AppStrings.productCode,
                   prefixIcon: const Icon(LucideIcons.qrCode, size: 20),
                 ),
-                validator: (value) => value == null || value.isEmpty ? AppStrings.required : null,
+                validator: (value) =>
+                    value == null || value.isEmpty ? AppStrings.required : null,
               ),
               const Gap(AppSpacing.lg),
               TextFormField(
                 controller: _priceController,
                 style: AppTypography.bodyMd,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: InputDecoration(
                   labelText: AppStrings.price,
                   prefixIcon: const Icon(LucideIcons.dollarSign, size: 20),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return AppStrings.required;
-                  if (double.tryParse(value) == null) return AppStrings.invalidNumber;
+                  if (value == null || value.isEmpty)
+                    return AppStrings.required;
+                  if (double.tryParse(value) == null)
+                    return AppStrings.invalidNumber;
                   return null;
                 },
               ),

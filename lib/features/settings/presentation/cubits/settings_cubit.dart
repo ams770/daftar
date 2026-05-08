@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../../core/models/app_settings.dart';
 import '../../../../core/services/settings_service.dart';
 

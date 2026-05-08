@@ -150,5 +150,6 @@
   "import_header_skip": "The first row is considered a header and will be skipped.",
   "pick_excel_file": "Pick Excel File",
   "add_logo": "Add Logo",
-  "add_logo_hint": "Add company logo here"
+  "add_logo_hint": "Add company logo here",
+  "skip": "Skip"
 }

@@ -1,5 +1,6 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../domain/entities/money_collection.dart';
 import '../../domain/repositories/invoice_repository.dart';
 
@@ -19,17 +20,23 @@ abstract class MoneyCollectionState extends Equatable {
   });
 
   @override
-  List<Object?> get props => [collections, hasMore, searchQuery, startDate, endDate];
+  List<Object?> get props => [
+    collections,
+    hasMore,
+    searchQuery,
+    startDate,
+    endDate,
+  ];
 }
 
 class MoneyCollectionInitial extends MoneyCollectionState {
   MoneyCollectionInitial()
-      : super(
-          collections: [],
-          hasMore: true,
-          startDate: DateTime.now().subtract(const Duration(days: 30)),
-          endDate: DateTime.now().add(const Duration(days: 1)),
-        );
+    : super(
+        collections: [],
+        hasMore: true,
+        startDate: DateTime.now().subtract(const Duration(days: 30)),
+        endDate: DateTime.now().add(const Duration(days: 1)),
+      );
 }
 
 class MoneyCollectionLoading extends MoneyCollectionState {
@@ -93,14 +100,16 @@ class MoneyCollectionCubit extends Cubit<MoneyCollectionState> {
     if (state is MoneyCollectionLoading && !refresh) return;
 
     final currentOffset = refresh ? 0 : state.collections.length;
-    
-    emit(MoneyCollectionLoading(
-      collections: refresh ? [] : state.collections,
-      hasMore: refresh ? true : state.hasMore,
-      searchQuery: state.searchQuery,
-      startDate: state.startDate,
-      endDate: state.endDate,
-    ));
+
+    emit(
+      MoneyCollectionLoading(
+        collections: refresh ? [] : state.collections,
+        hasMore: refresh ? true : state.hasMore,
+        searchQuery: state.searchQuery,
+        startDate: state.startDate,
+        endDate: state.endDate,
+      ),
+    );
 
     try {
       final newCollections = await repository.getCollectionsPaginated(
@@ -111,44 +120,54 @@ class MoneyCollectionCubit extends Cubit<MoneyCollectionState> {
         endDate: state.endDate,
       );
 
-      emit(MoneyCollectionLoaded(
-        collections: refresh ? newCollections : [...state.collections, ...newCollections],
-        hasMore: newCollections.length == _limit,
-        searchQuery: state.searchQuery,
-        startDate: state.startDate,
-        endDate: state.endDate,
-      ));
+      emit(
+        MoneyCollectionLoaded(
+          collections: refresh
+              ? newCollections
+              : [...state.collections, ...newCollections],
+          hasMore: newCollections.length == _limit,
+          searchQuery: state.searchQuery,
+          startDate: state.startDate,
+          endDate: state.endDate,
+        ),
+      );
     } catch (e) {
-      emit(MoneyCollectionError(
-        message: e.toString(),
-        collections: state.collections,
-        hasMore: state.hasMore,
-        searchQuery: state.searchQuery,
-        startDate: state.startDate,
-        endDate: state.endDate,
-      ));
+      emit(
+        MoneyCollectionError(
+          message: e.toString(),
+          collections: state.collections,
+          hasMore: state.hasMore,
+          searchQuery: state.searchQuery,
+          startDate: state.startDate,
+          endDate: state.endDate,
+        ),
+      );
     }
   }
 
   Future<void> setSearchQuery(String? query) async {
-    emit(MoneyCollectionLoaded(
-      collections: [],
-      hasMore: true,
-      searchQuery: query,
-      startDate: state.startDate,
-      endDate: state.endDate,
-    ));
+    emit(
+      MoneyCollectionLoaded(
+        collections: [],
+        hasMore: true,
+        searchQuery: query,
+        startDate: state.startDate,
+        endDate: state.endDate,
+      ),
+    );
     await loadCollections(refresh: true);
   }
 
   Future<void> setDateRange(DateTime start, DateTime end) async {
-    emit(MoneyCollectionLoaded(
-      collections: [],
-      hasMore: true,
-      searchQuery: state.searchQuery,
-      startDate: start,
-      endDate: end,
-    ));
+    emit(
+      MoneyCollectionLoaded(
+        collections: [],
+        hasMore: true,
+        searchQuery: state.searchQuery,
+        startDate: start,
+        endDate: end,
+      ),
+    );
     await loadCollections(refresh: true);
   }
 
@@ -159,14 +178,16 @@ class MoneyCollectionCubit extends Cubit<MoneyCollectionState> {
       await loadCollections(refresh: true);
       return id;
     } catch (e) {
-      emit(MoneyCollectionError(
-        message: e.toString(),
-        collections: state.collections,
-        hasMore: state.hasMore,
-        searchQuery: state.searchQuery,
-        startDate: state.startDate,
-        endDate: state.endDate,
-      ));
+      emit(
+        MoneyCollectionError(
+          message: e.toString(),
+          collections: state.collections,
+          hasMore: state.hasMore,
+          searchQuery: state.searchQuery,
+          startDate: state.startDate,
+          endDate: state.endDate,
+        ),
+      );
       return null;
     }
   }
@@ -176,14 +197,16 @@ class MoneyCollectionCubit extends Cubit<MoneyCollectionState> {
       await repository.deleteMoneyCollection(id);
       await loadCollections(refresh: true);
     } catch (e) {
-      emit(MoneyCollectionError(
-        message: e.toString(),
-        collections: state.collections,
-        hasMore: state.hasMore,
-        searchQuery: state.searchQuery,
-        startDate: state.startDate,
-        endDate: state.endDate,
-      ));
+      emit(
+        MoneyCollectionError(
+          message: e.toString(),
+          collections: state.collections,
+          hasMore: state.hasMore,
+          searchQuery: state.searchQuery,
+          startDate: state.startDate,
+          endDate: state.endDate,
+        ),
+      );
     }
   }
 

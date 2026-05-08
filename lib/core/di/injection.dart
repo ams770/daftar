@@ -1,48 +1,52 @@
+import 'dart:io';
+
 import 'package:get_it/get_it.dart';
-import '../services/excel/excel_service.dart';
-import '../services/excel/excel_service_impl.dart';
+
+import '../../features/invoices/data/datasources/invoice_local_datasource.dart';
+import '../../features/invoices/data/repositories/invoice_repository_impl.dart';
+import '../../features/invoices/domain/repositories/invoice_repository.dart';
+import '../../features/invoices/presentation/cubits/add_invoice_cubit.dart';
+import '../../features/invoices/presentation/cubits/invoice_cubit.dart';
+import '../../features/invoices/presentation/cubits/money_collection_cubit.dart';
+import '../../features/printer/presentation/cubits/printer_cubit.dart';
 import '../../features/products/data/datasources/product_local_datasource.dart';
 import '../../features/products/data/repositories/product_repository_impl.dart';
 import '../../features/products/domain/repositories/product_repository.dart';
 import '../../features/products/domain/usecases/add_product.dart';
+import '../../features/products/domain/usecases/delete_product.dart';
+import '../../features/products/domain/usecases/export_products_to_excel_use_case.dart';
 import '../../features/products/domain/usecases/get_product_by_code.dart';
 import '../../features/products/domain/usecases/get_products_paginated.dart';
+import '../../features/products/domain/usecases/import_excel_products_use_case.dart';
 import '../../features/products/domain/usecases/update_product.dart';
 import '../../features/products/domain/usecases/validate_excel_products_use_case.dart';
-import '../../features/products/domain/usecases/import_excel_products_use_case.dart';
-import '../../features/products/domain/usecases/export_products_to_excel_use_case.dart';
-import '../../features/products/domain/usecases/delete_product.dart';
 import '../../features/products/presentation/cubits/products_cubit.dart';
-import '../../features/invoices/data/datasources/invoice_local_datasource.dart';
-import '../../features/invoices/data/repositories/invoice_repository_impl.dart';
-import '../../features/invoices/domain/repositories/invoice_repository.dart';
-import '../../features/invoices/presentation/cubits/invoice_cubit.dart';
-import '../../features/invoices/presentation/cubits/add_invoice_cubit.dart';
-import '../../features/invoices/presentation/cubits/money_collection_cubit.dart';
 import '../../features/settings/presentation/cubits/settings_cubit.dart';
 import '../database/database_helper.dart';
-import '../services/settings_service.dart';
-import 'dart:io';
-import '../services/printer/thermal_printer_service.dart';
+import '../services/excel/excel_service.dart';
+import '../services/excel/excel_service_impl.dart';
 import '../services/printer/android_thermal_printer_service.dart';
 import '../services/printer/ios_thermal_printer_service.dart';
-import '../../features/printer/presentation/cubits/printer_cubit.dart';
+import '../services/printer/thermal_printer_service.dart';
+import '../services/settings_service.dart';
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
   // Cubits
-  sl.registerFactory(() => ProductsCubit(
-        getProductsPaginated: sl(),
-        getProductByCode: sl(),
-        addProduct: sl(),
-        updateProduct: sl(),
-        validateExcelProducts: sl(),
-        importExcelProducts: sl(),
-        exportProductsToExcel: sl(),
-        deleteProduct: sl(),
-        excelService: sl(),
-      ));
+  sl.registerFactory(
+    () => ProductsCubit(
+      getProductsPaginated: sl(),
+      getProductByCode: sl(),
+      addProduct: sl(),
+      updateProduct: sl(),
+      validateExcelProducts: sl(),
+      importExcelProducts: sl(),
+      exportProductsToExcel: sl(),
+      deleteProduct: sl(),
+      excelService: sl(),
+    ),
+  );
   sl.registerFactory(() => SettingsCubit(sl()));
   sl.registerFactory(() => InvoiceCubit(sl()));
   sl.registerFactory(() => AddInvoiceCubit(sl()));

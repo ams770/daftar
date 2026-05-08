@@ -1,9 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../products/domain/entities/product.dart';
+import '../../../products/domain/repositories/product_repository.dart';
 import '../../domain/entities/invoice.dart';
 import '../../domain/repositories/invoice_repository.dart';
-import '../../../products/domain/repositories/product_repository.dart';
 
 abstract class AddInvoiceState extends Equatable {
   const AddInvoiceState();
@@ -35,11 +36,8 @@ class CartItem extends Equatable {
 class AddInvoiceCreating extends AddInvoiceState {
   final Map<int, CartItem> cartItems; // productId -> CartItem
   final String? clientName;
-  
-  const AddInvoiceCreating({
-    this.cartItems = const {},
-    this.clientName,
-  });
+
+  const AddInvoiceCreating({this.cartItems = const {}, this.clientName});
 
   @override
   List<Object?> get props => [cartItems, clientName];
@@ -90,7 +88,7 @@ class AddInvoiceCubit extends Cubit<AddInvoiceState> {
       final currentState = state as AddInvoiceCreating;
       final newCart = Map<int, CartItem>.from(currentState.cartItems);
       final currentItem = newCart[product.id];
-      
+
       if (currentItem == null) {
         if (delta > 0) {
           newCart[product.id!] = CartItem(product: product, quantity: delta);
@@ -103,17 +101,20 @@ class AddInvoiceCubit extends Cubit<AddInvoiceState> {
           newCart[product.id!] = currentItem.copyWith(quantity: newQty);
         }
       }
-      
+
       emit(currentState.copyWith(cartItems: newCart));
     }
   }
 
-  Future<bool> addProductByCode(String code, ProductRepository productRepo) async {
+  Future<bool> addProductByCode(
+    String code,
+    ProductRepository productRepo,
+  ) async {
     if (state is! AddInvoiceCreating) return false;
 
     // Always fetch from repo to ensure we have the latest data and handle cases where it's not in a local list
     final product = await productRepo.getProductByCode(code);
-    
+
     if (product != null) {
       updateProductQty(product, 1);
       return true;

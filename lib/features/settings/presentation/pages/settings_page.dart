@@ -1,19 +1,21 @@
 import 'dart:io';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:gap/gap.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+
+import '../../../../core/constants/app_strings.dart';
+import '../../../../core/models/app_settings.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/models/app_settings.dart';
-import '../../../../core/constants/app_strings.dart';
+import '../../../../core/utils/logo_helper.dart';
 import '../../../printer/presentation/pages/printer_settings_page.dart';
 import '../cubits/settings_cubit.dart';
-import '../widgets/settings_widgets.dart';
 import '../widgets/settings_modals.dart';
-import '../../../../core/utils/logo_helper.dart';
+import '../widgets/settings_widgets.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -21,10 +23,7 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppStrings.settings),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: Text(AppStrings.settings), elevation: 0),
       body: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, state) {
           if (state is SettingsInitial) {
@@ -81,7 +80,9 @@ class _SettingsBody extends StatelessWidget {
                   isArabic: isArabic,
                   onToggle: (ar) {
                     context.setLocale(Locale(ar ? 'ar' : 'en'));
-                    final newSettings = settings.copyWith(language: ar ? 'AR' : 'EN');
+                    final newSettings = settings.copyWith(
+                      language: ar ? 'AR' : 'EN',
+                    );
                     context.read<SettingsCubit>().saveSettings(newSettings);
                   },
                 ),
@@ -97,10 +98,16 @@ class _SettingsBody extends StatelessWidget {
                       settings.printingLanguage == 'AR'
                           ? AppStrings.arabic
                           : AppStrings.english,
-                      style: AppTypography.bodySm.copyWith(color: AppColors.secondary),
+                      style: AppTypography.bodySm.copyWith(
+                        color: AppColors.secondary,
+                      ),
                     ),
                     const Gap(AppSpacing.xs),
-                    const Icon(LucideIcons.chevronRight, size: 16, color: AppColors.grey),
+                    const Icon(
+                      LucideIcons.chevronRight,
+                      size: 16,
+                      color: AppColors.grey,
+                    ),
                   ],
                 ),
                 onTap: () => _showPrintingLanguageModal(context),
@@ -164,10 +171,16 @@ class _SettingsBody extends StatelessWidget {
               _Tile(
                 icon: LucideIcons.bluetooth,
                 label: "printer_settings".tr(),
-                trailing: const Icon(LucideIcons.chevronRight, size: 20, color: AppColors.grey),
+                trailing: const Icon(
+                  LucideIcons.chevronRight,
+                  size: 20,
+                  color: AppColors.grey,
+                ),
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const PrinterSettingsPage()),
+                  MaterialPageRoute(
+                    builder: (_) => const PrinterSettingsPage(),
+                  ),
                 ),
               ),
             ],
@@ -279,14 +292,22 @@ class _BrandProfileCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.white,
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.white.withValues(alpha: 0.4), width: 2),
+                border: Border.all(
+                  color: AppColors.white.withValues(alpha: 0.4),
+                  width: 2,
+                ),
               ),
               child: settings.logoPath == null
-                  ? const Icon(LucideIcons.store, color: AppColors.white, size: 30)
+                  ? const Icon(
+                      LucideIcons.store,
+                      color: AppColors.white,
+                      size: 30,
+                    )
                   : FutureBuilder<String>(
                       future: LogoHelper.getFullPath(settings.logoPath!),
                       builder: (context, snapshot) {
-                        if (snapshot.hasData && File(snapshot.data!).existsSync()) {
+                        if (snapshot.hasData &&
+                            File(snapshot.data!).existsSync()) {
                           return Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
@@ -297,7 +318,11 @@ class _BrandProfileCard extends StatelessWidget {
                             ),
                           );
                         }
-                        return const Icon(LucideIcons.store, color: AppColors.white, size: 30);
+                        return const Icon(
+                          LucideIcons.store,
+                          color: AppColors.white,
+                          size: 30,
+                        );
                       },
                     ),
             ),
@@ -315,7 +340,10 @@ class _BrandProfileCard extends StatelessWidget {
                   ),
                   Text(
                     settings.brandName,
-                    style: AppTypography.h1.copyWith(color: AppColors.white, fontSize: 20),
+                    style: AppTypography.h1.copyWith(
+                      color: AppColors.white,
+                      fontSize: 20,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -356,7 +384,10 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: AppSpacing.sm, bottom: AppSpacing.sm),
+      padding: const EdgeInsets.only(
+        left: AppSpacing.sm,
+        bottom: AppSpacing.sm,
+      ),
       child: Text(
         text,
         style: AppTypography.label.copyWith(

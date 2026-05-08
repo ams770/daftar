@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import '../../../../core/theme/app_spacing.dart';
+
 import '../../../../core/services/sound_service.dart';
+import '../../../../core/theme/app_spacing.dart';
 
 class ScannerBottomSheet extends StatelessWidget {
   const ScannerBottomSheet({super.key});
@@ -12,7 +13,9 @@ class ScannerBottomSheet extends StatelessWidget {
       height: MediaQuery.of(context).size.height * 0.7,
       decoration: const BoxDecoration(
         color: Colors.black,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusXl)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSpacing.radiusXl),
+        ),
       ),
       clipBehavior: Clip.antiAlias,
       child: Stack(
@@ -49,7 +52,10 @@ class ScannerBottomSheet extends StatelessWidget {
               width: 250,
               height: 250,
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.white.withValues(alpha: 0.5), width: 2),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.5),
+                  width: 2,
+                ),
                 borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
               ),
             ),

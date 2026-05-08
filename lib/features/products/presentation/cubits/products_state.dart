@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
-import '../../domain/entities/product.dart';
+
 import '../../domain/entities/excel_product.dart';
+import '../../domain/entities/product.dart';
 
 abstract class ProductsState extends Equatable {
   const ProductsState();
@@ -69,5 +70,7 @@ class ExcelValidationLoaded extends ProductsState {
 }
 
 class ProductsImportSuccess extends ProductsState {}
+
 class ProductsExportLoading extends ProductsState {}
+
 class ProductsExportSuccess extends ProductsState {}

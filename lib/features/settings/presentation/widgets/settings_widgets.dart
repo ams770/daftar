@@ -1,13 +1,13 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/daftar_theme_extension.dart';
-import '../../../../core/constants/app_strings.dart';
-import '../../../../core/models/app_settings.dart';
 
 class LogoPreview extends StatelessWidget {
   final String? path;

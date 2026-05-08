@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:gap/gap.dart';
 import 'package:lottie/lottie.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/daftar_theme_extension.dart';
-import '../../../../core/constants/app_strings.dart';
 import '../../domain/entities/excel_product.dart';
 import '../cubits/products_cubit.dart';
 import '../cubits/products_state.dart';
@@ -46,9 +47,7 @@ class _ExcelValidationPageState extends State<ExcelValidationPage> {
         }
 
         return Scaffold(
-          appBar: AppBar(
-            title: Text(AppStrings.importExcel),
-          ),
+          appBar: AppBar(title: Text(AppStrings.importExcel)),
           body: _buildBody(context, state, products, isLoading),
           bottomNavigationBar: _buildBottomBar(context, products, isLoading),
         );
@@ -295,8 +294,9 @@ class _ExcelValidationPageState extends State<ExcelValidationPage> {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           minimumSize: const Size(double.infinity, 54),
-          backgroundColor:
-              hasDuplicates ? AppColors.greyLight : AppColors.secondary,
+          backgroundColor: hasDuplicates
+              ? AppColors.greyLight
+              : AppColors.secondary,
           foregroundColor: AppColors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
@@ -409,8 +409,8 @@ class _ExcelProductCard extends StatelessWidget {
                               : AppColors.greyDark,
                           fontWeight:
                               product.status == ExcelProductStatus.duplicate
-                                  ? FontWeight.bold
-                                  : FontWeight.w500,
+                              ? FontWeight.bold
+                              : FontWeight.w500,
                           fontSize: 12,
                         ),
                       ),

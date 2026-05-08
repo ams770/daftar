@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../domain/entities/invoice.dart';
 import '../../domain/entities/money_collection.dart';
-import '../cubits/money_collection_cubit.dart';
 import '../cubits/invoice_cubit.dart';
+import '../cubits/money_collection_cubit.dart';
 import '../pages/money_collection_details_page.dart';
 
 class CollectMoneyBottomSheet extends StatefulWidget {
@@ -18,7 +19,8 @@ class CollectMoneyBottomSheet extends StatefulWidget {
   const CollectMoneyBottomSheet({super.key, required this.invoice});
 
   @override
-  State<CollectMoneyBottomSheet> createState() => _CollectMoneyBottomSheetState();
+  State<CollectMoneyBottomSheet> createState() =>
+      _CollectMoneyBottomSheetState();
 }
 
 class _CollectMoneyBottomSheetState extends State<CollectMoneyBottomSheet> {
@@ -45,7 +47,9 @@ class _CollectMoneyBottomSheetState extends State<CollectMoneyBottomSheet> {
       val = widget.invoice.remainingAmount;
       _amountController.value = TextEditingValue(
         text: val.toStringAsFixed(2),
-        selection: TextSelection.collapsed(offset: val.toStringAsFixed(2).length),
+        selection: TextSelection.collapsed(
+          offset: val.toStringAsFixed(2).length,
+        ),
       );
     }
 
@@ -66,7 +70,8 @@ class _CollectMoneyBottomSheetState extends State<CollectMoneyBottomSheet> {
     return res < 0.001 ? 0.0 : res; // Handle potential precision issues
   }
 
-  bool get _isValid => _amount > 0 && _amount <= (widget.invoice.remainingAmount + 0.001);
+  bool get _isValid =>
+      _amount > 0 && _amount <= (widget.invoice.remainingAmount + 0.001);
 
   @override
   Widget build(BuildContext context) {
@@ -87,9 +92,17 @@ class _CollectMoneyBottomSheetState extends State<CollectMoneyBottomSheet> {
             textAlign: TextAlign.center,
           ),
           const Gap(AppSpacing.xl),
-          _buildSummaryRow(AppStrings.remainingAmount, widget.invoice.remainingAmount, AppColors.greyDark),
+          _buildSummaryRow(
+            AppStrings.remainingAmount,
+            widget.invoice.remainingAmount,
+            AppColors.greyDark,
+          ),
           const Gap(AppSpacing.sm),
-          _buildSummaryRow(AppStrings.remainingAfter, _newRemaining, AppColors.success),
+          _buildSummaryRow(
+            AppStrings.remainingAfter,
+            _newRemaining,
+            AppColors.success,
+          ),
           const Gap(AppSpacing.xl),
           TextField(
             controller: _amountController,
@@ -154,13 +167,14 @@ class _CollectMoneyBottomSheetState extends State<CollectMoneyBottomSheet> {
       if (mounted) {
         // Refresh invoices in the main list
         context.read<InvoiceCubit>().loadInvoices(refresh: true);
-        
+
         if (id != null) {
           final savedCollection = collection.copyWith(id: id);
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => MoneyCollectionDetailsPage(collection: savedCollection),
+              builder: (context) =>
+                  MoneyCollectionDetailsPage(collection: savedCollection),
             ),
           );
         } else {

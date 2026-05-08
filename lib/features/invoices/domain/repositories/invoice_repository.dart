@@ -1,5 +1,5 @@
-import '../entities/money_collection.dart';
 import '../../domain/entities/invoice.dart';
+import '../entities/money_collection.dart';
 
 abstract class InvoiceRepository {
   Future<int> saveInvoice(Invoice invoice);
@@ -12,7 +12,7 @@ abstract class InvoiceRepository {
   });
   Future<Invoice?> getInvoiceById(int id);
   Future<void> deleteInvoice(int id);
-  
+
   // Money Collection
   Future<int> saveMoneyCollection(MoneyCollection collection);
   Future<List<MoneyCollection>> getCollectionsPaginated({

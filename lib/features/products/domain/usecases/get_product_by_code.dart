@@ -1,5 +1,5 @@
-import '../repositories/product_repository.dart';
 import '../entities/product.dart';
+import '../repositories/product_repository.dart';
 
 class GetProductByCode {
   final ProductRepository repository;

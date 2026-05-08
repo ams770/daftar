@@ -1,7 +1,8 @@
 import 'dart:io';
+
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 class LogoHelper {
   static const String _logoFileName = 'brand_logo';
@@ -11,7 +12,7 @@ class LogoHelper {
   static Future<String?> pickAndSaveLogo() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-    
+
     if (image == null) return null;
 
     final Directory appDir = await getApplicationDocumentsDirectory();

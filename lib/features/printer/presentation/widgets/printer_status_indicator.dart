@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_spacing.dart';
 import '../cubits/printer_cubit.dart';
 import '../cubits/printer_state.dart';
 import '../pages/printer_settings_page.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_spacing.dart';
 
 class PrinterStatusIndicator extends StatelessWidget {
   const PrinterStatusIndicator({super.key});

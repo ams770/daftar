@@ -1,14 +1,15 @@
 import 'dart:io';
-import 'dart:typed_data';
+
+import 'package:flutter/services.dart';
+import 'package:image/image.dart' as img;
+import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:intl/intl.dart';
-import '../../models/app_settings.dart';
+
 import '../../../features/invoices/domain/entities/invoice.dart';
 import '../../../features/invoices/domain/entities/money_collection.dart';
-import 'package:flutter/services.dart';
+import '../../models/app_settings.dart';
 import '../../utils/logo_helper.dart';
-import 'package:image/image.dart' as img;
 
 class InvoicePdfService {
   static Future<Uint8List> generateInvoicePdf({

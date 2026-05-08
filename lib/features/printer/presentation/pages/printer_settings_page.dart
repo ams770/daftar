@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:gap/gap.dart';
-import '../cubits/printer_cubit.dart';
-import '../cubits/printer_state.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/services/printer/thermal_printer_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/constants/app_strings.dart';
+import '../cubits/printer_cubit.dart';
+import '../cubits/printer_state.dart';
 
 class PrinterSettingsPage extends StatefulWidget {
   const PrinterSettingsPage({super.key});
@@ -25,7 +25,7 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
   }
 
   Future<void> _checkPermissions() async {
-    // Small delay to ensure cubit is ready if needed, 
+    // Small delay to ensure cubit is ready if needed,
     // though service is directly accessible.
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await context.read<PrinterCubit>().requestPermissions();
@@ -75,7 +75,9 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
 
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -88,8 +90,12 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
                       ),
                       if (state is! PrinterBluetoothOff)
                         IconButton(
-                          icon: const Icon(LucideIcons.refreshCcw, color: AppColors.secondary),
-                          onPressed: () => context.read<PrinterCubit>().scanDevices(),
+                          icon: const Icon(
+                            LucideIcons.refreshCcw,
+                            color: AppColors.secondary,
+                          ),
+                          onPressed: () =>
+                              context.read<PrinterCubit>().scanDevices(),
                         ),
                     ],
                   ),
@@ -163,7 +169,8 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         side: BorderSide(
-          color: (isConnected ? AppColors.success : AppColors.warning).withValues(alpha: 0.3),
+          color: (isConnected ? AppColors.success : AppColors.warning)
+              .withValues(alpha: 0.3),
           width: 2,
         ),
       ),
@@ -176,7 +183,8 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.md),
                   decoration: BoxDecoration(
-                    color: (isConnected ? AppColors.success : AppColors.warning).withValues(alpha: 0.1),
+                    color: (isConnected ? AppColors.success : AppColors.warning)
+                        .withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -191,9 +199,13 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        isConnected ? AppStrings.statusConnected : AppStrings.statusConnecting,
+                        isConnected
+                            ? AppStrings.statusConnected
+                            : AppStrings.statusConnecting,
                         style: TextStyle(
-                          color: isConnected ? AppColors.success : AppColors.warning,
+                          color: isConnected
+                              ? AppColors.success
+                              : AppColors.warning,
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
@@ -208,7 +220,10 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
                       if (address != null)
                         Text(
                           address,
-                          style: const TextStyle(color: AppColors.grey, fontSize: 12),
+                          style: const TextStyle(
+                            color: AppColors.grey,
+                            fontSize: 12,
+                          ),
                         ),
                     ],
                   ),
@@ -217,7 +232,10 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
                   const SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.secondary),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.secondary,
+                    ),
                   ),
               ],
             ),
@@ -271,13 +289,22 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
           return GestureDetector(
             onTap: () => context.read<PrinterCubit>().connect(
               BluetoothPrinterDevice(
-                name: (context.read<PrinterCubit>().state as PrinterConnected).deviceName ?? '',
-                address: (context.read<PrinterCubit>().state as PrinterConnected).address ?? '',
+                name:
+                    (context.read<PrinterCubit>().state as PrinterConnected)
+                        .deviceName ??
+                    '',
+                address:
+                    (context.read<PrinterCubit>().state as PrinterConnected)
+                        .address ??
+                    '',
               ),
               w,
             ),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.lg,
+                vertical: AppSpacing.sm,
+              ),
               decoration: BoxDecoration(
                 color: isSelected ? AppColors.secondary : Colors.transparent,
                 borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
@@ -286,8 +313,8 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
                 w == PrinterWidth.inch2
                     ? AppStrings.twoInch
                     : w == PrinterWidth.inch3
-                        ? AppStrings.threeInch
-                        : AppStrings.fourInch,
+                    ? AppStrings.threeInch
+                    : AppStrings.fourInch,
                 style: TextStyle(
                   color: isSelected ? Colors.white : AppColors.text,
                   fontWeight: FontWeight.bold,
@@ -330,7 +357,9 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
     if (state is PrinterScanning) {
       return const SliverFillRemaining(
         hasScrollBody: false,
-        child: Center(child: CircularProgressIndicator(color: AppColors.secondary)),
+        child: Center(
+          child: CircularProgressIndicator(color: AppColors.secondary),
+        ),
       );
     }
 
@@ -343,7 +372,11 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(LucideIcons.bluetooth, size: 48, color: AppColors.greyLight),
+              const Icon(
+                LucideIcons.bluetooth,
+                size: 48,
+                color: AppColors.greyLight,
+              ),
               const Gap(AppSpacing.md),
               Text(
                 AppStrings.noDevicesFound,
@@ -365,18 +398,31 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate((context, index) {
           final device = devices[index];
-          final isConnecting = state is PrinterConnecting && state.address == device.address;
+          final isConnecting =
+              state is PrinterConnecting && state.address == device.address;
 
           return Card(
             margin: const EdgeInsets.only(bottom: AppSpacing.md),
             child: ListTile(
-              leading: const Icon(LucideIcons.bluetooth, color: AppColors.secondary),
-              title: Text(device.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+              leading: const Icon(
+                LucideIcons.bluetooth,
+                color: AppColors.secondary,
+              ),
+              title: Text(
+                device.name,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
               subtitle: Text(device.address),
               trailing: isConnecting
-                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                   : const Icon(LucideIcons.chevronRight, size: 16),
-              onTap: isConnecting ? null : () => _showWidthSelectionSheet(context, device),
+              onTap: isConnecting
+                  ? null
+                  : () => _showWidthSelectionSheet(context, device),
             ),
           );
         }, childCount: devices.length),
@@ -384,11 +430,16 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
     );
   }
 
-  void _showWidthSelectionSheet(BuildContext context, BluetoothPrinterDevice device) {
+  void _showWidthSelectionSheet(
+    BuildContext context,
+    BluetoothPrinterDevice device,
+  ) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusXl)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppSpacing.radiusXl),
+        ),
       ),
       builder: (sheetContext) {
         return Container(
@@ -398,7 +449,10 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
             children: [
               Text(
                 AppStrings.selectPaperWidth,
-                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 20),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 20,
+                ),
               ),
               const Gap(AppSpacing.sm),
               Text(
@@ -411,9 +465,23 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
                 children: [
                   // Expanded(child: _buildWidthOption(context, device, PrinterWidth.inch2, AppStrings.printer2Inch)),
                   // const Gap(AppSpacing.md),
-                  Expanded(child: _buildWidthOption(context, device, PrinterWidth.inch3, AppStrings.printer3Inch)),
+                  Expanded(
+                    child: _buildWidthOption(
+                      context,
+                      device,
+                      PrinterWidth.inch3,
+                      AppStrings.printer3Inch,
+                    ),
+                  ),
                   const Gap(AppSpacing.md),
-                  Expanded(child: _buildWidthOption(context, device, PrinterWidth.inch4, AppStrings.printer4Inch)),
+                  Expanded(
+                    child: _buildWidthOption(
+                      context,
+                      device,
+                      PrinterWidth.inch4,
+                      AppStrings.printer4Inch,
+                    ),
+                  ),
                 ],
               ),
               const Gap(AppSpacing.xl),
@@ -424,7 +492,12 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
     );
   }
 
-  Widget _buildWidthOption(BuildContext context, BluetoothPrinterDevice device, PrinterWidth width, String label) {
+  Widget _buildWidthOption(
+    BuildContext context,
+    BluetoothPrinterDevice device,
+    PrinterWidth width,
+    String label,
+  ) {
     return InkWell(
       onTap: () {
         Navigator.pop(context);

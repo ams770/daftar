@@ -1,18 +1,19 @@
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+
 import 'app_shell.dart';
 import 'core/di/injection.dart' as di;
 import 'core/theme/app_theme.dart';
-import 'features/settings/presentation/cubits/settings_cubit.dart';
-import 'features/invoices/presentation/cubits/invoice_cubit.dart';
 import 'features/invoices/presentation/cubits/add_invoice_cubit.dart';
+import 'features/invoices/presentation/cubits/invoice_cubit.dart';
 import 'features/invoices/presentation/cubits/money_collection_cubit.dart';
 import 'features/printer/presentation/cubits/printer_cubit.dart';
+import 'features/settings/presentation/cubits/settings_cubit.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();

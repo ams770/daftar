@@ -1,6 +1,6 @@
 import '../../../../core/database/database_helper.dart';
-import '../../domain/entities/money_collection.dart';
 import '../../domain/entities/invoice.dart';
+import '../../domain/entities/money_collection.dart';
 
 abstract class InvoiceLocalDataSource {
   Future<int> saveInvoice(Invoice invoice);
@@ -39,12 +39,12 @@ class InvoiceLocalDataSourceImpl implements InvoiceLocalDataSource {
     return await db.transaction((txn) async {
       // Save invoice
       final invoiceId = await txn.insert('invoices', invoice.toJson());
-      
+
       // Save items
       for (final item in invoice.items) {
         await txn.insert('invoice_items', item.toJson(invoiceId));
       }
-      
+
       return invoiceId;
     });
   }
@@ -58,24 +58,33 @@ class InvoiceLocalDataSourceImpl implements InvoiceLocalDataSource {
     DateTime? endDate,
   }) async {
     final db = await _dbHelper.database;
-    
+
     List<String> whereClauses = [];
     List<dynamic> whereArgs = [];
-    
+
     if (searchQuery != null && searchQuery.isNotEmpty) {
       whereClauses.add('clientName LIKE ?');
       whereArgs.add('%$searchQuery%');
     }
-    
+
     if (startDate != null && endDate != null) {
       final start = DateTime(startDate.year, startDate.month, startDate.day);
-      final end = DateTime(endDate.year, endDate.month, endDate.day, 23, 59, 59);
+      final end = DateTime(
+        endDate.year,
+        endDate.month,
+        endDate.day,
+        23,
+        59,
+        59,
+      );
       whereClauses.add('createdAt BETWEEN ? AND ?');
       whereArgs.add(start.toIso8601String());
       whereArgs.add(end.toIso8601String());
     }
-    
-    final String? where = whereClauses.isEmpty ? null : whereClauses.join(' AND ');
+
+    final String? where = whereClauses.isEmpty
+        ? null
+        : whereClauses.join(' AND ');
 
     final List<Map<String, dynamic>> maps = await db.query(
       'invoices',
@@ -85,7 +94,7 @@ class InvoiceLocalDataSourceImpl implements InvoiceLocalDataSource {
       offset: offset,
       orderBy: 'createdAt DESC',
     );
-    
+
     List<Invoice> invoices = [];
     for (final map in maps) {
       final items = await getInvoiceItems(map['id']);
@@ -102,7 +111,7 @@ class InvoiceLocalDataSourceImpl implements InvoiceLocalDataSource {
       where: 'invoiceId = ?',
       whereArgs: [invoiceId],
     );
-    
+
     return maps.map((item) => InvoiceItem.fromJson(item)).toList();
   }
 
@@ -129,7 +138,10 @@ class InvoiceLocalDataSourceImpl implements InvoiceLocalDataSource {
     final db = await _dbHelper.database;
     return await db.transaction((txn) async {
       // 1. Save collection
-      final collectionId = await txn.insert('money_collections', collection.toJson());
+      final collectionId = await txn.insert(
+        'money_collections',
+        collection.toJson(),
+      );
 
       // 2. Get current invoice data to update it correctly
       final List<Map<String, dynamic>> invoiceMaps = await txn.query(
@@ -179,13 +191,22 @@ class InvoiceLocalDataSourceImpl implements InvoiceLocalDataSource {
 
     if (startDate != null && endDate != null) {
       final start = DateTime(startDate.year, startDate.month, startDate.day);
-      final end = DateTime(endDate.year, endDate.month, endDate.day, 23, 59, 59);
+      final end = DateTime(
+        endDate.year,
+        endDate.month,
+        endDate.day,
+        23,
+        59,
+        59,
+      );
       whereClauses.add('createdAt BETWEEN ? AND ?');
       whereArgs.add(start.toIso8601String());
       whereArgs.add(end.toIso8601String());
     }
 
-    final String? where = whereClauses.isEmpty ? null : whereClauses.join(' AND ');
+    final String? where = whereClauses.isEmpty
+        ? null
+        : whereClauses.join(' AND ');
 
     final List<Map<String, dynamic>> maps = await db.query(
       'money_collections',
@@ -226,11 +247,7 @@ class InvoiceLocalDataSourceImpl implements InvoiceLocalDataSource {
         final collection = MoneyCollection.fromJson(collectionMaps.first);
 
         // 2. Delete collection
-        await txn.delete(
-          'money_collections',
-          where: 'id = ?',
-          whereArgs: [id],
-        );
+        await txn.delete('money_collections', where: 'id = ?', whereArgs: [id]);
 
         // 3. Update invoice
         final List<Map<String, dynamic>> invoiceMaps = await txn.query(
@@ -241,7 +258,8 @@ class InvoiceLocalDataSourceImpl implements InvoiceLocalDataSource {
 
         if (invoiceMaps.isNotEmpty) {
           final currentPaid = invoiceMaps.first['paidAmount'] as double;
-          final currentRemaining = invoiceMaps.first['remainingAmount'] as double;
+          final currentRemaining =
+              invoiceMaps.first['remainingAmount'] as double;
 
           await txn.update(
             'invoices',

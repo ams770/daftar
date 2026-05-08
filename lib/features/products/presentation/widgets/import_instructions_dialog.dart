@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:gap/gap.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-
-import '../../../../core/constants/app_strings.dart';
 
 class ImportInstructionsDialog extends StatelessWidget {
   const ImportInstructionsDialog({super.key});
@@ -13,7 +13,9 @@ class ImportInstructionsDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusXl)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+      ),
       backgroundColor: AppColors.white,
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),
@@ -23,7 +25,11 @@ class ImportInstructionsDialog extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Icon(LucideIcons.info, color: AppColors.secondary, size: 28),
+                const Icon(
+                  LucideIcons.info,
+                  color: AppColors.secondary,
+                  size: 28,
+                ),
                 const Gap(AppSpacing.md),
                 Text(
                   AppStrings.instructions,
@@ -39,7 +45,10 @@ class ImportInstructionsDialog extends StatelessWidget {
             const Gap(AppSpacing.lg),
             _buildColumnInfo(AppStrings.columnName, AppStrings.columnNameType),
             _buildColumnInfo(AppStrings.columnCode, AppStrings.columnCodeType),
-            _buildColumnInfo(AppStrings.columnPrice, AppStrings.columnPriceType),
+            _buildColumnInfo(
+              AppStrings.columnPrice,
+              AppStrings.columnPriceType,
+            ),
             const Gap(AppSpacing.xl),
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
@@ -50,7 +59,11 @@ class ImportInstructionsDialog extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(LucideIcons.circleAlert, size: 16, color: AppColors.warning),
+                  const Icon(
+                    LucideIcons.circleAlert,
+                    size: 16,
+                    color: AppColors.warning,
+                  ),
                   const Gap(AppSpacing.sm),
                   Expanded(
                     child: Text(
@@ -84,8 +97,14 @@ class ImportInstructionsDialog extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: AppTypography.bodyMd.copyWith(fontWeight: FontWeight.w600)),
-          Text(type, style: AppTypography.bodySm.copyWith(color: AppColors.secondary)),
+          Text(
+            title,
+            style: AppTypography.bodyMd.copyWith(fontWeight: FontWeight.w600),
+          ),
+          Text(
+            type,
+            style: AppTypography.bodySm.copyWith(color: AppColors.secondary),
+          ),
         ],
       ),
     );

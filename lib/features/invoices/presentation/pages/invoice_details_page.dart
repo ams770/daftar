@@ -1,30 +1,30 @@
+import 'dart:ui' as ui;
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:printing/printing.dart';
-import 'package:easy_localization/easy_localization.dart';
+
+import '../../../../core/constants/app_strings.dart';
+import '../../../../core/services/pdf/invoice_pdf_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/services/pdf/invoice_pdf_service.dart';
-import '../../../../core/constants/app_strings.dart';
 import '../../../../core/theme/daftar_theme_extension.dart';
 import '../../../printer/presentation/cubits/printer_cubit.dart';
 import '../../../printer/presentation/cubits/printer_state.dart';
 import '../../../printer/presentation/widgets/printer_status_indicator.dart';
 import '../../../settings/presentation/cubits/settings_cubit.dart';
 import '../../domain/entities/invoice.dart';
-import 'dart:ui' as ui;
+import '../../domain/entities/money_collection.dart';
 import '../cubits/invoice_cubit.dart';
+import '../cubits/money_collection_cubit.dart';
+import '../widgets/collect_money_bottom_sheet.dart';
 import '../widgets/invoice_items_table.dart';
 import '../widgets/invoice_totals_section.dart';
 import '../widgets/section_title.dart';
-
-import '../widgets/collect_money_bottom_sheet.dart';
-import '../../domain/entities/money_collection.dart';
-import '../cubits/money_collection_cubit.dart';
 import 'money_collection_details_page.dart';
 
 class InvoiceDetailsPage extends StatefulWidget {

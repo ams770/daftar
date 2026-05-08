@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:flutter/services.dart';
+
 import 'thermal_printer_service.dart';
 
 class AndroidThermalPrinterService implements ThermalPrinterService {

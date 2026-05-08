@@ -1,23 +1,20 @@
-import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:gap/gap.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:easy_localization/easy_localization.dart';
+
+import '../../../../core/constants/app_strings.dart';
+import '../../../../core/models/app_settings.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/theme/daftar_theme_extension.dart';
-import '../../../../core/constants/app_strings.dart';
-import '../../../../core/models/app_settings.dart';
-import '../../../settings/presentation/cubits/settings_cubit.dart';
 import '../../../../core/utils/logo_helper.dart';
-import '../widgets/onboarding_step.dart';
-import '../widgets/onboarding_lang_form.dart';
-import '../widgets/onboarding_brand_form.dart';
-import '../widgets/onboarding_tax_form.dart';
+import '../../../settings/presentation/cubits/settings_cubit.dart';
 import '../widgets/onboarding_bottom_bar.dart';
+import '../widgets/onboarding_brand_form.dart';
+import '../widgets/onboarding_lang_form.dart';
+import '../widgets/onboarding_step.dart';
+import '../widgets/onboarding_tax_form.dart';
 
 class OnboardingPage extends StatefulWidget {
   final AppSettings initialSettings;
@@ -49,6 +46,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   String _selectedPrintLang = 'EN';
 
   bool _isFieldFocused = false;
+  bool _isBrandSkipped = false;
 
   @override
   void initState() {
@@ -114,10 +112,33 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   bool get _isPage1Valid {
+    if (_isBrandSkipped) return true;
     return _nameController.text.isNotEmpty &&
         _phoneController.text.isNotEmpty &&
         _addressController.text.isNotEmpty &&
         _logoFileName != null;
+  }
+
+  void _skipAll() {
+    setState(() {
+      if (_nameController.text.isEmpty) {
+        _nameController.text = 'app_name'.tr();
+      }
+      if (_phoneController.text.isEmpty) {
+        _phoneController.text = '';
+      }
+      if (_addressController.text.isEmpty) {
+        _addressController.text = '';
+      }
+      if (_vatController.text.isEmpty) {
+        _vatController.text = '15';
+      }
+      if (_currencyController.text.isEmpty) {
+        _currencyController.text = widget.initialSettings.currency;
+      }
+      _isBrandSkipped = true;
+    });
+    _finish();
   }
 
   bool get _isPage2Valid =>
@@ -184,88 +205,134 @@ class _OnboardingPageState extends State<OnboardingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Column(
+      body: Stack(
         children: [
-          Expanded(
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: (index) {
-                FocusScope.of(context).unfocus();
-                setState(() => _currentPage = index);
-              },
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                OnboardingStep(
-                  svg: 'assets/svg/onboarding-1.svg',
-                  title: AppStrings.language,
-                  desc: AppStrings.onboardingLangDesc,
-                  content: OnboardingLangForm(
-                    selectedLang: _selectedLang,
-                    selectedPrintLang: _selectedPrintLang,
-                    onAppLangChanged: (lang) {
-                      setState(() => _selectedLang = lang);
-                      context.setLocale(
-                        Locale(lang == 'AR' ? 'ar' : 'en'),
-                      );
-                    },
-                    onPrintLangChanged: (lang) {
-                      setState(() => _selectedPrintLang = lang);
-                    },
-                  ),
+          Column(
+            children: [
+              Expanded(
+                child: PageView(
+                  controller: _pageController,
+                  onPageChanged: (index) {
+                    FocusScope.of(context).unfocus();
+                    setState(() => _currentPage = index);
+                  },
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    OnboardingStep(
+                      svg: 'assets/svg/onboarding-1.svg',
+                      title: AppStrings.language,
+                      desc: AppStrings.onboardingLangDesc,
+                      content: OnboardingLangForm(
+                        selectedLang: _selectedLang,
+                        selectedPrintLang: _selectedPrintLang,
+                        onAppLangChanged: (lang) {
+                          setState(() => _selectedLang = lang);
+                          context.setLocale(Locale(lang == 'AR' ? 'ar' : 'en'));
+                        },
+                        onPrintLangChanged: (lang) {
+                          setState(() => _selectedPrintLang = lang);
+                        },
+                      ),
+                    ),
+                    OnboardingStep(
+                      svg: 'assets/svg/onboarding-2.svg',
+                      title: AppStrings.onboardingWelcome,
+                      desc: AppStrings.onboardingBrandDesc,
+                      content: OnboardingBrandForm(
+                        nameController: _nameController,
+                        phoneController: _phoneController,
+                        addressController: _addressController,
+                        nameFocus: _nameFocus,
+                        phoneFocus: _phoneFocus,
+                        addressFocus: _addressFocus,
+                        logoPath: _logoPath,
+                        logoFileName: _logoFileName,
+                        onPickLogo: _pickLogo,
+                        onStateChanged: () {
+                          setState(() {
+                            _isBrandSkipped = false;
+                          });
+                        },
+                        onNext: () {
+                          if (_isPage1Valid) _nextPage();
+                        },
+                      ),
+                    ),
+                    OnboardingStep(
+                      svg: 'assets/svg/onboarding-3.svg',
+                      title: AppStrings.taxation,
+                      desc: AppStrings.onboardingTaxDesc,
+                      content: OnboardingTaxForm(
+                        vatController: _vatController,
+                        currencyController: _currencyController,
+                        vatFocus: _vatFocus,
+                        currencyFocus: _currencyFocus,
+                        onStateChanged: () => setState(() {}),
+                        onNext: () {
+                          if (_isPage2Valid) _nextPage();
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-                OnboardingStep(
-                  svg: 'assets/svg/onboarding-2.svg',
-                  title: AppStrings.onboardingWelcome,
-                  desc: AppStrings.onboardingBrandDesc,
-                  content: OnboardingBrandForm(
-                    nameController: _nameController,
-                    phoneController: _phoneController,
-                    addressController: _addressController,
-                    nameFocus: _nameFocus,
-                    phoneFocus: _phoneFocus,
-                    addressFocus: _addressFocus,
-                    logoPath: _logoPath,
-                    logoFileName: _logoFileName,
-                    onPickLogo: _pickLogo,
-                    onStateChanged: () => setState(() {}),
-                    onNext: () {
-                      if (_isPage1Valid) _nextPage();
-                    },
-                  ),
-                ),
-                OnboardingStep(
-                  svg: 'assets/svg/onboarding-3.svg',
-                  title: AppStrings.taxation,
-                  desc: AppStrings.onboardingTaxDesc,
-                  content: OnboardingTaxForm(
-                    vatController: _vatController,
-                    currencyController: _currencyController,
-                    vatFocus: _vatFocus,
-                    currencyFocus: _currencyFocus,
-                    onStateChanged: () => setState(() {}),
-                    onNext: () {
-                      if (_isPage2Valid) _nextPage();
-                    },
-                  ),
-                ),
-              ],
-            ),
+              ),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                height: _isFieldFocused ? 0 : null,
+                child: _isFieldFocused
+                    ? const SizedBox.shrink()
+                    : OnboardingBottomBar(
+                        currentPage: _currentPage,
+                        isCurrentPageValid: _isCurrentPageValid,
+                        onPrevious: _previousPage,
+                        onNext: _nextPage,
+                      ),
+              ),
+            ],
           ),
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            height: _isFieldFocused ? 0 : null,
-            child: _isFieldFocused
-                ? const SizedBox.shrink()
-                : OnboardingBottomBar(
-                    currentPage: _currentPage,
-                    isCurrentPageValid: _isCurrentPageValid,
-                    onPrevious: _previousPage,
-                    onNext: _nextPage,
+          Positioned.directional(
+            textDirection: Directionality.of(context),
+            top: MediaQuery.of(context).padding.top + 16,
+            end: 16,
+            child: AnimatedOpacity(
+              opacity: _isFieldFocused ? 0.0 : 1.0,
+              duration: const Duration(milliseconds: 200),
+              child: IgnorePointer(
+                ignoring: _isFieldFocused,
+                child: TextButton(
+                  onPressed: _skipAll,
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.secondary,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.lg,
+                      vertical: AppSpacing.sm,
+                    ),
                   ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        AppStrings.skip,
+                        style: AppTypography.bodyMd.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.secondary,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        context.locale.languageCode == 'ar'
+                            ? LucideIcons.chevronLeft
+                            : LucideIcons.chevronRight,
+                        size: 16,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),
     );
   }
 }
-

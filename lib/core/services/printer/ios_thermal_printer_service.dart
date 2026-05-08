@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:flutter/services.dart';
+
 import 'thermal_printer_service.dart';
 
 class IosThermalPrinterService implements ThermalPrinterService {
@@ -53,13 +55,18 @@ class IosThermalPrinterService implements ThermalPrinterService {
   @override
   Future<List<BluetoothPrinterDevice>> scanDevices() async {
     try {
-      final List<dynamic> devices = await _channel.invokeMethod('getPairedDevices');
+      final List<dynamic> devices = await _channel.invokeMethod(
+        'getPairedDevices',
+      );
       return devices.map((d) {
         // iOS implementation returns "Name (Address)" string
         final str = d.toString();
         final match = RegExp(r'(.+)\s\((.+)\)').firstMatch(str);
         if (match != null) {
-          return BluetoothPrinterDevice(name: match.group(1)!, address: match.group(2)!);
+          return BluetoothPrinterDevice(
+            name: match.group(1)!,
+            address: match.group(2)!,
+          );
         }
         return BluetoothPrinterDevice(name: str, address: str);
       }).toList();
@@ -72,7 +79,9 @@ class IosThermalPrinterService implements ThermalPrinterService {
   Future<void> connect(String address) async {
     _stateController.add(PrinterConnectionState.connecting);
     try {
-      final bool success = await _channel.invokeMethod('connectToDevice', {'address': address});
+      final bool success = await _channel.invokeMethod('connectToDevice', {
+        'address': address,
+      });
       if (success) {
         _stateController.add(PrinterConnectionState.connected);
       } else {
@@ -121,7 +130,9 @@ class IosThermalPrinterService implements ThermalPrinterService {
 
   @override
   Future<void> configurePaperWidth(PrinterWidth width) async {
-    await _channel.invokeMethod('configurePrinter', {'paperWidth': width.pixels});
+    await _channel.invokeMethod('configurePrinter', {
+      'paperWidth': width.pixels,
+    });
   }
 
   @override

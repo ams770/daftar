@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+
 import 'core/constants/app_strings.dart';
-import 'features/products/presentation/pages/products_page.dart';
-import 'features/invoices/presentation/pages/invoices_page.dart';
-import 'features/invoices/presentation/pages/collections_page.dart';
-import 'features/settings/presentation/pages/settings_page.dart';
-import 'features/onboarding/presentation/pages/onboarding_page.dart';
-import 'features/settings/presentation/cubits/settings_cubit.dart';
 import 'core/theme/app_colors.dart';
+import 'features/invoices/presentation/pages/collections_page.dart';
+import 'features/invoices/presentation/pages/invoices_page.dart';
+import 'features/onboarding/presentation/pages/onboarding_page.dart';
+import 'features/products/presentation/pages/products_page.dart';
+import 'features/settings/presentation/cubits/settings_cubit.dart';
+import 'features/settings/presentation/pages/settings_page.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});

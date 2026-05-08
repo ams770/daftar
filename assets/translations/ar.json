@@ -150,5 +150,6 @@
   "import_header_skip": "يتم اعتبار الصف الأول كعنوان وسيتم تخطيه.",
   "pick_excel_file": "اختر ملف Excel",
   "add_logo": "أضف شعارك",
-  "add_logo_hint": "أضف شعار الشركة هنا"
+  "add_logo_hint": "أضف شعار الشركة هنا",
+  "skip": "تخطي"
 }
